@@ -211,6 +211,10 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 .pcGrid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #e5e7eb}
 .pcGrid div{padding:10px 14px;font-size:12px;color:#6b7280}.pcGrid div b{display:block;font-size:18px;color:#111}.pcGrid div+div{border-left:1px solid #e5e7eb}
 .pcAtu{font-size:12px;color:#6b7280;margin-top:10px;line-height:1.5}
+.nhPush{margin:12px 16px 0;display:flex;align-items:center;gap:10px;background:#fef3c7;border:1px solid #fde68a;color:#78350f;border-radius:14px;padding:10px 12px;font-size:14px;font-weight:600}
+.nhPush span{flex:1}.nhPush button{border:0;border-radius:10px;background:#b45309;color:#fff;font-weight:800;padding:9px 12px;font-size:13px}
+.avLbl{display:block;font-size:13px;color:#6b7280;margin:12px 2px 4px;font-weight:600}
+.avIn{width:100%;font-size:17px;padding:12px;border:2px solid #e5e7eb;border-radius:12px;font-family:inherit;background:#fff;margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -250,6 +254,7 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 <symbol id="ic-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8zM7.5 7.5h.01"/></symbol>
 <symbol id="ic-conf" viewBox="0 0 24 24"><path d="M9 5H6v16h12V5h-3M9 3h6v4H9zM9 13l2 2 4-4"/></symbol>
 <symbol id="ic-cont" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></symbol>
+<symbol id="ic-sino" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></symbol>
 <symbol id="ic-scan" viewBox="0 0 24 24"><path d="M3 7V4h3M18 4h3v3M21 17v3h-3M6 20H3v-3M7 8v8M10 8v8M13 8v8M17 8v8"/></symbol>
 </defs></svg>
 <section class="tela" id="tHome">
@@ -258,6 +263,7 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
     <div class="nhNome" id="nhNome"></div><div class="nhDia" id="nhDia"></div>
     <div class="nhPonto" id="nhPonto" style="display:none"></div>
   </div>
+  <div class="nhPush" id="nhPush" style="display:none"><span>🔔 Receber avisos neste celular</span><button onclick="ativarPush()">ATIVAR</button></div>
   <button class="nhCp" onclick="irPreco()"><span class="ib"><svg class="nhIc"><use href="#ic-scan"/></svg></span><span><b>Consulta preço</b><i>bipe o produto: preço, promoção e saldo</i></span></button>
   <div class="nhLista" id="nhLista"></div>
 </section>
@@ -267,6 +273,15 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
   <input type="file" id="fotoPreco" accept="image/*" capture="environment" style="display:none">
   <ul class="pcRes" id="pcRes"></ul>
   <div id="pcCard"></div>
+</section>
+
+<section class="tela" id="tAviso">
+  <div class="faixa preco"><span>ENVIAR AVISO</span><button onclick="irTipo()">VOLTAR</button></div>
+  <label class="avLbl" for="avPara">Para quem</label><select id="avPara" class="avIn"></select>
+  <label class="avLbl" for="avTit">Título</label><input id="avTit" class="avIn" placeholder="Aviso do Pauvan" maxlength="60">
+  <label class="avLbl" for="avTx">Mensagem</label><textarea id="avTx" class="avIn" rows="5" maxlength="400" placeholder="Escreva o aviso"></textarea>
+  <button class="btn ok" id="avBt" onclick="enviarAviso()" style="margin-top:12px">ENVIAR AVISO</button>
+  <p class="dica" id="avRes"></p>
 </section>
 
 <!-- 3. BIPAR -->
@@ -425,6 +440,7 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 // Quando a página roda fora do Apps Script (ex.: hospedada em outro lugar), aponta para a URL do web app:
 var API_URL = '%%API_URL%%';
 // v62: tela inicial nova só no app hospedado
+var FB_CFG={apiKey:'AIzaSyC4lagk9rwIo-_G5sZxV0GPyhcaTvJz0ng',authDomain:'apps-pauvan.firebaseapp.com',projectId:'apps-pauvan',storageBucket:'apps-pauvan.firebasestorage.app',messagingSenderId:'442345355000',appId:'1:442345355000:web:b311386f57ad07527dad0d'},FB_VAPID='BDmanVUsM42_JEf3CDuth5vPV_hHXt2fPMmF2hUH9E9tiZOLHt8fVvwiBFvj519E3PGjJAq33EagY4F12vX_rQw',fbMsg=null; // v63: notificações
 var NOVA_HOME=/^https?:/.test(API_URL);
 if(NOVA_HOME){try{document.querySelector('header').style.background='#104800';}catch(e){}}
 var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont']};
@@ -1047,7 +1063,9 @@ function irHome(){
   $('nhNome').textContent=sd+', '+quem;
   var dias=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'],meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'],d=new Date();
   $('nhDia').textContent=dias[d.getDay()]+', '+d.getDate()+' de '+meses[d.getMonth()];
-  mostrar('tHome');renderHome();
+  var ab='';try{ab=new URLSearchParams(location.search).get('abrir')||'';if(ab)history.replaceState(null,'',location.pathname);}catch(e){}
+  if(ab==='rebaixas'&&appsCache.indexOf('REBAIXAS')>=0){escolherTipo('REBAIXAS');return;}
+  mostrar('tHome');renderHome();atualizarPushUI();
   api({acao:'resumoHome',quem:quem}).then(function(r){if(r&&r.ok){resumoCache=r;try{localStorage.setItem('ci_resumo',JSON.stringify(r));}catch(e){}renderHome();}}).catch(function(){});
 }
 function renderHome(){
@@ -1063,6 +1081,59 @@ function renderHome(){
     b.onclick=function(){vibra();escolherTipo(a);};box.appendChild(b);
   });
   if(!box.children.length)box.innerHTML=appsOk?'<p class="dica" style="font-size:16px;margin-top:20px;line-height:1.5">Seus outros módulos ainda não foram liberados.<br>Peça ao Celio para liberar.</p>':'<p class="dica">Carregando…</p>';
+  if(semAc(quem||'').toLowerCase().trim()==='celio'){var g=document.createElement('h3');g.textContent='GESTÃO';box.appendChild(g);var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:#b45309"><svg class="nhIc"><use href="#ic-sino"/></svg></span><span><b>Enviar aviso</b><i>notificação no celular da equipe</i></span><span class="ar">›</span>';b.onclick=function(){vibra();irAviso();};box.appendChild(b);} // v63
+}
+// ----- v63: notificações (Firebase) -----
+function pushSuportado(){return NOVA_HOME&&('Notification' in window)&&('serviceWorker' in navigator);}
+function carregarFb(){
+  if(fbMsg)return Promise.resolve(fbMsg);
+  return new Promise(function(ok,err){
+    function s(u,cb){var e=document.createElement('script');e.src=u;e.onload=cb;e.onerror=function(){err('não carregou o Firebase');};document.head.appendChild(e);}
+    s('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',function(){s('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js',function(){
+      try{
+        if(!firebase.apps.length)firebase.initializeApp(FB_CFG);
+        fbMsg=firebase.messaging();
+        fbMsg.onMessage(function(pl){var n=pl.notification||{};toast((n.title||'Aviso')+': '+(n.body||''));try{navigator.serviceWorker.ready.then(function(r){r.showNotification(n.title||'Aviso',{body:n.body||'',icon:'icone-192.png',data:{abrir:(pl.data||{}).abrir||''}});});}catch(e){}});
+        ok(fbMsg);
+      }catch(e){err(e&&e.message||e);}
+    });});
+  });
+}
+function registrarToken(){
+  return carregarFb().then(function(m){return navigator.serviceWorker.ready.then(function(reg){return m.getToken({vapidKey:FB_VAPID,serviceWorkerRegistration:reg});});}).then(function(tk){
+    if(!tk)throw 'sem token';
+    var marca=tk+'|'+quem+'|'+new Date().toDateString(),ult='';try{ult=localStorage.getItem('ci_fcm')||'';}catch(e){}
+    if(ult===marca)return true;
+    return api({acao:'registrarPush',quem:quem,token:token,fcm:tk,aparelho:navigator.userAgent}).then(function(r){if(r&&r.ok){try{localStorage.setItem('ci_fcm',marca);}catch(e){}return true;}throw (r&&r.erro)||'erro';});
+  });
+}
+function atualizarPushUI(){
+  var b=$('nhPush');if(!b)return;
+  if(!pushSuportado()){b.style.display='none';return;}
+  if(Notification.permission==='granted'){b.style.display='none';registrarToken().catch(function(){});}
+  else if(Notification.permission==='denied'){b.style.display='flex';b.querySelector('span').textContent='🔕 Avisos bloqueados neste celular. Libere as notificações do app nas configurações.';b.querySelector('button').style.display='none';}
+  else b.style.display='flex';
+}
+function ativarPush(){
+  Notification.requestPermission().then(function(p){
+    if(p!=='granted'){atualizarPushUI();toast('Notificações não permitidas','err');return;}
+    toast('Ativando avisos…');
+    registrarToken().then(function(){toast('Avisos ativados ✅');atualizarPushUI();}).catch(function(e){toast('Erro ao ativar: '+e,'err');});
+  });
+}
+function irAviso(){
+  tipoAtual='AVISO';mostrar('tAviso');var s=$('avPara');s.innerHTML='';
+  [['TODOS','Todos']].concat(PESSOAS.map(function(n){return [n,n];})).forEach(function(x){var o=document.createElement('option');o.value=x[0];o.textContent=x[1];s.appendChild(o);});
+  $('avRes').textContent='';
+}
+function enviarAviso(){
+  var tx=$('avTx').value.trim();if(!tx){toast('Escreva a mensagem','err');return;}
+  $('avBt').disabled=true;$('avRes').textContent='Enviando…';
+  api({acao:'enviarAviso',quem:quem,token:token,para:$('avPara').value,titulo:$('avTit').value.trim(),texto:tx}).then(function(r){
+    $('avBt').disabled=false;
+    if(r&&r.ok){$('avRes').textContent=r.aparelhos?('Enviado para '+r.enviados+' de '+r.aparelhos+' celular(es).'):'Ninguém desse grupo ativou os avisos ainda.';if(r.enviados){$('avTx').value='';$('avTit').value='';}}
+    else{$('avRes').textContent='';toast((r&&r.erro)||'Erro ao enviar','err');}
+  }).catch(function(){$('avBt').disabled=false;$('avRes').textContent='';toast('Sem conexão. Tente de novo.','err');});
 }
 // ----- consulta preço -----
 var NOME_PROMO={'SCANNTECH':['SCANNTECH','#0369a1'],'DIA D':['DIA D','#111'],'ESQUENTA DIA D':['ESQUENTA DIA D','#111'],'QUARTA VERDE':['QUARTA VERDE','#16a34a'],'QUINTA E SEXTA DA CARNE':['QUINTA E SEXTA DA CARNE','#b91c1c'],'SEGUNDA E TERCA':['SEGUNDA E TERÇA','#c2410c'],'FIM DE SEMANA':['FIM DE SEMANA','#7c3aed'],'REBAIXA':['REBAIXA','#6d28d9'],'PROMOCAO':['PROMOÇÃO','#b45309']};
