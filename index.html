@@ -264,7 +264,7 @@ ul.citens li .q{font-size:12px;color:#15803d;font-weight:600}
   <div id="confRes"></div>
   <div class="linha">
     <input type="text" id="confBusca" placeholder="bipar, código ou nome" autocomplete="off">
-    <button class="btn sec" style="width:auto;margin:0;padding:12px 14px;font-size:16px" onclick="document.getElementById('fotoConf').click()">📷</button>
+    <button class="btn sec" style="width:auto;margin:0;padding:12px 14px;font-size:16px" onclick="escanear('fotoConf')">📷</button>
   </div>
   <input type="file" id="fotoConf" accept="image/*" capture="environment">
   <ul class="citens" id="confItens"></ul>
@@ -284,7 +284,7 @@ ul.citens li .q{font-size:12px;color:#15803d;font-weight:600}
     <div class="formas" id="ccEmbBt"></div>
     <div class="lin" id="ccEmbQtd" style="display:none"><label>Quantas embalagens?</label><input class="qe" type="text" inputmode="numeric" placeholder="ex.: 10"></div>
   </div>
-  <div class="lin" style="margin-top:8px"><label>Código da embalagem</label><input id="ccCodLido" type="text" inputmode="numeric" placeholder="opcional — bipe ou digite"><button class="btn sec" style="width:auto;margin:0;padding:10px 12px;font-size:15px" onclick="document.getElementById('fotoCodEmb').click()">📷</button></div>
+  <div class="lin" style="margin-top:8px"><label>Código da embalagem</label><input id="ccCodLido" type="text" inputmode="numeric" placeholder="opcional — bipe ou digite"><button class="btn sec" style="width:auto;margin:0;padding:10px 12px;font-size:15px" onclick="escanear('fotoCodEmb')">📷</button></div>
   <div class="codst" id="ccCodSt"></div>
   <input type="file" id="fotoCodEmb" accept="image/*" capture="environment">
   <div id="ccTrocas"></div>
@@ -304,7 +304,7 @@ ul.citens li .q{font-size:12px;color:#15803d;font-weight:600}
   <div class="cod" id="trDesc"></div>
   <div class="lin"><label>Quantos deste item foram trocados?</label><input id="trQtdSubst" type="text" inputmode="decimal" placeholder="ex.: 2"></div>
   <div class="dica" style="text-align:left;margin:10px 0 4px">O que veio no lugar?</div>
-  <div class="linha"><input id="trBusca" type="text" placeholder="bipar, código ou nome do produto" autocomplete="off"><button class="btn sec" style="width:auto;margin:0;padding:10px 12px;font-size:15px" onclick="document.getElementById('fotoTroca').click()">📷</button></div>
+  <div class="linha"><input id="trBusca" type="text" placeholder="bipar, código ou nome do produto" autocomplete="off"><button class="btn sec" style="width:auto;margin:0;padding:10px 12px;font-size:15px" onclick="escanear('fotoTroca')">📷</button></div>
   <input type="file" id="fotoTroca" accept="image/*" capture="environment">
   <ul class="res" id="trRes"></ul>
   <div id="trSel" class="trsel" style="display:none"></div>
@@ -933,18 +933,50 @@ function renderConfNF(){
 function semAc(s){return String(s||'').normalize?String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,''):String(s||'');}
 $('confBusca').addEventListener('input',function(){if(confNF&&confNF.nf)renderConfNF();});
 $('confBusca').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();var vis=$('confItens').querySelectorAll('li');if(vis.length===1)vis[0].click();}});
+// v61: câmera ao vivo nos botões 📷 (conferência, código da embalagem, troca). Onde o navegador não deixa (link antigo do Google), usa a foto.
+var SCAN_CB={},scanSt=null,scanZx=null,scanOn=false;
+function escanear(id){
+  var ov=$('scanOv');
+  if(!ov){
+    ov=document.createElement('div');ov.id='scanOv';
+    ov.innerHTML='<video id="scanV" playsinline muted></video><div class="mira" id="scanMira"></div><div class="txt" id="scanTxt"></div><div class="bts"><button id="scanFoto">TIRAR FOTO</button><button id="scanFechar">CANCELAR</button></div>';
+    document.body.appendChild(ov);
+    var st=document.createElement('style');
+    st.textContent='#scanOv{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center}#scanOv video{width:100%;max-height:65vh;object-fit:cover}#scanOv .mira{position:absolute;left:10%;right:10%;top:38%;height:18%;border:3px solid #22c55e;border-radius:12px;pointer-events:none}#scanOv .txt{color:#fff;margin:16px;font-size:16px;text-align:center}#scanOv .bts{display:flex;gap:10px}#scanOv button{border:0;border-radius:12px;padding:12px 18px;font-size:16px;font-weight:700;background:#fff;color:#111}';
+    document.head.appendChild(st);
+  }
+  var v=$('scanV'),tx=$('scanTxt');
+  $('scanFechar').onclick=fecharScan;
+  $('scanFoto').onclick=function(){fecharScan();document.getElementById(id).click();};
+  function semAoVivo(){fecharStream();v.style.display='none';$('scanMira').style.display='none';tx.textContent='Câmera ao vivo indisponível aqui. Toque em TIRAR FOTO.';}
+  v.style.display='';$('scanMira').style.display='';tx.textContent='Aponte para o código de barras';
+  ov.style.display='flex';scanOn=true;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){semAoVivo();return;}
+  function ok(txt){var c=String(txt||'').replace(/\D/g,'');if(!c||!scanOn)return;fecharScan();beep();if(SCAN_CB[id])SCAN_CB[id](c);}
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false})
+  .then(function(s){if(!scanOn){s.getTracks().forEach(function(t){t.stop();});return;}scanSt=s;v.srcObject=s;return v.play();})
+  .then(function(){
+    if(!scanOn)return;
+    if(detector){(function tick(){if(!scanOn)return;if(v.readyState>=2){detector.detect(v).then(function(cs){if(cs&&cs.length)ok(cs[0].rawValue);}).catch(function(){});}setTimeout(tick,200);})();}
+    else if(window.ZXing){scanZx=new ZXing.BrowserMultiFormatReader();scanZx.decodeFromStream(scanSt,v,function(r){if(r)ok(r.getText());});}
+    else semAoVivo();
+  })
+  .catch(function(){if(scanOn)semAoVivo();});
+}
+function fecharStream(){if(scanZx){try{scanZx.reset();}catch(e){}scanZx=null;}if(scanSt){scanSt.getTracks().forEach(function(t){t.stop();});scanSt=null;}}
+function fecharScan(){scanOn=false;fecharStream();var ov=$('scanOv');if(ov)ov.style.display='none';}
 function lerFotoPara(inp,cb){
   var f=inp.files[0];if(!f)return;toast('Lendo a foto…');
   var img=new Image();img.onload=function(){lerFotoCodigo(img,function(c){URL.revokeObjectURL(img.src);if(!c){toast('Não achei código na foto','err');return;}cb(String(c).replace(/\D/g,''));});};
   img.onerror=function(){toast('Não deu para abrir a foto','err');};img.src=URL.createObjectURL(f);inp.value='';
 }
-$('fotoConf').addEventListener('change',function(){
-  lerFotoPara(this,function(cod){
+SCAN_CB.fotoConf=function(cod){
     var it=confNF.itens.filter(function(i){return i.codigo===cod||i.codigo===cod.replace(/^0+/,'')||i.sku===cod;})[0];
     if(it){vibra();beep();abrirConfItem(it);}else{$('confBusca').value=cod;renderConfNF();toast('Esse código não está nesta nota','err');}
-  });
-});
-$('fotoCodEmb').addEventListener('change',function(){lerFotoPara(this,function(cod){$('ccCodLido').value=cod;vibra();beep();checarCodLido();});});
+};
+$('fotoConf').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fotoConf);});
+SCAN_CB.fotoCodEmb=function(cod){$('ccCodLido').value=cod;vibra();beep();checarCodLido();};
+$('fotoCodEmb').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fotoCodEmb);});
 $('ccCodLido').addEventListener('change',checarCodLido);
 $('ccCodLido').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();checarCodLido();}});
 function checarCodLido(){
@@ -1127,7 +1159,8 @@ function trBuscar(){
 }
 $('trBusca').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();trBuscar();}});
 $('trBusca').addEventListener('input',function(){if(this.value.trim().length>=3&&!/^\d+$/.test(this.value.trim()))trBuscar();});
-$('fotoTroca').addEventListener('change',function(){lerFotoPara(this,function(cod){$('trBusca').value=cod;trBuscar();});});
+SCAN_CB.fotoTroca=function(cod){$('trBusca').value=cod;trBuscar();};
+$('fotoTroca').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fotoTroca);});
 function salvarTroca(){
   var qs=parseFloat(String($('trQtdSubst').value).replace(',','.')),qn=parseFloat(String($('trQtdNovo').value).replace(',','.'));
   if(!(qs>0))return toast('Quantos do item da nota foram trocados?','err');
