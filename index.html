@@ -981,7 +981,7 @@ function salvarCT(it,resp,qtd,val){
 
 // ===== FOTOS DO SITE — v66 =====
 var fsCache=null,fsAberto=null,fsFotos=[],fsSlot=0;
-var FS_ROT=['Frente','Verso','Código / detalhe'];
+var FS_ROT=['Frente','Frente 2','Código de barras'];
 function irFS(){
   pararCamera();$('faixaFS').textContent='FOTOS DO SITE · '+quem;mostrar('tFS');
   try{fsCache=JSON.parse(localStorage.getItem('ci_fs')||'null');}catch(e){}
@@ -1009,7 +1009,7 @@ function renderFS(){
       if(fsAberto===it.sku){
         html+='<div class="fsSlots">';
         for(var k=0;k<3;k++){html+='<button class="fsSlot'+(fsFotos[k]?' ok':'')+'" data-k="'+k+'">'+(fsFotos[k]?'<img src="'+fsFotos[k]+'">':'<span style="font-size:26px">📷</span>')+(fsFotos[k]?'✅ ':'')+FS_ROT[k]+(k===0?' *':'')+'</button>';}
-        html+='</div><div class="m">* a foto da frente é obrigatória; as outras ajudam</div>';
+        html+='</div><div class="m">* a 1ª foto da frente é obrigatória; tire também a 2ª frente e o código de barras</div>';
         html+='<button class="bt env">ENVIAR FOTOS</button><button class="bt sec can">Cancelar</button>';
       }else{
         html+='<button class="bt'+(it.status==='ENVIADO'?' sec':'')+' abre">'+(it.status==='ENVIADO'?'Mandar de novo':'📷 FOTOGRAFAR')+'</button>';
