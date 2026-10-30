@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Apps Pauvan</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="theme-color" content="#14532d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Apps Pauvan">
+<style>
+  body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#fff;color:#14532d;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center}
+  #ld img{width:96px;height:96px}
+  #ld p{font-size:16px;margin:12px 0}
+  #ld button{border:0;border-radius:12px;background:#14532d;color:#fff;font-size:16px;font-weight:700;padding:12px 20px}
+</style>
+</head>
+<body>
+<div id="ld"><img src="icone-192.png" alt=""><p>Carregando…</p></div>
+<script>
+// Apps Pauvan — página de entrada (GitHub Pages).
+// A tela do app vem sempre do Apps Script (acao=html): atualizou lá, atualiza aqui. Nada para subir de novo.
+var API = 'https://script.google.com/macros/s/AKfycby5E_gkrNjAOsBgpYbrfJvXaKcHqMbTwH8Jb5ma_U-ThOhAFnVstqabM8bbnbJOB4DA/exec';
+var EXTRA_HEAD = '<link rel="manifest" href="manifest.json"><link rel="icon" href="icone-192.png"><link rel="apple-touch-icon" href="icone-180.png"><meta name="theme-color" content="#14532d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Apps Pauvan">';
+function abrir(html) {
+  html = html.split('%%API_URL%%').join(API);
+  html = html.replace(/<head[^>]*>/i, function (m) { return m + EXTRA_HEAD; });
+  document.open(); document.write(html); document.close();
+}
+function erro() {
+  document.getElementById('ld').innerHTML = '<img src="icone-192.png" alt=""><p>Sem conexão com a internet.</p><button onclick="location.reload()">TENTAR DE NOVO</button>';
+}
+var guardado = null;
+try { guardado = localStorage.getItem('ap_html'); } catch (e) {}
+fetch(API + '?acao=html&t=' + Date.now())
+  .then(function (r) { return r.json(); })
+  .then(function (r) {
+    if (r && r.ok && r.html) { try { localStorage.setItem('ap_html', r.html); } catch (e) {} abrir(r.html); }
+    else if (guardado) abrir(guardado); else erro();
+  })
+  .catch(function () { if (guardado) abrir(guardado); else erro(); });
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(function () {}); }
+</script>
+</body>
+</html>
