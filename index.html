@@ -24,6 +24,20 @@
   .btn.avaria{background:#b91c1c}
   .btn.rebaixas{background:#6d28d9}
   .faixa.rebaixas{background:#6d28d9}
+.btn.confirmacao{background:#0f766e}
+.faixa.confirmacao{background:#0f766e}
+ul.ct{list-style:none;padding:0;margin:0}
+ul.ct li{border:2px solid var(--borda);border-radius:14px;padding:12px;margin-bottom:10px}
+ul.ct li.tem{border-color:#15803d;background:#f0fdf4}
+ul.ct li.nao{border-color:#b91c1c;background:#fef2f2}
+ul.ct li .d{font-weight:700;font-size:16px;line-height:1.25}
+ul.ct li .m{font-size:13px;color:var(--muted);margin-top:4px}
+ul.ct li .row{display:flex;gap:8px;margin-top:10px}
+ul.ct li .row button{flex:1;border:2px solid var(--borda);background:#fff;border-radius:12px;font-size:16px;font-weight:700;padding:12px 0}
+ul.ct li .row button.on.t{background:#15803d;border-color:#15803d;color:#fff}
+ul.ct li .row button.on.n{background:#b91c1c;border-color:#b91c1c;color:#fff}
+ul.ct li input{width:100%;margin-top:8px;font-size:18px;padding:10px 12px}
+ul.ct .grp{background:#ccfbf1;color:#115e59;font-weight:800;font-size:13px;letter-spacing:.4px;padding:10px 12px;border-radius:10px;margin:14px 0 8px}
 .btn.contagem{background:#111}
 .faixa.contagem{background:#111}
 .contTop{display:flex;justify-content:space-between;font-weight:700;margin:0 0 8px;font-size:15px}
@@ -319,6 +333,14 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
   <div id="contBlocos"></div>
 </section>
 
+<!-- 7. CONFIRMAÇÃO (Tati) -->
+<section class="tela" id="tCT">
+  <div class="faixa confirmacao"><span id="faixaCT"></span><button onclick="irTipo()">TROCAR</button></div>
+  <div class="contTop"><span>O produto ainda existe?</span><span id="ctProg"></span></div>
+  <p class="dica" style="text-align:left;margin:0 0 10px">Veja na loja e responda TEM ou NÃO TEM MAIS. Se tem, confirme a validade do produto.</p>
+  <div id="ctLista"></div>
+</section>
+
 <!-- 6. CONFERÊNCIA — lista de notas -->
 <section class="tela" id="tConf">
   <div class="faixa conferencia"><span id="faixaConf"></span><button onclick="irTipo()">TROCAR</button></div>
@@ -443,7 +465,7 @@ var API_URL = 'https://script.google.com/macros/s/AKfycby5E_gkrNjAOsBgpYbrfJvXaK
 var FB_CFG={apiKey:'AIzaSyC4lagk9rwIo-_G5sZxV0GPyhcaTvJz0ng',authDomain:'apps-pauvan.firebaseapp.com',projectId:'apps-pauvan',storageBucket:'apps-pauvan.firebasestorage.app',messagingSenderId:'442345355000',appId:'1:442345355000:web:b311386f57ad07527dad0d'},FB_VAPID='BDmanVUsM42_JEf3CDuth5vPV_hHXt2fPMmF2hUH9E9tiZOLHt8fVvwiBFvj519E3PGjJAq33EagY4F12vX_rQw',fbMsg=null; // v63: notificações
 var NOVA_HOME=/^https?:/.test(API_URL);
 if(NOVA_HOME){try{document.querySelector('header').style.background='#104800';}catch(e){}}
-var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont']};
+var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont'],CONFIRMACAO:['LOJA E RECEBIMENTO','Conferência Tati','confirmar o que ainda tem na loja','#0f766e','conf']};
 var resumoCache={};try{resumoCache=JSON.parse(localStorage.getItem('ci_resumo')||'{}')||{};}catch(e){}
 
 var PESSOAS = [];
@@ -498,7 +520,7 @@ function confirmarPin(){
 $('pin1').addEventListener('keydown',function(e){if(e.key==='Enter'){if(pinNovo)$('pin2').focus();else confirmarPin();}});
 $('pin2').addEventListener('keydown',function(e){if(e.key==='Enter')confirmarPin();});
 $('pin1').addEventListener('input',function(){if(!pinNovo&&this.value.replace(/\D/g,'').length===4)confirmarPin();});
-var NOMES_TIPO={MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA'};
+var NOMES_TIPO={MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',CONFIRMACAO:'CONFERÊNCIA TATI'};
 function irTipo(){
   reenviarFila();
   pararCamera();tipoAtual=null;$('hdr').textContent=quem;$('btTrocarQuem').style.display='inline-block';
@@ -509,7 +531,7 @@ function irTipo(){
 }
 function renderTipos(){
   var box=$('listaTipo');box.innerHTML='';
-  var defs={MERCADO:['mercado','CONSUMO DO MERCADO','produto usado pela loja'],PROPRIO:['proprio','CONSUMO PRÓPRIO','produto retirado pela família'],AVARIA:['avaria','AVARIA / VENCIDO','produto perdido, com foto'],REBAIXAS:['rebaixas','REBAIXAS','avisar que uma rebaixa terminou'],CONTAGEM:['contagem','CONTAGEM DIA D','contar o que tem na gôndola'],CONFERENCIA:['conferencia','CONFERÊNCIA','conferir as notas que chegaram']};
+  var defs={MERCADO:['mercado','CONSUMO DO MERCADO','produto usado pela loja'],PROPRIO:['proprio','CONSUMO PRÓPRIO','produto retirado pela família'],AVARIA:['avaria','AVARIA / VENCIDO','produto perdido, com foto'],REBAIXAS:['rebaixas','REBAIXAS','avisar que uma rebaixa terminou'],CONTAGEM:['contagem','CONTAGEM DIA D','contar o que tem na gôndola'],CONFERENCIA:['conferencia','CONFERÊNCIA','conferir as notas que chegaram'],CONFIRMACAO:['confirmacao','CONFERÊNCIA TATI','confirmar o que ainda tem na loja']};
   appsCache.forEach(function(a){var d=defs[a];if(!d)return;var b=document.createElement('button');b.className='btn '+d[0];b.innerHTML=d[1]+'<br><span style="font-size:14px;font-weight:400">'+d[2]+'</span>';b.onclick=function(){escolherTipo(a);};box.appendChild(b);});
   if(!box.children.length)box.innerHTML=appsOk?'<p class="dica" style="font-size:17px;margin-top:24px;line-height:1.5">Seu acesso ainda não foi liberado.<br>Peça ao Celio para liberar.</p>':'<p class="dica">Carregando…</p>';
 }
@@ -520,6 +542,7 @@ function escolherTipo(t){
   tipoAtual=t;
   if(t==='REBAIXAS'){irReb();return;}
 if(t==='CONTAGEM'){irCont();return;}
+  if(t==='CONFIRMACAO'){irCT();return;}
   if(t==='CONFERENCIA'){irConf();return;}
   var f=$('faixa');f.className='faixa '+t.toLowerCase();
   $('faixaTxt').textContent=NOMES_TIPO[t]+' · '+quem;
@@ -866,6 +889,71 @@ api({acao:'pessoas'}).then(function(r){
 }).catch(function(){});
 document.addEventListener('visibilitychange',function(){if(document.hidden){pararCamera();}else if(tipoAtual&&!produtoAtual){iniciarCamera();}});
 
+
+// ===== CONFIRMAÇÃO (Tati) — v65 =====
+var ctCache=null;
+function irCT(){
+  pararCamera();$('faixaCT').textContent='CONFERÊNCIA TATI · '+quem;mostrar('tCT');
+  try{ctCache=JSON.parse(localStorage.getItem('ci_ct')||'null');}catch(e){}
+  renderCT();carregarCT();
+}
+function carregarCT(){
+  api({acao:'confirmacao',quem:quem}).then(function(r){if(r&&r.ok){ctCache=r.itens||[];try{localStorage.setItem('ci_ct',JSON.stringify(ctCache));}catch(e){}renderCT();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
+}
+function temData(v){return /^\d{2}\/\d{2}\/\d{4}$/.test(String(v||''));}
+function isoParaBr(s){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||'');return m?m[3]+'/'+m[2]+'/'+m[1]:'';}
+function brParaIso(s){var m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s||'');return m?m[3]+'-'+m[2]+'-'+m[1]:'';}
+function renderCT(){
+  var box=$('ctLista');box.innerHTML='';
+  if(!ctCache){box.innerHTML='<p class="dica">Carregando…</p>';return;}
+  var feitos=ctCache.filter(function(i){return i.resposta;}).length;
+  $('ctProg').textContent=feitos+' / '+ctCache.length+' respondidos';
+  var ordem=[['NO APP','NO MÓDULO REBAIXAS'],['FORA DO APP','TEM FOTO, MAS NÃO ESTÁ NO MÓDULO']];
+  ordem.forEach(function(o){
+    var its=ctCache.filter(function(i){return i.origem===o[0];});if(!its.length)return;
+    var hd=document.createElement('div');hd.className='grp';hd.textContent=o[1]+' ('+its.length+')';box.appendChild(hd);
+    var ul=document.createElement('ul');ul.className='ct';
+    its.sort(function(a,b){return String(a.validade).split('/').reverse().join('')<String(b.validade).split('/').reverse().join('')?-1:1;});
+    its.forEach(function(it){
+      var li=document.createElement('li');li.className=it.resposta==='TEM'?'tem':(it.resposta==='NAO TEM'?'nao':'');
+      var pr=it.por?'<s>'+brl(it.de)+'</s> <b>'+brl(it.por)+'</b> · ':'';
+      var comData=temData(it.validade);
+      var html='<div class="d">'+esc(it.desc)+'</div><div class="m">'+pr+(comData?'validade '+esc(it.validade):'<b>sem validade cadastrada</b>')+'</div>'
+        +'<div class="row"><button class="t'+(it.resposta==='TEM'?' on':'')+'">TEM</button><button class="n'+(it.resposta==='NAO TEM'?' on':'')+'">NÃO TEM MAIS</button></div>';
+      if(it.resposta==='TEM'){
+        if(comData){
+          html+='<div class="m" style="margin-top:10px">A validade '+esc(it.validade)+' está certa?</div>'
+            +'<div class="row"><button class="vc'+(it.valTati===it.validade?' on t':'')+'">SIM, CERTA</button><button class="vo'+(it.valTati&&it.valTati!==it.validade?' on n':'')+'">É OUTRA</button></div>';
+          if(it.valTati&&it.valTati!==it.validade||it.pedeOutra)html+='<input class="v" type="date" value="'+esc(brParaIso(it.valTati&&it.valTati!==it.validade?it.valTati:''))+'">';
+        }else{
+          html+='<div class="m" style="margin-top:10px">Qual é a validade deste produto?</div><input class="v" type="date" value="'+esc(brParaIso(it.valTati||''))+'">';
+        }
+      }
+      if(it.resposta)html+='<div class="m">'+esc(it.quem)+' · '+esc(it.em)+(it.resposta==='TEM'&&it.valTati?' · validade '+esc(it.valTati):'')+'</div>';
+      li.innerHTML=html;
+      var bt=li.querySelectorAll('.row')[0].querySelectorAll('button');
+      bt[0].onclick=function(){salvarCT(it,'TEM',it.qtd,it.valTati);};
+      bt[1].onclick=function(){salvarCT(it,'NAO TEM','','');};
+      var q=li.querySelector('input.q');if(q)q.onchange=function(){salvarCT(it,'TEM',q.value,it.valTati);};
+      var vc=li.querySelector('button.vc');if(vc)vc.onclick=function(){it.pedeOutra=false;salvarCT(it,'TEM',it.qtd,it.validade);};
+      var vo=li.querySelector('button.vo');if(vo)vo.onclick=function(){it.pedeOutra=true;it.valTati='';renderCT();};
+      var v=li.querySelector('input.v');if(v)v.onchange=function(){var br=isoParaBr(v.value);if(br){it.pedeOutra=false;salvarCT(it,'TEM',it.qtd,br);}};
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  });
+}
+function salvarCT(it,resp,qtd,val){
+  var ant=[it.resposta,it.qtd,it.quem,it.em,it.valTati];
+  if(it.resposta===resp&&resp==='NAO TEM'&&arguments.length&&val==='')resp='';
+  it.resposta=resp;it.qtd=resp==='TEM'?(qtd||''):'';it.valTati=resp==='TEM'?(val||''):'';it.quem=resp?quem:'';it.em=resp?'agora':'';renderCT();
+  function volta(){it.resposta=ant[0];it.qtd=ant[1];it.quem=ant[2];it.em=ant[3];it.valTati=ant[4];renderCT();}
+  api({acao:'responderCT',quem:quem,token:token,id:it.id,resposta:resp,qtd:it.qtd,val:it.valTati}).then(function(r){
+    if(r&&r.ok){try{localStorage.setItem('ci_ct',JSON.stringify(ctCache));}catch(e){}return;}
+    volta();if(r&&r.reauth){irPin();return;}toast((r&&r.erro)||'Não salvou','err');
+  }).catch(function(){volta();toast('Sem conexão. Tente de novo.','err');});
+}
+
 // ===== CONTAGEM DIA D =====
 var contCache=null;
 function irCont(){
@@ -1070,7 +1158,7 @@ function irHome(){
 }
 function renderHome(){
   var box=$('nhLista');box.innerHTML='';var grupo='';
-  ['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM'].forEach(function(a){
+  ['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO'].forEach(function(a){
     if(appsCache.indexOf(a)<0)return;var d=HOME_DEF[a];
     if(d[0]!==grupo){grupo=d[0];var t=document.createElement('h3');t.textContent=grupo;box.appendChild(t);}
     var sub=d[2];
