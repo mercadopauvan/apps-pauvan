@@ -912,7 +912,7 @@ api({acao:'pessoas'}).then(function(r){
   if(quem&&PESSOAS.indexOf(quem)<0){pararCamera();quem=null;token=null;try{localStorage.removeItem('ci_quem');localStorage.removeItem('ci_token');}catch(e){}$('hdr').textContent='';$('btTrocarQuem').style.display='none';mostrar('tQuem');}
   else if(quem&&$('tQuem').classList.contains('on')){if(token)irTipo();else irPin();}
 }).catch(function(){});
-document.addEventListener('visibilitychange',function(){if(document.hidden){pararCamera();}else if(tipoAtual&&!produtoAtual){iniciarCamera();}});
+document.addEventListener('visibilitychange',function(){if(document.hidden){pararCamera();}else if(tipoAtual&&!produtoAtual&&$('tScan').classList.contains('on')){iniciarCamera();}});
 
 
 // ===== CONFIRMAÇÃO (Tati) — v65 =====
