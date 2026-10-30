@@ -26,6 +26,21 @@
   .faixa.rebaixas{background:#6d28d9}
 .btn.confirmacao{background:#0f766e}
 .faixa.confirmacao{background:#0f766e}
+.btn.fotos{background:#be185d}
+.faixa.fotos{background:#be185d}
+ul.fs{list-style:none;padding:0;margin:0}
+#fsLista .grp{background:#fce7f3;color:#9d174d;font-weight:800;font-size:13px;letter-spacing:.4px;padding:10px 12px;border-radius:10px;margin:14px 0 8px}
+ul.fs li{border:2px solid var(--borda);border-radius:14px;padding:12px;margin-bottom:10px}
+ul.fs li.env{border-color:#15803d;background:#f0fdf4}
+ul.fs li.ref{border-color:#b91c1c;background:#fef2f2}
+ul.fs li .d{font-weight:700;font-size:16px;line-height:1.25}
+ul.fs li .m{font-size:13px;color:var(--muted);margin-top:4px}
+ul.fs li .bt{width:100%;margin-top:10px;border:2px solid #be185d;background:#be185d;color:#fff;border-radius:12px;font-size:16px;font-weight:700;padding:12px 0}
+ul.fs li .bt.sec{background:#fff;color:#be185d}
+.fsSlots{display:flex;gap:8px;margin-top:10px}
+.fsSlot{flex:1;border:2px dashed var(--borda);border-radius:12px;background:#fff;padding:6px;text-align:center;font-size:13px;font-weight:700;color:var(--muted);min-height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.fsSlot.ok{border-style:solid;border-color:#15803d;color:#15803d}
+.fsSlot img{width:100%;height:80px;object-fit:contain;border-radius:8px;background:#f3f4f6}
 ul.ct{list-style:none;padding:0;margin:0}
 ul.ct li{border:2px solid var(--borda);border-radius:14px;padding:12px;margin-bottom:10px}
 ul.ct li.tem{border-color:#15803d;background:#f0fdf4}
@@ -264,7 +279,7 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 <svg width="0" height="0" style="position:absolute"><defs>
 <symbol id="ic-loja" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M4 9v11h16V9M3 9h18M9 20v-6h6v6"/></symbol>
 <symbol id="ic-casa" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></symbol>
-<symbol id="ic-aler" viewBox="0 0 24 24"><path d="M12 3l9 16H3zM12 10v4M12 17h.01"/></symbol>
+<symbol id="ic-aler" viewBox="0 0 24 24"><path d="M12 3l9 16H3zM12 10v4M12 17h.01"/></symbol><symbol id="ic-foto" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></symbol>
 <symbol id="ic-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8zM7.5 7.5h.01"/></symbol>
 <symbol id="ic-conf" viewBox="0 0 24 24"><path d="M9 5H6v16h12V5h-3M9 3h6v4H9zM9 13l2 2 4-4"/></symbol>
 <symbol id="ic-cont" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></symbol>
@@ -339,6 +354,15 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
   <div class="contTop"><span>O produto ainda existe?</span><span id="ctProg"></span></div>
   <p class="dica" style="text-align:left;margin:0 0 10px">Veja na loja e responda TEM ou NÃO TEM MAIS. Se tem, confirme a validade do produto.</p>
   <div id="ctLista"></div>
+</section>
+
+<!-- 8. FOTOS DO SITE (v66) -->
+<section class="tela" id="tFS">
+  <div class="faixa fotos"><span id="faixaFS"></span><button onclick="irTipo()">TROCAR</button></div>
+  <div class="contTop"><span>Produtos sem foto no site</span><span id="fsProg"></span></div>
+  <p class="dica" style="text-align:left;margin:0 0 10px">Pegue o produto na loja e tire as fotos: <b>de frente</b>, o produto <b>inteiro</b>, em <b>fundo claro</b> (folha branca ou bancada) e com <b>boa luz</b>, sem reflexo. A foto da frente é a principal.</p>
+  <div id="fsLista"></div>
+  <input type="file" id="fsFile" accept="image/*" capture="environment" style="display:none">
 </section>
 
 <!-- 6. CONFERÊNCIA — lista de notas -->
@@ -465,7 +489,7 @@ var API_URL = 'https://script.google.com/macros/s/AKfycby5E_gkrNjAOsBgpYbrfJvXaK
 var FB_CFG={apiKey:'AIzaSyC4lagk9rwIo-_G5sZxV0GPyhcaTvJz0ng',authDomain:'apps-pauvan.firebaseapp.com',projectId:'apps-pauvan',storageBucket:'apps-pauvan.firebasestorage.app',messagingSenderId:'442345355000',appId:'1:442345355000:web:b311386f57ad07527dad0d'},FB_VAPID='BDmanVUsM42_JEf3CDuth5vPV_hHXt2fPMmF2hUH9E9tiZOLHt8fVvwiBFvj519E3PGjJAq33EagY4F12vX_rQw',fbMsg=null; // v63: notificações
 var NOVA_HOME=/^https?:/.test(API_URL);
 if(NOVA_HOME){try{document.querySelector('header').style.background='#104800';}catch(e){}}
-var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont'],CONFIRMACAO:['LOJA E RECEBIMENTO','Conferência Tati','confirmar o que ainda tem na loja','#0f766e','conf']};
+var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont'],CONFIRMACAO:['LOJA E RECEBIMENTO','Conferência Tati','confirmar o que ainda tem na loja','#0f766e','conf'],FOTOS:['LOJA E RECEBIMENTO','Fotos do site','fotografar produtos sem foto no site','#be185d','foto']};
 var resumoCache={};try{resumoCache=JSON.parse(localStorage.getItem('ci_resumo')||'{}')||{};}catch(e){}
 
 var PESSOAS = [];
@@ -520,7 +544,7 @@ function confirmarPin(){
 $('pin1').addEventListener('keydown',function(e){if(e.key==='Enter'){if(pinNovo)$('pin2').focus();else confirmarPin();}});
 $('pin2').addEventListener('keydown',function(e){if(e.key==='Enter')confirmarPin();});
 $('pin1').addEventListener('input',function(){if(!pinNovo&&this.value.replace(/\D/g,'').length===4)confirmarPin();});
-var NOMES_TIPO={MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',CONFIRMACAO:'CONFERÊNCIA TATI'};
+var NOMES_TIPO={MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',CONFIRMACAO:'CONFERÊNCIA TATI',FOTOS:'FOTOS DO SITE'};
 function irTipo(){
   reenviarFila();
   pararCamera();tipoAtual=null;$('hdr').textContent=quem;$('btTrocarQuem').style.display='inline-block';
@@ -531,7 +555,7 @@ function irTipo(){
 }
 function renderTipos(){
   var box=$('listaTipo');box.innerHTML='';
-  var defs={MERCADO:['mercado','CONSUMO DO MERCADO','produto usado pela loja'],PROPRIO:['proprio','CONSUMO PRÓPRIO','produto retirado pela família'],AVARIA:['avaria','AVARIA / VENCIDO','produto perdido, com foto'],REBAIXAS:['rebaixas','REBAIXAS','avisar que uma rebaixa terminou'],CONTAGEM:['contagem','CONTAGEM DIA D','contar o que tem na gôndola'],CONFERENCIA:['conferencia','CONFERÊNCIA','conferir as notas que chegaram'],CONFIRMACAO:['confirmacao','CONFERÊNCIA TATI','confirmar o que ainda tem na loja']};
+  var defs={MERCADO:['mercado','CONSUMO DO MERCADO','produto usado pela loja'],PROPRIO:['proprio','CONSUMO PRÓPRIO','produto retirado pela família'],AVARIA:['avaria','AVARIA / VENCIDO','produto perdido, com foto'],REBAIXAS:['rebaixas','REBAIXAS','avisar que uma rebaixa terminou'],CONTAGEM:['contagem','CONTAGEM DIA D','contar o que tem na gôndola'],CONFERENCIA:['conferencia','CONFERÊNCIA','conferir as notas que chegaram'],CONFIRMACAO:['confirmacao','CONFERÊNCIA TATI','confirmar o que ainda tem na loja'],FOTOS:['fotos','FOTOS DO SITE','fotografar produtos sem foto no site']};
   appsCache.forEach(function(a){var d=defs[a];if(!d)return;var b=document.createElement('button');b.className='btn '+d[0];b.innerHTML=d[1]+'<br><span style="font-size:14px;font-weight:400">'+d[2]+'</span>';b.onclick=function(){escolherTipo(a);};box.appendChild(b);});
   if(!box.children.length)box.innerHTML=appsOk?'<p class="dica" style="font-size:17px;margin-top:24px;line-height:1.5">Seu acesso ainda não foi liberado.<br>Peça ao Celio para liberar.</p>':'<p class="dica">Carregando…</p>';
 }
@@ -543,6 +567,7 @@ function escolherTipo(t){
   if(t==='REBAIXAS'){irReb();return;}
 if(t==='CONTAGEM'){irCont();return;}
   if(t==='CONFIRMACAO'){irCT();return;}
+  if(t==='FOTOS'){irFS();return;}
   if(t==='CONFERENCIA'){irConf();return;}
   var f=$('faixa');f.className='faixa '+t.toLowerCase();
   $('faixaTxt').textContent=NOMES_TIPO[t]+' · '+quem;
@@ -954,6 +979,71 @@ function salvarCT(it,resp,qtd,val){
   }).catch(function(){volta();toast('Sem conexão. Tente de novo.','err');});
 }
 
+// ===== FOTOS DO SITE — v66 =====
+var fsCache=null,fsAberto=null,fsFotos=[],fsSlot=0;
+var FS_ROT=['Frente','Verso','Código / detalhe'];
+function irFS(){
+  pararCamera();$('faixaFS').textContent='FOTOS DO SITE · '+quem;mostrar('tFS');
+  try{fsCache=JSON.parse(localStorage.getItem('ci_fs')||'null');}catch(e){}
+  renderFS();carregarFS();
+}
+function carregarFS(){
+  api({acao:'fotosSite',quem:quem}).then(function(r){if(r&&r.ok){fsCache=r.itens||[];try{localStorage.setItem('ci_fs',JSON.stringify(fsCache));}catch(e){}renderFS();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
+}
+function renderFS(){
+  var box=$('fsLista');box.innerHTML='';
+  if(!fsCache){box.innerHTML='<p class="dica">Carregando…</p>';return;}
+  if(!fsCache.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:20px">Nenhum produto esperando foto. 👍</p>';$('fsProg').textContent='';return;}
+  var env=fsCache.filter(function(i){return i.status==='ENVIADO';}).length;
+  $('fsProg').textContent=env+' / '+fsCache.length+' enviados';
+  var ordem=[['A FOTOGRAFAR',function(i){return i.status!=='ENVIADO';}],['JÁ ENVIADOS',function(i){return i.status==='ENVIADO';}]];
+  ordem.forEach(function(o){
+    var its=fsCache.filter(o[1]);if(!its.length)return;
+    var hd=document.createElement('div');hd.className='grp';hd.textContent=o[0]+' ('+its.length+')';box.appendChild(hd);
+    var ul=document.createElement('ul');ul.className='fs';
+    its.forEach(function(it){
+      var li=document.createElement('li');li.className=it.status==='ENVIADO'?'env':(it.status==='REFAZER'?'ref':'');
+      var html='<div class="d">'+esc(it.desc)+'</div><div class="m">SKU '+esc(it.sku)+(it.secao?' · '+esc(it.secao):'')+'</div>';
+      if(it.status==='REFAZER')html+='<div class="m" style="color:#b91c1c;font-weight:700">Tirar de novo'+(it.obs?': '+esc(it.obs):'')+'</div>';
+      if(it.status==='ENVIADO')html+='<div class="m" style="color:#15803d;font-weight:700">✅ '+(it.fotos||'')+(it.fotos===1?' foto enviada':' fotos enviadas')+(it.quem?' · '+esc(it.quem):'')+(it.em?' · '+esc(it.em):'')+'</div>';
+      if(fsAberto===it.sku){
+        html+='<div class="fsSlots">';
+        for(var k=0;k<3;k++){html+='<button class="fsSlot'+(fsFotos[k]?' ok':'')+'" data-k="'+k+'">'+(fsFotos[k]?'<img src="'+fsFotos[k]+'">':'<span style="font-size:26px">📷</span>')+(fsFotos[k]?'✅ ':'')+FS_ROT[k]+(k===0?' *':'')+'</button>';}
+        html+='</div><div class="m">* a foto da frente é obrigatória; as outras ajudam</div>';
+        html+='<button class="bt env">ENVIAR FOTOS</button><button class="bt sec can">Cancelar</button>';
+      }else{
+        html+='<button class="bt'+(it.status==='ENVIADO'?' sec':'')+' abre">'+(it.status==='ENVIADO'?'Mandar de novo':'📷 FOTOGRAFAR')+'</button>';
+      }
+      li.innerHTML=html;
+      var ab=li.querySelector('.abre');if(ab)ab.onclick=function(){vibra();fsAberto=it.sku;fsFotos=[];renderFS();};
+      var cn=li.querySelector('.can');if(cn)cn.onclick=function(){fsAberto=null;fsFotos=[];renderFS();};
+      var ev=li.querySelector('.env');if(ev)ev.onclick=function(){enviarFS(it,ev);};
+      li.querySelectorAll('.fsSlot').forEach(function(b){b.onclick=function(){fsSlot=+b.getAttribute('data-k');$('fsFile').click();};});
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  });
+}
+$('fsFile').addEventListener('change',function(){
+  var inp=this,f=inp.files[0];if(!f)return;inp.value='';
+  toast('Preparando foto…');
+  var img=new Image();img.onload=function(){
+    var MAX=1600,w=img.width,h=img.height,k=Math.min(1,MAX/Math.max(w,h));
+    var c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    fsFotos[fsSlot]=c.toDataURL('image/jpeg',0.85);URL.revokeObjectURL(img.src);renderFS();
+  };img.onerror=function(){toast('Não deu para ler a foto','err');};img.src=URL.createObjectURL(f);
+});
+function enviarFS(it,bt){
+  if(!fsFotos[0]){toast('Tire a foto da frente','err');return;}
+  var fotos=fsFotos.filter(Boolean);
+  bt.disabled=true;bt.textContent='Enviando…';
+  api({acao:'salvarFotosSite',quem:quem,token:token,sku:it.sku,fotos:fotos}).then(function(r){
+    if(r&&r.ok){vibra();it.status='ENVIADO';it.quem=quem;it.em='agora';it.fotos=r.fotos||fotos.length;fsAberto=null;fsFotos=[];try{localStorage.setItem('ci_fs',JSON.stringify(fsCache));}catch(e){}toast('Fotos enviadas ✅');renderFS();return;}
+    bt.disabled=false;bt.textContent='ENVIAR FOTOS';if(r&&r.reauth){irPin();return;}toast((r&&r.erro)||'Não enviou','err');
+  }).catch(function(){bt.disabled=false;bt.textContent='ENVIAR FOTOS';toast('Sem conexão. Tente de novo.','err');});
+}
+
 // ===== CONTAGEM DIA D =====
 var contCache=null;
 function irCont(){
@@ -1158,7 +1248,7 @@ function irHome(){
 }
 function renderHome(){
   var box=$('nhLista');box.innerHTML='';var grupo='';
-  ['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO'].forEach(function(a){
+  ['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS'].forEach(function(a){
     if(appsCache.indexOf(a)<0)return;var d=HOME_DEF[a];
     if(d[0]!==grupo){grupo=d[0];var t=document.createElement('h3');t.textContent=grupo;box.appendChild(t);}
     var sub=d[2];
