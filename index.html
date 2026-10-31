@@ -94,6 +94,9 @@ ul.cont li .q{font-size:13px;color:#15803d;margin-top:6px;font-weight:600}
   .faixa button{background:rgba(255,255,255,.22);color:#fff;border:0;border-radius:8px;padding:6px 10px;font-size:13px}
   #cam{position:relative;background:#000;border-radius:14px;overflow:hidden;aspect-ratio:4/3;max-height:52vh}
   #cam video{width:100%;height:100%;object-fit:cover;display:block}
+  #camLido{position:absolute;inset:0;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:800;font-size:22px;opacity:0;pointer-events:none;transition:opacity .15s}
+  #camLido.on{opacity:1}
+  #camLido small{font-size:14px;font-weight:600;opacity:.8}
   #mira{position:absolute;left:10%;right:10%;top:35%;bottom:35%;border:3px solid rgba(255,255,255,.85);border-radius:10px;box-shadow:0 0 0 999px rgba(0,0,0,.25)}
   #status{text-align:center;color:var(--muted);font-size:14px;margin:10px 0}
   .linha{display:flex;gap:8px;margin-top:8px}
@@ -320,7 +323,7 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 <!-- 3. BIPAR -->
 <section class="tela" id="tScan">
   <div class="faixa" id="faixa"><span id="faixaTxt"></span><button onclick="irTipo()">TROCAR</button></div>
-  <div id="cam"><video id="video" playsinline muted autoplay></video><div id="mira"></div></div>
+  <div id="cam"><video id="video" playsinline muted autoplay></video><div id="mira"></div><div id="camLido"><span>✓ LIDO</span><small id="camLidoTx">buscando o produto…</small></div></div>
   <div id="status">Aponte a câmera para o código de barras</div>
   <div class="sw" id="btKg" onclick="toggleKg()"><span class="lbl">⚖️ Produto por kg (sem etiqueta)</span><span class="st" id="swSt">OFF</span><span class="trk"><span class="knob"></span></span></div>
   <div class="linha">
@@ -741,9 +744,13 @@ function achou(txt){
   var agora=Date.now();
   if(cod===ultimoCod&&agora-ultimoT<2500)return; // evita repetir
   ultimoCod=cod;ultimoT=agora;
-  if(produtoAtual)return; // card aberto
+  if(produtoAtual||lidoTrava)return; // card aberto ou ainda buscando o último código
+  lidoTrava=true;lidoIni=Date.now();$('camLidoTx').textContent='buscando o produto…';$('camLido').classList.add('on'); // v73: tela escurece = leu
   vibra();beep();buscar(cod);
 }
+// v73: libera nova leitura só depois que o produto carregou (tela fica escura pelo menos 0,7 s)
+var lidoTrava=false,lidoIni=0;
+function liberarLeitura(){var falta=Math.max(0,700-(Date.now()-lidoIni));setTimeout(function(){lidoTrava=false;var c=$('camLido');if(c)c.classList.remove('on');},falta);}
 function buscarManual(){
   var v=$('manual').value.trim();if(!v){limparRes();return;}
   if(/^[\d\s.-]+$/.test(v))buscar(v.replace(/\D/g,''));else buscarPorNome(v);
@@ -819,7 +826,8 @@ function buscar(cod){
     $('status').textContent='';
     if(r&&r.ok){abrirCard({codigo:cod,sku:r.sku,desc:r.desc,un:r.un||'UNIDADE',bal:r.bal,pesoSug:r.pesoSug,etiqTotal:r.etiqTotal});}
     else abrirCard({codigo:cod,sku:'',desc:'',un:'UNIDADE',nf:true});
-  }).catch(function(e){$('status').textContent='';toast('Erro ao consultar: '+e,'err');});
+    liberarLeitura();
+  }).catch(function(e){$('status').textContent='';toast('Erro ao consultar: '+e,'err');liberarLeitura();});
 }
 function abrirCard(p){
   produtoAtual=p;
@@ -1221,7 +1229,7 @@ function escanear(id){
   v.style.display='';$('scanMira').style.display='';tx.textContent='Aponte para o código de barras';
   ov.style.display='flex';scanOn=true;
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){semAoVivo();return;}
-  function ok(txt){var c=String(txt||'').replace(/\D/g,'');if(!c||!scanOn)return;fecharScan();beep();if(SCAN_CB[id])SCAN_CB[id](c);}
+  function ok(txt){var c=String(txt||'').replace(/\D/g,'');if(!c||!scanOn)return;scanOn=false;fecharStream();beep();try{navigator.vibrate&&navigator.vibrate(60);}catch(e){}v.style.display='none';$('scanMira').style.display='none';tx.innerHTML='<b style="font-size:26px">✓ LIDO</b><br>buscando o produto…';setTimeout(function(){fecharScan();if(SCAN_CB[id])SCAN_CB[id](c);},600);} // v73: tela escura = leu
   navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false})
   .then(function(s){if(!scanOn){s.getTracks().forEach(function(t){t.stop();});return;}scanSt=s;v.srcObject=s;return v.play();})
   .then(function(){
