@@ -892,7 +892,7 @@ function reenviarFila(){
   api(reg).then(function(r){if(!(r&&r.ok))guardarFila(reg);else{toast('Reenviado: '+reg.desc,'ok');carregarUltimos();}setTimeout(reenviarFila,500);}).catch(function(){guardarFila(reg);});
 }
 // v66: usuário Delivery — na baixa de consumo próprio escolhe quem pediu
-var PEDIDO_POR=['Celio','Amanda','Ana Paula','Paulo','Wanda'],pedidoPor=null;
+var PEDIDO_POR=['Celio','Amanda','Ana Paula','Paulo','Vanda'],pedidoPor=null;
 function ehDelivery(){return semAc(quem||'').toLowerCase().trim()==='delivery'&&tipoAtual==='PROPRIO';}
 function renderPed(){var b=$('pedBts');b.innerHTML='';PEDIDO_POR.forEach(function(n){var x=document.createElement('button');x.textContent=n;if(n===pedidoPor)x.className='on';x.onclick=function(){pedidoPor=n;vibra();renderPed();};b.appendChild(x);});}
 function carregarUltimos(){
