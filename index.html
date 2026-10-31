@@ -826,7 +826,7 @@ function buscar(cod){
     $('status').textContent='';
     if(r&&r.ok){abrirCard({codigo:cod,sku:r.sku,desc:r.desc,un:r.un||'UNIDADE',bal:r.bal,pesoSug:r.pesoSug,etiqTotal:r.etiqTotal});}
     else abrirCard({codigo:cod,sku:'',desc:'',un:'UNIDADE',nf:true});
-    liberarLeitura();
+    if(lidoTrava)$('camLidoTx').textContent='informe a quantidade e salve'; // v74: fica escuro até SALVAR/CANCELAR
   }).catch(function(e){$('status').textContent='';toast('Erro ao consultar: '+e,'err');liberarLeitura();});
 }
 function abrirCard(p){
@@ -861,7 +861,7 @@ function lerFoto(inp,btn,prev,cb){
 }
 $('fotoAv').addEventListener('change',function(){lerFoto(this,$('btFotoAv'),$('fotoPrev'),function(d){fotoAtual=d;rotuloFoto1();});});
 $('fotoAv2').addEventListener('change',function(){lerFoto(this,$('btFotoAv2'),$('fotoPrev2'),function(d){fotoAtual2=d;$('btFotoAv2').textContent='✅ Foto 2 — produtos (mostrando a quantidade)';});});
-function fecharCard(){produtoAtual=null;$('res').innerHTML='';$('card').classList.remove('on');$('manual').value='';}
+function fecharCard(){liberarLeitura();produtoAtual=null;$('res').innerHTML='';$('card').classList.remove('on');$('manual').value='';}
 function mudaQtd(d){var q=$('qtd');var v=parseFloat(String(q.value).replace(',','.'))||0;v=Math.max(0,v+d);q.value=(v%1===0)?String(v):v.toFixed(3);}
 function salvar(){
   var p=produtoAtual;if(!p)return;
