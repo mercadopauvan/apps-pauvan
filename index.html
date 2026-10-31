@@ -211,6 +211,10 @@ ul.citens li .q{font-size:12px;color:#15803d;font-weight:600}
 #fotoCodEmb,#fotoTroca{display:none}
 .card{max-height:92vh;overflow:auto}
 .ccpe{font-size:12px;color:#b45309;font-weight:700;margin-top:4px}
+.pedLbl{font-weight:800;margin:12px 0 6px;font-size:15px}
+.ped{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.ped button{flex:1 1 30%;border:2px solid var(--borda);background:#fff;border-radius:12px;padding:12px 4px;font-size:15px;font-weight:700;color:var(--txt)}
+.ped button.on{background:var(--laranja);border-color:var(--laranja);color:#fff}
 /* v62: tela inicial nova + consulta preço (só no app hospedado) */
 #tHome{padding:0}
 .nhHero{background:linear-gradient(135deg,#104800,#2f7d12);color:#fff;padding:14px 16px 14px;padding-top:calc(14px + env(safe-area-inset-top))}
@@ -474,6 +478,7 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
     <span class="un" id="cardUn"></span>
     <button onclick="mudaQtd(1)">+</button>
   </div>
+  <div id="cardPara" style="display:none"><div class="pedLbl">Quem pediu?</div><div class="ped" id="pedBts"></div></div>
   <button class="btn ok" onclick="salvar()">SALVAR</button>
   <button class="btn cancel" onclick="fecharCard()">CANCELAR</button>
 </div>
@@ -604,7 +609,7 @@ function renderReb(){
       var lc=it.local||'sem local no cadastro';
       if(lc!==ultLoc){ultLoc=lc;var s=document.createElement('li');s.className='loc';s.textContent='📍 '+lc;if(!aberto)s.style.display='none';ul.appendChild(s);els.push(s);}
       var li=document.createElement('li');if(!aberto)li.style.display='none';
-      li.innerHTML='<div class="d">'+esc(it.desc)+'</div><div class="p"><s>'+brl(it.de)+'</s><b>'+brl(it.por)+'</b></div><div class="m">validade '+esc(it.validade)+(it.qtd?' · '+esc(it.qtd)+' un na rebaixa':'')+'</div>';
+      li.innerHTML='<div class="d">'+esc(it.desc)+'</div><div class="p"><s>'+brl(it.de)+'</s><b>'+brl(it.por)+'</b></div><div class="m">validade '+esc(it.validade)+(it.qtd?' · '+esc(it.qtd)+' un na rebaixa':'')+'</div>'+(it.aviso?'<div class="m" style="color:#b91c1c;font-weight:700">⚠ '+esc(it.aviso)+' · marque ACABOU ou VENCEU</div>':'');
       li.onclick=function(){abrirReb(it);};ul.appendChild(li);els.push(li);
     });
     h.onclick=function(){var ab=els[0]&&els[0].style.display==='none';els.forEach(function(e){e.style.display=ab?'':'none';});h.querySelector('span').textContent=(ab?'▾ ':'▸ ')+nm;};
@@ -829,6 +834,7 @@ function abrirCard(p){
   var av=tipoAtual==='AVARIA';
   $('cardAv').style.display=av?'block':'none';$('card').classList.toggle('compacto',av);
   if(av){motivoAtual=null;fotoAtual='';fotoAtual2='';$('btVenc').classList.remove('on');$('btAvar').classList.remove('on');$('validade').style.display='none';$('validade').value='';$('fotoPrev').style.display='none';$('fotoPrev').src='';$('fotoPrev2').style.display='none';$('fotoPrev2').src='';rotuloFoto1();$('btFotoAv2').textContent='📷 Foto 2 — produtos (mostrando a quantidade)';}
+  var dl=ehDelivery();$('cardPara').style.display=dl?'block':'none';pedidoPor=null;if(dl)renderPed(); // v66
   $('card').classList.add('on');
   if(kg&&!p.pesoSug&&!av)setTimeout(function(){q.focus();},100);
 }
@@ -862,7 +868,8 @@ function salvar(){
     var v=$('validade').value;var vd=v?v.split('-').reverse().join('/'):'';
     reg={acao:'salvarAvaria',id:uuid(),token:token,quem:quem,tipo:'AVARIA',motivo:motivoAtual,validade:vd,codigo:p.codigo,sku:p.sku,desc:p.desc||'NÃO CADASTRADO',qtd:qtd,un:p.un,foto:fotoAtual,foto2:fotoAtual2};
   } else {
-    reg={acao:'salvar',id:uuid(),token:token,quem:quem,tipo:NOMES_TIPO[tipoAtual],codigo:p.codigo,sku:p.sku,desc:p.desc||'NÃO CADASTRADO',qtd:qtd,un:p.un};
+    if(ehDelivery()&&!pedidoPor){toast('Escolha quem pediu','err');return;}
+    reg={acao:'salvar',id:uuid(),token:token,quem:quem,tipo:NOMES_TIPO[tipoAtual],codigo:p.codigo,sku:p.sku,desc:p.desc||'NÃO CADASTRADO',qtd:qtd,un:p.un,pedidoPor:ehDelivery()?pedidoPor:''};
   }
   fecharCard();toast('Salvando…');
   enviar(reg);
@@ -884,6 +891,10 @@ function reenviarFila(){
   reg.token=token;
   api(reg).then(function(r){if(!(r&&r.ok))guardarFila(reg);else{toast('Reenviado: '+reg.desc,'ok');carregarUltimos();}setTimeout(reenviarFila,500);}).catch(function(){guardarFila(reg);});
 }
+// v66: usuário Delivery — na baixa de consumo próprio escolhe quem pediu
+var PEDIDO_POR=['Celio','Amanda','Ana Paula','Paulo','Wanda'],pedidoPor=null;
+function ehDelivery(){return semAc(quem||'').toLowerCase().trim()==='delivery'&&tipoAtual==='PROPRIO';}
+function renderPed(){var b=$('pedBts');b.innerHTML='';PEDIDO_POR.forEach(function(n){var x=document.createElement('button');x.textContent=n;if(n===pedidoPor)x.className='on';x.onclick=function(){pedidoPor=n;vibra();renderPed();};b.appendChild(x);});}
 function carregarUltimos(){
   var tipoReq=tipoAtual==='AVARIA'?'AVARIA':NOMES_TIPO[tipoAtual];
   api({acao:'ultimos',quem:quem,tipo:tipoReq}).then(function(r){
@@ -892,7 +903,7 @@ function carregarUltimos(){
       var li=document.createElement('li');
       var tp=it.tipo==='AVARIA'?'avaria':(/MERCADO/.test(it.tipo)?'mercado':'proprio');
       var rot=tp==='avaria'?(it.motivo==='VENCIDO'?'VENC':'AVAR'):(tp==='mercado'?'MERC':'PRÓP');
-      var extra=tp==='avaria'?(it.validade?' · val. '+esc(it.validade):'')+(it.foto?' · <a href="'+esc(it.foto)+'" target="_blank" style="color:#1d4ed8">Foto 1</a>':'')+(it.foto2?' · <a href="'+esc(it.foto2)+'" target="_blank" style="color:#1d4ed8">Foto 2</a>':''):'';
+      var extra=it.pedidoPor?' · pedido por '+esc(it.pedidoPor):'';extra+=tp==='avaria'?(it.validade?' · val. '+esc(it.validade):'')+(it.foto?' · <a href="'+esc(it.foto)+'" target="_blank" style="color:#1d4ed8">Foto 1</a>':'')+(it.foto2?' · <a href="'+esc(it.foto2)+'" target="_blank" style="color:#1d4ed8">Foto 2</a>':''):'';
       li.innerHTML='<div class="d"><span class="tp '+tp+'">'+rot+'</span>'+esc(it.desc)+'<br><small style="color:#64748b">'+esc(it.data)+' '+esc(it.hora)+extra+'</small></div><div class="q">'+it.qtd+' '+(/QUILO|KG/i.test(it.un)?'kg':'un')+'</div><button class="x" title="excluir">✕</button>';
       var bx=li.querySelector('.x');bx.onclick=function(){if(bx.dataset.c!=='1'){bx.dataset.c='1';bx.textContent='EXCLUIR?';bx.style.fontWeight='700';setTimeout(function(){bx.dataset.c='';bx.textContent='✕';bx.style.fontWeight='';},3000);return;}bx.textContent='…';api({acao:'excluir',id:it.id,token:token,tipo:tipoReq}).then(function(x){toast(x.ok?'Excluído':'Não deu para excluir ('+(x.motivo||'')+')',x.ok?'ok':'err');carregarUltimos();}).catch(function(e){toast('Erro: '+e,'err');});};
       ul.appendChild(li);
