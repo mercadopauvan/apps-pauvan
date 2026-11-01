@@ -34,6 +34,7 @@ ul.po{list-style:none;padding:0;margin:0}
 #poLista{padding-bottom:80px}
 ul.po li{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--borda);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer}
 ul.po li.sel{border-color:#0369a1;background:#f0f9ff}
+ul.po li.fd{margin-left:22px}
 ul.po li.conf{border-color:#d97706;background:#fffbeb;cursor:default}
 ul.po li.ativ{border-color:#15803d;background:#f0fdf4;cursor:default}
 ul.po li .ck{flex:0 0 30px;height:30px;border:2px solid var(--borda);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;background:#fff}
@@ -1118,7 +1119,7 @@ function renderPO(){
   var box=$('poLista');box.innerHTML='';
   if(!poCache){box.innerHTML='<p class="dica">Carregando…</p>';return;}
   var its=poCache.itens;
-  var pend=its.filter(function(i){return !i.status;}),conf=its.filter(function(i){return i.status==='CONFIRMADO';}),ativ=its.filter(function(i){return i.status==='ATIVADO';});
+  var pend=its.filter(function(i){return !i.status&&(!i.oculto||(poCache.verTudo&&!i.pai));}),conf=its.filter(function(i){return i.status==='CONFIRMADO';}),ativ=its.filter(function(i){return i.status==='ATIVADO';});
   $('poProg').textContent=pend.length+(pend.length===1?' para etiquetar':' para etiquetar');
   $('poArq').textContent=poCache.em?'Relatório da Nath atualizado em '+poCache.em:'';
   if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:20px">Nenhum preço off-line no relatório. 👍</p>';}
@@ -1127,13 +1128,15 @@ function renderPO(){
   pend.forEach(function(i){var g=i.rep||'SEM RESPONSÁVEL';if(!grupos[g]){grupos[g]=[];ordem.push(g);}grupos[g].push(i);});
   ordem.sort(function(a,b){var ma=ehMeu(a)?0:1,mb=ehMeu(b)?0:1;if(ma!==mb)return ma-mb;if(a==='SEM RESPONSÁVEL')return 1;if(b==='SEM RESPONSÁVEL')return -1;return a<b?-1:1;});
   ordem.forEach(function(g){
-    var lst=grupos[g].sort(function(a,b){return (a.local+a.desc)<(b.local+b.desc)?-1:1;});
+    var lst=grupos[g].sort(function(a,b){return (a.local+'|'+(a.ord||a.desc))<(b.local+'|'+(b.ord||b.desc))?-1:1;}); // v77: fardo logo abaixo da unidade
     var hd=document.createElement('div');hd.className='grp';hd.textContent=(ehMeu(g)?'MEUS · ':'')+g.toUpperCase()+' ('+lst.length+')';box.appendChild(hd);
     var ul=document.createElement('ul');ul.className='po';
     lst.forEach(function(it){
       var li=document.createElement('li');if(poSel[it.sku])li.className='sel';
       var sobe=it.novo>it.atual;
-      li.innerHTML='<span class="ck">'+(poSel[it.sku]?'✓':'')+'</span><div class="tx"><div class="d">'+esc(it.desc)+'</div><div class="m">SKU '+esc(it.sku)+(it.local?' · '+esc(it.local):(it.cat?' · '+esc(it.cat):''))+'</div>'
+      var junto=its.filter(function(x){return x.oculto&&x.pai===it.sku&&!x.status;}).map(function(x){return x.desc+' '+brl(x.novo);}); // v77
+      if(it.fardo&&!it.oculto)li.className+=' fd';
+      li.innerHTML='<span class="ck">'+(poSel[it.sku]?'✓':'')+'</span><div class="tx"><div class="d">'+esc(it.desc)+'</div><div class="m">SKU '+esc(it.sku)+(it.local?' · '+esc(it.local):(it.cat?' · '+esc(it.cat):''))+(it.oculto?' · fardo/caixa sem a unidade na lista':'')+'</div>'+(junto.length?'<div class="m">ativa junto: '+esc(junto.join(' · '))+'</div>':'')
         +'<div class="pr"><b>'+brl(it.novo)+'</b> <span class="'+(sobe?'up':'dn')+'">'+(sobe?'▲':'▼')+'</span> <s>'+brl(it.atual)+'</s></div></div>';
       li.onclick=function(){vibra();if(poSel[it.sku])delete poSel[it.sku];else poSel[it.sku]=1;renderPO();};
       ul.appendChild(li);
@@ -1160,14 +1163,14 @@ function confirmarPO(){
   var skus=Object.keys(poSel);if(!skus.length)return;
   var bt=$('poBt');bt.disabled=true;bt.textContent='Enviando…';
   api({acao:'confirmarPrecosOff',quem:quem,token:token,skus:skus}).then(function(r){
-    if(r&&r.ok){vibra();poCache.itens.forEach(function(i){if(poSel[i.sku]&&!i.status){i.status='CONFIRMADO';i.quem=quem;i.em='agora';}});poSel={};try{localStorage.setItem('ci_po',JSON.stringify(poCache));}catch(e){}toast('Enviado ✅ O preço será ativado no sistema');renderPO();return;}
+    if(r&&r.ok){vibra();poCache.itens.forEach(function(i){if((poSel[i.sku]||(i.oculto&&i.pai&&poSel[i.pai]))&&!i.status){i.status='CONFIRMADO';i.quem=quem;i.em='agora';}});poSel={};try{localStorage.setItem('ci_po',JSON.stringify(poCache));}catch(e){}toast('Enviado ✅ O preço será ativado no sistema');renderPO();return;}
     bt.disabled=false;renderPO();if(r&&r.reauth){irPin();return;}toast((r&&r.erro)||'Não enviou','err');
   }).catch(function(){bt.disabled=false;renderPO();toast('Sem conexão. Tente de novo.','err');});
 }
 function desfazerPO(it,b){
   b.disabled=true;b.textContent='…';
   api({acao:'desfazerPrecoOff',quem:quem,token:token,sku:it.sku,novo:it.novo}).then(function(r){
-    if(r&&r.ok){it.status='';it.quem='';it.em='';renderPO();return;}
+    if(r&&r.ok){it.status='';it.quem='';it.em='';poCache.itens.forEach(function(x){if(x.oculto&&x.pai===it.sku&&x.status==='CONFIRMADO'){x.status='';x.quem='';x.em='';}});renderPO();return;}
     b.disabled=false;b.textContent='desfazer';if(r&&r.reauth){irPin();return;}toast((r&&r.erro)||'Não desfez','err');
   }).catch(function(){b.disabled=false;b.textContent='desfazer';toast('Sem conexão. Tente de novo.','err');});
 }
