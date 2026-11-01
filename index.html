@@ -839,6 +839,9 @@ function abrirCard(p){
   var q=$('qtd');q.value=kg?'':'1';q.placeholder=kg?'peso em kg':'';
   var et=$('cardEtiq');
   if(p.pesoSug){q.value=String(p.pesoSug.toFixed(3)).replace('.',',');et.textContent='Etiqueta R$ '+p.etiqTotal.toFixed(2).replace('.',',')+' → peso calculado. Confira com o PESO da etiqueta.';et.style.display='block';}else{et.style.display='none';}
+  // v75: produto por kg com código de barras e peso na descrição (ex.: UVA 500G) → pede em unidades e converte para kg
+  p.pesoUn=0;
+  if(kg&&!p.pesoSug&&/QUILO|KG/i.test(p.un)&&p.codigo&&p.codigo!==p.sku&&/^\d{8,14}$/.test(p.codigo)){var pw=pesoDaDesc(p.desc);if(pw){p.pesoUn=pw;$('cardUn').textContent='un';q.value='1';q.placeholder='';mostraConv();}}
   var av=tipoAtual==='AVARIA';
   $('cardAv').style.display=av?'block':'none';$('card').classList.toggle('compacto',av);
   if(av){motivoAtual=null;fotoAtual='';fotoAtual2='';$('btVenc').classList.remove('on');$('btAvar').classList.remove('on');$('validade').style.display='none';$('validade').value='';$('fotoPrev').style.display='none';$('fotoPrev').src='';$('fotoPrev2').style.display='none';$('fotoPrev2').src='';rotuloFoto1();$('btFotoAv2').textContent='📷 Foto 2 — produtos (mostrando a quantidade)';}
@@ -862,11 +865,16 @@ function lerFoto(inp,btn,prev,cb){
 $('fotoAv').addEventListener('change',function(){lerFoto(this,$('btFotoAv'),$('fotoPrev'),function(d){fotoAtual=d;rotuloFoto1();});});
 $('fotoAv2').addEventListener('change',function(){lerFoto(this,$('btFotoAv2'),$('fotoPrev2'),function(d){fotoAtual2=d;$('btFotoAv2').textContent='✅ Foto 2 — produtos (mostrando a quantidade)';});});
 function fecharCard(){liberarLeitura();produtoAtual=null;$('res').innerHTML='';$('card').classList.remove('on');$('manual').value='';}
-function mudaQtd(d){var q=$('qtd');var v=parseFloat(String(q.value).replace(',','.'))||0;v=Math.max(0,v+d);q.value=(v%1===0)?String(v):v.toFixed(3);}
+function mudaQtd(d){var q=$('qtd');var v=parseFloat(String(q.value).replace(',','.'))||0;v=Math.max(0,v+d);q.value=(v%1===0)?String(v):v.toFixed(3);mostraConv();}
+// v75: peso por unidade tirado da descrição (500G, 250G, 1KG) e conta un → kg
+function pesoDaDesc(d){var m=String(d||'').toUpperCase().match(/(\d+(?:[.,]\d+)?)\s*(KG|GR|G)\b/g);if(!m)return 0;var s=m[m.length-1].match(/(\d+(?:[.,]\d+)?)\s*(KG|GR|G)/);var n=parseFloat(s[1].replace(',','.'));if(!n)return 0;var k=s[2]==='KG'?n:n/1000;return k>0&&k<=30?k:0;}
+function mostraConv(){var p=produtoAtual,et=$('cardEtiq');if(!p||!p.pesoUn)return;var n=parseFloat(String($('qtd').value).replace(',','.'))||0;et.textContent=String(n).replace('.',',')+' un × '+Math.round(p.pesoUn*1000)+' g = '+(n*p.pesoUn).toFixed(3).replace('.',',')+' kg (é isso que vai para a baixa)';et.style.display='block';}
+try{$('qtd').addEventListener('input',mostraConv);}catch(e){}
 function salvar(){
   var p=produtoAtual;if(!p)return;
   var qtd=parseFloat(String($('qtd').value).replace(',','.'));
   if(!qtd||qtd<=0){toast('Informe a quantidade','err');return;}
+  if(p.pesoUn)qtd=Math.round(qtd*p.pesoUn*1000)/1000; // v75: unidades → kg
   var reg;
   if(tipoAtual==='AVARIA'){
     if(!motivoAtual){toast('Marque VENCIDO ou AVARIA','err');return;}
