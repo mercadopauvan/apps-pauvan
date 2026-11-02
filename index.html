@@ -278,6 +278,8 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 .faixa.validades,.btn.validades{background:#a16207}
 #valLista .grp{background:#fef3c7;color:#78350f;font-weight:800;font-size:13px;letter-spacing:.4px;padding:10px 12px;border-radius:10px;margin:14px 0 8px}
 #valLista .grp.sem{background:#e2e8f0;color:#334155}
+#valLista .grp.tg{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+#valLista .grp.tg .sx{font-size:16px;line-height:1}
 #valLista .grp.ok{background:#dcfce7;color:#14532d}
 #valLista .loc{font-size:13px;font-weight:700;color:#78350f;margin:10px 2px 6px}
 ul.tf{list-style:none;padding:0;margin:0}
@@ -1238,16 +1240,23 @@ function renderCV(box){
   ordem.forEach(function(g){blocos.push([g,'',grupos[g].sort(ord)]);});
   if(sem.length)blocos.push(['SEM SEÇÃO','sem',sem]);
   if(!pend.length)box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">Tudo conferido nesta semana. 👍</p>';
-  blocos.forEach(function(bl){
-    var hd=document.createElement('div');hd.className='grp '+bl[1];hd.textContent=bl[0]+' ('+bl[2].length+')';box.appendChild(hd);
-    var ul=document.createElement('ul');ul.className='cv';var ult=null;
-    bl[2].forEach(function(it){var lc=it.local||'sem local no cadastro';if(lc!==ult){ult=lc;var s=document.createElement('div');s.className='loc';s.textContent='📍 '+lc;ul.appendChild(s);}ul.appendChild(cvItem(it,'pend'));});
+  // v83: cada bloco encolhe/abre ao tocar no título (lembra a escolha no aparelho)
+  function bloco(tit,cls,lista,modo,loc){
+    var k=tit.replace(/\s*\(.*$/,''),fech=cvFechado(k,tudo);
+    var hd=document.createElement('div');hd.className='grp tg '+cls;hd.innerHTML='<span>'+esc(tit)+' ('+lista.length+')</span><span class="sx">'+(fech?'▸':'▾')+'</span>';box.appendChild(hd);
+    var ul=document.createElement('ul');ul.className='cv';if(fech)ul.style.display='none';var ult=null;
+    lista.forEach(function(it){if(loc){var lc=it.local||'sem local no cadastro';if(lc!==ult){ult=lc;var s=document.createElement('div');s.className='loc';s.textContent='📍 '+lc;ul.appendChild(s);}}ul.appendChild(cvItem(it,modo));});
     box.appendChild(ul);
-  });
+    hd.onclick=function(){var f=ul.style.display!=='none';ul.style.display=f?'none':'';hd.querySelector('.sx').textContent=f?'▸':'▾';cvGuardaFech(k,f);};
+  }
+  blocos.forEach(function(bl){bloco(bl[0],bl[1],bl[2],'pend',true);});
   if(tudo){var ep=its.filter(function(i){return i.status==='CONFERIDO'&&i.estPend&&!cvAberto[i.id];}).sort(ord);
-    if(ep.length){var hd=document.createElement('div');hd.className='grp';hd.textContent='ESTOQUE NÃO CONFERIDO ('+ep.length+')';box.appendChild(hd);var ul=document.createElement('ul');ul.className='cv';ep.forEach(function(it){ul.appendChild(cvItem(it,'est'));});box.appendChild(ul);}}
-  if(feitos.length){var hd2=document.createElement('div');hd2.className='grp ok';hd2.textContent='CONFERIDOS NESTA SEMANA ('+feitos.length+')';box.appendChild(hd2);var ul2=document.createElement('ul');ul2.className='cv';feitos.sort(ord).forEach(function(it){ul2.appendChild(cvItem(it,'feito'));});box.appendChild(ul2);}
+    if(ep.length)bloco('ESTOQUE NÃO CONFERIDO','',ep,'est',false);}
+  if(feitos.length)bloco('CONFERIDOS NESTA SEMANA','ok',feitos.sort(ord),'feito',false);
 }
+function cvFechMapa(){try{return JSON.parse(localStorage.getItem('cv_fech')||'{}')||{};}catch(e){return {};}}
+function cvFechado(k,tudo){var m=cvFechMapa();if(m[k]!==undefined)return !!m[k];return !!tudo&&k.indexOf('ATRASADOS')<0;}
+function cvGuardaFech(k,v){var m=cvFechMapa();m[k]=v?1:0;try{localStorage.setItem('cv_fech',JSON.stringify(m));}catch(e){}}
 
 // ===== VENCIDOS DA SEMANA — v79 =====
 var vsCache=null,vsPend=null;
