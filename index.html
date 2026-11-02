@@ -1232,7 +1232,7 @@ function renderCV(box){
   var pend=its.filter(function(i){return i.status==='PENDENTE'||cvAberto[i.id];}),feitos=its.filter(function(i){return i.status!=='PENDENTE'&&!cvAberto[i.id];});
   $('valProg').textContent=feitos.length+' / '+its.length+' conferidos';
   if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:20px">Nada para conferir nesta semana. 👍</p>';return;}
-  function ord(a,b){return String(a.local||'~').localeCompare(String(b.local||'~'))||String(a.desc).localeCompare(String(b.desc))||String(a.validade).split('/').reverse().join('').localeCompare(String(b.validade).split('/').reverse().join(''));}
+  function ord(a,b){return String(a.local||'~').localeCompare(String(b.local||'~'))||String(a.validade).split('/').reverse().join('').localeCompare(String(b.validade).split('/').reverse().join(''))||String(a.desc).localeCompare(String(b.desc));} // v84: dentro do local, validade mais próxima primeiro
   var blocos=[],atr=pend.filter(function(i){return i.atrasado&&!i.semSecao;}).sort(ord),sem=pend.filter(function(i){return i.semSecao;}).sort(ord),grupos={},ordem=[];
   pend.filter(function(i){return !i.atrasado&&!i.semSecao;}).forEach(function(i){var g=tudo?(String(i.para).toUpperCase()+' · '+i.janela+' DIAS'):'MINHA LISTA';if(!grupos[g]){grupos[g]=[];ordem.push(g);}grupos[g].push(i);});
   ordem.sort();
