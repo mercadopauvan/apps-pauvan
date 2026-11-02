@@ -274,6 +274,25 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 .nhPush span{flex:1}.nhPush button{border:0;border-radius:10px;background:#b45309;color:#fff;font-weight:800;padding:9px 12px;font-size:13px}
 .avLbl{display:block;font-size:13px;color:#6b7280;margin:12px 2px 4px;font-weight:600}
 .avIn{width:100%;font-size:17px;padding:12px;border:2px solid #e5e7eb;border-radius:12px;font-family:inherit;background:#fff;margin-bottom:4px}
+/* v81: Validades — troca de frente */
+.faixa.validades,.btn.validades{background:#a16207}
+#valLista .grp{background:#fef3c7;color:#78350f;font-weight:800;font-size:13px;letter-spacing:.4px;padding:10px 12px;border-radius:10px;margin:14px 0 8px}
+#valLista .grp.sem{background:#e2e8f0;color:#334155}
+#valLista .grp.ok{background:#dcfce7;color:#14532d}
+#valLista .loc{font-size:13px;font-weight:700;color:#78350f;margin:10px 2px 6px}
+ul.tf{list-style:none;padding:0;margin:0}
+ul.tf li{border:2px solid #f59e0b;border-radius:14px;padding:12px;margin-bottom:10px;background:#fffbeb}
+ul.tf li.feito{border-color:var(--borda);background:#f8fafc;opacity:.8}
+ul.tf li .d{font-weight:700;font-size:16px;line-height:1.25}
+ul.tf li .m{font-size:13px;color:var(--muted);margin-top:4px}
+ul.tf li .vv{display:flex;gap:8px;margin-top:8px}
+ul.tf li .vv div{flex:1;border-radius:10px;padding:6px 8px;font-size:12px;text-align:center}
+ul.tf li .vv b{display:block;font-size:16px}
+ul.tf li .vv .nv{background:#fee2e2;color:#991b1b}
+ul.tf li .vv .ex{background:#dcfce7;color:#14532d}
+ul.tf li .ac{font-size:14px;font-weight:700;color:#78350f;margin-top:8px}
+ul.tf li .bt{width:100%;margin-top:10px;border:0;border-radius:12px;background:#a16207;color:#fff;font-size:16px;font-weight:800;padding:12px 0}
+ul.tf li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b45309;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:700}
 /* v79: Vencidos da semana */
 #vsBtn{display:none;width:100%;border:0;border-radius:14px;background:#7f1d1d;color:#fff;font-size:16px;font-weight:800;padding:13px 12px;margin:0 0 10px;text-align:left}
 #vsBtn small{display:block;font-weight:400;font-size:13px;opacity:.9;margin-top:2px}
@@ -431,6 +450,14 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <button id="poBt" style="display:none" onclick="confirmarPO()"></button>
 </section>
 
+<!-- 11. VALIDADES — TROCA DE FRENTE (v81) -->
+<section class="tela" id="tVAL">
+  <div class="faixa validades"><span id="faixaVAL"></span><button onclick="irTipo()">TROCAR</button></div>
+  <div class="contTop"><span>Troca de frente</span><span id="valProg"></span></div>
+  <p class="dica" style="text-align:left;margin:0 0 10px">Chegou produto com validade <b>mais curta</b> do que o que está exposto. Coloque o <b>novo na frente</b> e toque em <b>TROQUEI</b>.</p>
+  <div id="valLista"></div>
+</section>
+
 <!-- 10. VENCIDOS DA SEMANA (v79) -->
 <section class="tela" id="tVS">
   <div class="faixa avaria"><span id="faixaVS"></span><button onclick="vsSair()">VOLTAR</button></div>
@@ -564,7 +591,7 @@ var API_URL = 'https://script.google.com/macros/s/AKfycby5E_gkrNjAOsBgpYbrfJvXaK
 var FB_CFG={apiKey:'AIzaSyC4lagk9rwIo-_G5sZxV0GPyhcaTvJz0ng',authDomain:'apps-pauvan.firebaseapp.com',projectId:'apps-pauvan',storageBucket:'apps-pauvan.firebasestorage.app',messagingSenderId:'442345355000',appId:'1:442345355000:web:b311386f57ad07527dad0d'},FB_VAPID='BDmanVUsM42_JEf3CDuth5vPV_hHXt2fPMmF2hUH9E9tiZOLHt8fVvwiBFvj519E3PGjJAq33EagY4F12vX_rQw',fbMsg=null; // v63: notificações
 var NOVA_HOME=/^https?:/.test(API_URL);
 if(NOVA_HOME){try{document.querySelector('header').style.background='#104800';}catch(e){}}
-var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont'],CONFIRMACAO:['LOJA E RECEBIMENTO','Conferência Tati','confirmar o que ainda tem na loja','#0f766e','conf'],FOTOS:['LOJA E RECEBIMENTO','Fotos do site','fotografar produtos sem foto no site','#be185d','foto'],PRECOS_OFF:['LOJA E RECEBIMENTO','Preços off-line','etiqueta colocada → ativar o preço','#0369a1','tag']};
+var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont'],CONFIRMACAO:['LOJA E RECEBIMENTO','Conferência Tati','confirmar o que ainda tem na loja','#0f766e','conf'],FOTOS:['LOJA E RECEBIMENTO','Fotos do site','fotografar produtos sem foto no site','#be185d','foto'],PRECOS_OFF:['LOJA E RECEBIMENTO','Preços off-line','etiqueta colocada → ativar o preço','#0369a1','tag'],VALIDADES:['LOJA E RECEBIMENTO','Validades','troca de frente (validade mais curta na frente)','#a16207','conf']};
 var resumoCache={};try{resumoCache=JSON.parse(localStorage.getItem('ci_resumo')||'{}')||{};}catch(e){}
 
 var PESSOAS = [];
@@ -619,7 +646,7 @@ function confirmarPin(){
 $('pin1').addEventListener('keydown',function(e){if(e.key==='Enter'){if(pinNovo)$('pin2').focus();else confirmarPin();}});
 $('pin2').addEventListener('keydown',function(e){if(e.key==='Enter')confirmarPin();});
 $('pin1').addEventListener('input',function(){if(!pinNovo&&this.value.replace(/\D/g,'').length===4)confirmarPin();});
-var NOMES_TIPO={MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',CONFIRMACAO:'CONFERÊNCIA TATI',FOTOS:'FOTOS DO SITE',PRECOS_OFF:'PREÇOS OFF-LINE'};
+var NOMES_TIPO={VALIDADES:'VALIDADES',MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',CONFIRMACAO:'CONFERÊNCIA TATI',FOTOS:'FOTOS DO SITE',PRECOS_OFF:'PREÇOS OFF-LINE'};
 function irTipo(){
   vsPend=null;
   reenviarFila();
@@ -631,7 +658,7 @@ function irTipo(){
 }
 function renderTipos(){
   var box=$('listaTipo');box.innerHTML='';
-  var defs={MERCADO:['mercado','CONSUMO DO MERCADO','produto usado pela loja'],PROPRIO:['proprio','CONSUMO PRÓPRIO','produto retirado pela família'],AVARIA:['avaria','AVARIA / VENCIDO','produto perdido, com foto'],REBAIXAS:['rebaixas','REBAIXAS','avisar que uma rebaixa terminou'],CONTAGEM:['contagem','CONTAGEM DIA D','contar o que tem na gôndola'],CONFERENCIA:['conferencia','CONFERÊNCIA','conferir as notas que chegaram'],CONFIRMACAO:['confirmacao','CONFERÊNCIA TATI','confirmar o que ainda tem na loja'],FOTOS:['fotos','FOTOS DO SITE','fotografar produtos sem foto no site'],PRECOS_OFF:['precosoff','PREÇOS OFF-LINE','etiqueta colocada → ativar o preço']};
+  var defs={MERCADO:['mercado','CONSUMO DO MERCADO','produto usado pela loja'],PROPRIO:['proprio','CONSUMO PRÓPRIO','produto retirado pela família'],AVARIA:['avaria','AVARIA / VENCIDO','produto perdido, com foto'],REBAIXAS:['rebaixas','REBAIXAS','avisar que uma rebaixa terminou'],CONTAGEM:['contagem','CONTAGEM DIA D','contar o que tem na gôndola'],CONFERENCIA:['conferencia','CONFERÊNCIA','conferir as notas que chegaram'],CONFIRMACAO:['confirmacao','CONFERÊNCIA TATI','confirmar o que ainda tem na loja'],FOTOS:['fotos','FOTOS DO SITE','fotografar produtos sem foto no site'],PRECOS_OFF:['precosoff','PREÇOS OFF-LINE','etiqueta colocada → ativar o preço'],VALIDADES:['validades','VALIDADES','troca de frente']};
   appsCache.forEach(function(a){var d=defs[a];if(!d)return;var b=document.createElement('button');b.className='btn '+d[0];b.innerHTML=d[1]+'<br><span style="font-size:14px;font-weight:400">'+d[2]+'</span>';b.onclick=function(){escolherTipo(a);};box.appendChild(b);});
   if(!box.children.length)box.innerHTML=appsOk?'<p class="dica" style="font-size:17px;margin-top:24px;line-height:1.5">Seu acesso ainda não foi liberado.<br>Peça ao Celio para liberar.</p>':'<p class="dica">Carregando…</p>';
 }
@@ -645,6 +672,7 @@ if(t==='CONTAGEM'){irCont();return;}
   if(t==='CONFIRMACAO'){irCT();return;}
   if(t==='FOTOS'){irFS();return;}
   if(t==='PRECOS_OFF'){irPO();return;}
+  if(t==='VALIDADES'){irVAL();return;} // v81
   if(t==='CONFERENCIA'){irConf();return;}
   var f=$('faixa');f.className='faixa '+t.toLowerCase();
   $('faixaTxt').textContent=NOMES_TIPO[t]+' · '+quem;
@@ -1079,6 +1107,61 @@ function salvarCT(it,resp,qtd,val){
   }).catch(function(){volta();toast('Sem conexão. Tente de novo.','err');});
 }
 
+// ===== VALIDADES — TROCA DE FRENTE — v81 =====
+var valCache=null;
+function irVAL(){
+  pararCamera();$('faixaVAL').textContent='VALIDADES · '+quem;mostrar('tVAL');
+  try{valCache=JSON.parse(localStorage.getItem('ci_val')||'null');}catch(e){}
+  renderVAL();carregarVAL();
+}
+function carregarVAL(){
+  api({acao:'validades',quem:quem}).then(function(r){if(r&&r.ok){valCache={trocas:r.trocas||[],feitos:r.feitos||[],verTudo:!!r.verTudo};try{localStorage.setItem('ci_val',JSON.stringify(valCache));}catch(e){}renderVAL();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
+}
+function valMarcar(it,b,desf){
+  if(desf&&b.dataset.c!=='1'){b.dataset.c='1';b.textContent='DESFAZER? TOQUE DE NOVO';setTimeout(function(){b.dataset.c='';b.textContent='DESFAZER';},3000);return;}
+  vibra();b.textContent='…';
+  api({acao:'trocaFeita',id:it.id,token:token,quem:quem,desfazer:desf?'1':''}).then(function(r){
+    if(r&&r.ok){toast(desf?'Voltou para a lista':'Troca registrada','ok');carregarVAL();}
+    else if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(e){}irPin();}
+    else{toast('Não deu: '+(r&&r.erro||''),'err');renderVAL();}
+  }).catch(function(){toast('Sem internet — tente de novo','err');renderVAL();});
+}
+function renderVAL(){
+  var box=$('valLista');box.innerHTML='';
+  if(!valCache){box.innerHTML='<p class="dica">Carregando…</p>';return;}
+  var tr=valCache.trocas,tudo=valCache.verTudo;
+  $('valProg').textContent=tr.length?(tr.length+(tr.length===1?' troca':' trocas')):'';
+  if(!tr.length)box.innerHTML='<p class="dica" style="font-size:16px;margin-top:20px">Nenhuma troca de frente pendente. 👍</p>';
+  var grupos={},ordem=[];
+  tr.forEach(function(it){var g=it.secao?(tudo?String(it.rep||'SEM REPOSITORA').toUpperCase():'MINHAS TROCAS'):'SEM SEÇÃO';if(!grupos[g]){grupos[g]=[];ordem.push(g);}grupos[g].push(it);});
+  ordem.sort(function(a,b){var sa=a==='SEM SEÇÃO'?1:0,sb=b==='SEM SEÇÃO'?1:0;return sa-sb||a.localeCompare(b);});
+  ordem.forEach(function(g){
+    var hd=document.createElement('div');hd.className='grp'+(g==='SEM SEÇÃO'?' sem':'');hd.textContent=g+' ('+grupos[g].length+')';box.appendChild(hd);
+    var ul=document.createElement('ul');ul.className='tf',ult=null;
+    grupos[g].sort(function(a,b){return String(a.local).localeCompare(String(b.local))||String(a.desc).localeCompare(String(b.desc));});
+    grupos[g].forEach(function(it){
+      var lc=it.local||'sem local no cadastro';
+      if(lc!==ult){ult=lc;var s=document.createElement('div');s.className='loc';s.textContent='📍 '+lc;ul.appendChild(s);}
+      var li=document.createElement('li');
+      li.innerHTML='<div class="d">'+esc(it.desc)+'</div><div class="m">chegou na NF '+esc(it.nf)+(it.forn?' · '+esc(it.forn):'')+' · '+esc(String(it.data).slice(0,5))+'</div><div class="vv"><div class="nv">CHEGOU<b>'+esc(it.nova)+'</b></div><div class="ex">EXPOSTO<b>'+esc(it.exposta)+'</b></div></div><div class="ac">➜ Repor o novo na frente</div><button class="bt">TROQUEI</button>';
+      var b=li.querySelector('.bt');b.onclick=function(){valMarcar(it,b,false);};
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  });
+  if(valCache.feitos.length){
+    var hd=document.createElement('div');hd.className='grp ok';hd.textContent='TROCADAS NOS ÚLTIMOS DIAS ('+valCache.feitos.length+')';box.appendChild(hd);
+    var ul=document.createElement('ul');ul.className='tf';
+    valCache.feitos.forEach(function(it){
+      var li=document.createElement('li');li.className='feito';
+      li.innerHTML='<div class="d">✅ '+esc(it.desc)+'</div><div class="m">chegou '+esc(it.nova)+' · exposto '+esc(it.exposta)+' · '+esc(it.quem)+' · '+esc(it.em)+'</div><button class="desf">DESFAZER</button>';
+      var b=li.querySelector('.desf');b.onclick=function(){valMarcar(it,b,true);};
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  }
+}
+
 // ===== VENCIDOS DA SEMANA — v79 =====
 var vsCache=null,vsPend=null;
 var VS_DIA=['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
@@ -1504,7 +1587,7 @@ function irHome(){
 }
 function renderHome(){
   var box=$('nhLista');box.innerHTML='';var grupo='';
-  ['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF'].forEach(function(a){
+  ['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES'].forEach(function(a){
     if(appsCache.indexOf(a)<0)return;var d=HOME_DEF[a];
     if(d[0]!==grupo){grupo=d[0];var t=document.createElement('h3');t.textContent=grupo;box.appendChild(t);}
     var sub=d[2];
