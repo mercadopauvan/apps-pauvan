@@ -274,6 +274,30 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 .nhPush span{flex:1}.nhPush button{border:0;border-radius:10px;background:#b45309;color:#fff;font-weight:800;padding:9px 12px;font-size:13px}
 .avLbl{display:block;font-size:13px;color:#6b7280;margin:12px 2px 4px;font-weight:600}
 .avIn{width:100%;font-size:17px;padding:12px;border:2px solid #e5e7eb;border-radius:12px;font-family:inherit;background:#fff;margin-bottom:4px}
+/* v79: Vencidos da semana */
+#vsBtn{display:none;width:100%;border:0;border-radius:14px;background:#7f1d1d;color:#fff;font-size:16px;font-weight:800;padding:13px 12px;margin:0 0 10px;text-align:left}
+#vsBtn small{display:block;font-weight:400;font-size:13px;opacity:.9;margin-top:2px}
+#vsBanner{display:none;background:#fef2f2;border:2px solid #b91c1c;border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:14px;color:#7f1d1d}
+#vsBanner b{display:block;font-size:15px}
+#vsBanner button{margin-top:8px;border:1px solid #b91c1c;background:#fff;color:#b91c1c;border-radius:8px;padding:6px 12px;font-weight:700;font-size:13px}
+#vsLista .grp{background:#fee2e2;color:#7f1d1d;font-weight:800;font-size:13px;letter-spacing:.4px;padding:10px 12px;border-radius:10px;margin:14px 0 8px}
+#vsLista .grp.atr{background:#b91c1c;color:#fff}
+#vsLista .grp.sem{background:#e2e8f0;color:#334155}
+#vsLista .grp.ok{background:#dcfce7;color:#14532d}
+ul.vs{list-style:none;padding:0;margin:0}
+ul.vs li{border:2px solid var(--borda);border-radius:14px;padding:12px;margin-bottom:10px}
+ul.vs li.atr{border-color:#b91c1c}
+ul.vs li.feito{opacity:.75;background:#f8fafc}
+ul.vs li .d{font-weight:700;font-size:16px;line-height:1.25}
+ul.vs li .m{font-size:13px;color:var(--muted);margin-top:4px}
+ul.vs li .tag{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px;margin-right:6px;background:#b91c1c;color:#fff;vertical-align:2px}
+ul.vs li .tag.frio{background:#0369a1}
+ul.vs li .tag.ok{background:#15803d}
+ul.vs li .tag.nao{background:#64748b}
+ul.vs li .bts{display:flex;gap:8px;margin-top:10px}
+ul.vs li .bts button{flex:1;border-radius:12px;font-size:15px;font-weight:800;padding:12px 4px;border:2px solid #b91c1c;background:#b91c1c;color:#fff}
+ul.vs li .bts button.nao{background:#fff;color:#475569;border-color:#94a3b8}
+ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b45309;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:700}
 </style>
 </head>
 <body>
@@ -346,6 +370,8 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 <!-- 3. BIPAR -->
 <section class="tela" id="tScan">
   <div class="faixa" id="faixa"><span id="faixaTxt"></span><button onclick="irTipo()">TROCAR</button></div>
+  <button id="vsBtn" onclick="irVS()">📋 VENCIDOS DA SEMANA<small id="vsBtnSub">abrir a lista para retirar da loja</small></button>
+  <div id="vsBanner"><span>Retirando da lista de vencidos:</span><b id="vsBanTx"></b><span id="vsBanSub"></span><br><button onclick="vsVoltar()">VOLTAR À LISTA</button></div>
   <div id="cam"><video id="video" playsinline muted autoplay></video><div id="mira"></div><div id="camLido"><span>✓ LIDO</span><small id="camLidoTx">buscando o produto…</small></div></div>
   <div id="status">Aponte a câmera para o código de barras</div>
   <div class="sw" id="btKg" onclick="toggleKg()"><span class="lbl">⚖️ Produto por kg (sem etiqueta)</span><span class="st" id="swSt">OFF</span><span class="trk"><span class="knob"></span></span></div>
@@ -403,6 +429,14 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
   <p class="dica" style="text-align:left;margin:0 0 10px;font-size:12px" id="poArq"></p>
   <div id="poLista"></div>
   <button id="poBt" style="display:none" onclick="confirmarPO()"></button>
+</section>
+
+<!-- 10. VENCIDOS DA SEMANA (v79) -->
+<section class="tela" id="tVS">
+  <div class="faixa avaria"><span id="faixaVS"></span><button onclick="vsSair()">VOLTAR</button></div>
+  <div class="contTop"><span id="vsSemana">Vencidos da semana</span><span id="vsProg"></span></div>
+  <p class="dica" style="text-align:left;margin:0 0 10px">Tire da loja o que está na lista até o dia indicado. <b>RETIREI</b> abre a baixa de vencido (fotos, validade e quantidade). <b>NÃO ENCONTRADO</b> se o produto não está mais na loja.</p>
+  <div id="vsLista"></div>
 </section>
 
 <!-- 6. CONFERÊNCIA — lista de notas -->
@@ -516,7 +550,7 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
   </div>
   <div id="cardPara" style="display:none"><div class="pedLbl">Quem pediu?</div><div class="ped" id="pedBts"></div></div>
   <button class="btn ok" onclick="salvar()">SALVAR</button>
-  <button class="btn cancel" onclick="fecharCard()">CANCELAR</button>
+  <button class="btn cancel" onclick="cancelarCard()">CANCELAR</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -587,6 +621,7 @@ $('pin2').addEventListener('keydown',function(e){if(e.key==='Enter')confirmarPin
 $('pin1').addEventListener('input',function(){if(!pinNovo&&this.value.replace(/\D/g,'').length===4)confirmarPin();});
 var NOMES_TIPO={MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',CONFIRMACAO:'CONFERÊNCIA TATI',FOTOS:'FOTOS DO SITE',PRECOS_OFF:'PREÇOS OFF-LINE'};
 function irTipo(){
+  vsPend=null;
   reenviarFila();
   pararCamera();tipoAtual=null;$('hdr').textContent=quem;$('btTrocarQuem').style.display='inline-block';
   if(NOVA_HOME){irHome();api({acao:'apps',quem:quem}).then(function(r){if(r&&r.ok&&r.apps){appsOk=true;appsCache=r.apps;try{localStorage.setItem('ci_apps',JSON.stringify(r.apps));}catch(e){}renderHome();}}).catch(function(){});return;}
@@ -614,6 +649,7 @@ if(t==='CONTAGEM'){irCont();return;}
   var f=$('faixa');f.className='faixa '+t.toLowerCase();
   $('faixaTxt').textContent=NOMES_TIPO[t]+' · '+quem;
   mostrar('tScan');iniciarCamera();carregarUltimos();carregarAtalhos();
+  vsAtualizaBotoes(); // v79
 }
 // ===== REBAIXAS =====
 var rebAtual=null,motReb=null,rebCache=null;
@@ -882,6 +918,7 @@ function abrirCard(p){
   var dl=ehDelivery();$('cardPara').style.display=dl?'block':'none';pedidoPor=null;if(dl)renderPed(); // v66
   $('card').classList.add('on');
   if(kg&&!p.pesoSug&&!av)setTimeout(function(){q.focus();},100);
+  if(av&&vsPend){setMotivo('VENCIDO');$('cardCod').textContent+=' · lista: vence '+vsPend.validade;} // v79
 }
 function rotuloFoto1(){var t=motivoAtual==='VENCIDO'?'📷 Foto 1 — validade impressa no produto':(motivoAtual==='AVARIA'?'📷 Foto 1 — a avaria (rasgado, amassado…)':'📷 Foto 1 — validade ou avaria');$('btFotoAv').textContent=(fotoAtual?'✅ ':'')+t;}
 function setMotivo(m){motivoAtual=m;$('btVenc').classList.toggle('on',m==='VENCIDO');$('btAvar').classList.toggle('on',m==='AVARIA');$('validade').style.display=m==='VENCIDO'?'block':'none';rotuloFoto1();vibra();}
@@ -917,12 +954,14 @@ function salvar(){
     if(!fotoAtual2){toast('Falta a foto 2: os produtos mostrando a quantidade','err');return;}
     var v=$('validade').value;var vd=v?v.split('-').reverse().join('/'):'';
     reg={acao:'salvarAvaria',id:uuid(),token:token,quem:quem,tipo:'AVARIA',motivo:motivoAtual,validade:vd,codigo:p.codigo,sku:p.sku,desc:p.desc||'NÃO CADASTRADO',qtd:qtd,un:p.un,foto:fotoAtual,foto2:fotoAtual2};
+    if(vsPend&&motivoAtual==='VENCIDO')reg.vsId=vsPend.id; // v79: baixa feita pelo RETIREI da lista
   } else {
     if(ehDelivery()&&!pedidoPor){toast('Escolha quem pediu','err');return;}
     reg={acao:'salvar',id:uuid(),token:token,quem:quem,tipo:NOMES_TIPO[tipoAtual],codigo:p.codigo,sku:p.sku,desc:p.desc||'NÃO CADASTRADO',qtd:qtd,un:p.un,pedidoPor:ehDelivery()?pedidoPor:''};
   }
   fecharCard();toast('Salvando…');
   enviar(reg);
+  if(reg.vsId){var vid=reg.vsId;vsPend=null;if(vsCache)vsCache.itens.forEach(function(i){if(i.id===vid){i.status='RETIRADO';i.qtd=reg.qtd;}});irVS();} // v79: volta para a lista
 }
 function enviar(reg){
   api(reg).then(function(r){
@@ -1038,6 +1077,91 @@ function salvarCT(it,resp,qtd,val){
     if(r&&r.ok){try{localStorage.setItem('ci_ct',JSON.stringify(ctCache));}catch(e){}return;}
     volta();if(r&&r.reauth){irPin();return;}toast((r&&r.erro)||'Não salvou','err');
   }).catch(function(){volta();toast('Sem conexão. Tente de novo.','err');});
+}
+
+// ===== VENCIDOS DA SEMANA — v79 =====
+var vsCache=null,vsPend=null;
+var VS_DIA=['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+function vsData(s){var p=String(s||'').split('/');return p.length===3?new Date(+p[2],+p[1]-1,+p[0]):null;}
+function vsDiaTx(s){var d=vsData(s);return d?VS_DIA[d.getDay()]+' '+s.slice(0,5):s;}
+function vsTem(){return appsCache.indexOf('VENCIDOS')>=0;}
+function vsAtualizaBotoes(){
+  var av=tipoAtual==='AVARIA';
+  $('vsBtn').style.display=av&&vsTem()&&!vsPend?'block':'none';
+  $('vsBanner').style.display=av&&vsPend?'block':'none';
+  if(vsPend){$('vsBanTx').textContent=vsPend.desc;$('vsBanSub').textContent='vence '+vsPend.validade+(vsPend.sku?'':' · bipe o código do produto');}
+  if(av&&vsTem()&&!vsPend){try{vsCache=JSON.parse(localStorage.getItem('ci_vs')||'null');}catch(e){}vsSubBotao();carregarVS(vsSubBotao);}
+}
+function vsSubBotao(){if(!vsCache)return;var n=vsCache.itens.filter(function(i){return i.status==='PENDENTE';}).length,a=vsCache.itens.filter(function(i){return i.status==='PENDENTE'&&i.atrasado;}).length;$('vsBtnSub').textContent=n?(n+(n===1?' produto para retirar':' produtos para retirar')+(a?' · '+a+' atrasado'+(a>1?'s':''):'')):'nada para retirar nesta semana 👍';}
+function irVS(){
+  pararCamera();$('faixaVS').textContent='VENCIDOS DA SEMANA · '+quem;mostrar('tVS');
+  if(!vsCache){try{vsCache=JSON.parse(localStorage.getItem('ci_vs')||'null');}catch(e){}}
+  renderVS();carregarVS();
+}
+function vsSair(){vsPend=null;escolherTipo('AVARIA');}
+function vsVoltar(){vsPend=null;irVS();}
+function carregarVS(cb){
+  api({acao:'vencidos',quem:quem}).then(function(r){if(r&&r.ok){vsCache={semana:r.semana,hoje:r.hoje,itens:r.itens||[]};try{localStorage.setItem('ci_vs',JSON.stringify(vsCache));}catch(e){}if($('tVS').classList.contains('on'))renderVS();if(cb)cb();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
+}
+function cancelarCard(){fecharCard();if(vsPend&&tipoAtual==='AVARIA'){vsPend=null;irVS();}} // v79: cancelou → item continua na lista
+function vsRetirei(it){
+  vibra();vsPend=it;tipoAtual='AVARIA';
+  var f=$('faixa');f.className='faixa avaria';$('faixaTxt').textContent=NOMES_TIPO.AVARIA+' · '+quem;
+  mostrar('tScan');iniciarCamera();carregarUltimos();carregarAtalhos();vsAtualizaBotoes();
+  if(it.sku)abrirCard({codigo:it.sku,sku:it.sku,desc:it.desc,un:it.un||'UNIDADE'});
+  else toast('Bipe o código do produto','ok');
+}
+function vsNaoAchei(it,b){
+  if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='CONFIRMA? TOQUE DE NOVO';setTimeout(function(){b.dataset.c='';b.textContent='NÃO ENCONTRADO';},3000);return;}
+  b.textContent='…';
+  api({acao:'vencidoNaoEncontrado',id:it.id,token:token,quem:quem}).then(function(r){
+    if(r&&r.ok){it.status='NAO ENCONTRADO';toast('Registrado: não encontrado','ok');renderVS();carregarVS();}
+    else if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(e){}irPin();}
+    else{toast('Não deu: '+(r&&r.erro||''),'err');renderVS();}
+  }).catch(function(){toast('Sem internet — tente de novo','err');renderVS();});
+}
+function vsDesfazer(it,b){
+  if(b.dataset.c!=='1'){b.dataset.c='1';b.textContent='DESFAZER? TOQUE DE NOVO';setTimeout(function(){b.dataset.c='';b.textContent='DESFAZER';},3000);return;}
+  b.textContent='…';
+  api({acao:'vencidoDesfazer',id:it.id,token:token,quem:quem}).then(function(r){toast(r&&r.ok?'Voltou para a lista':'Não deu: '+(r&&r.erro||''),r&&r.ok?'ok':'err');carregarVS();}).catch(function(){toast('Sem internet','err');});
+}
+function renderVS(){
+  var box=$('vsLista');box.innerHTML='';
+  if(!vsCache){box.innerHTML='<p class="dica">Carregando…</p>';return;}
+  var its=vsCache.itens,pend=its.filter(function(i){return i.status==='PENDENTE';}),feitos=its.filter(function(i){return i.status!=='PENDENTE';});
+  $('vsSemana').textContent='Semana de '+String(vsCache.semana||'').slice(0,5);
+  $('vsProg').textContent=feitos.length+' / '+its.length+' resolvidos';
+  if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:20px">Nada vencendo nesta semana. 👍</p>';return;}
+  function ord(a,b){var x=vsData(a.retirar)-vsData(b.retirar);if(x)return x;x=vsData(a.validade)-vsData(b.validade);return x||String(a.local).localeCompare(String(b.local))||String(a.desc).localeCompare(String(b.desc));}
+  var hoje=vsData(vsCache.hoje),blocos=[],atr=pend.filter(function(i){return i.atrasado&&i.secao;}).sort(ord),sem=pend.filter(function(i){return !i.secao;}).sort(ord),dias={},ordemD=[];
+  pend.filter(function(i){return !i.atrasado&&i.secao;}).sort(ord).forEach(function(i){if(!dias[i.retirar]){dias[i.retirar]=[];ordemD.push(i.retirar);}dias[i.retirar].push(i);});
+  if(atr.length)blocos.push(['⚠ ATRASADOS — semana passada','atr',atr]);
+  ordemD.forEach(function(d){var dt=vsData(d),tx='RETIRAR ATÉ '+vsDiaTx(d);if(hoje&&dt&&+dt===+hoje)tx+=' · HOJE';else if(hoje&&dt&&dt<hoje)tx+=' · JÁ PASSOU';blocos.push([tx,'',dias[d]]);});
+  if(sem.length)blocos.push(['SEM SEÇÃO (sem local no cadastro)','sem',sem]);
+  if(!pend.length)box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">Tudo resolvido nesta semana. 👍</p>';
+  blocos.forEach(function(bl){
+    var hd=document.createElement('div');hd.className='grp '+bl[1];hd.textContent=bl[0]+' ('+bl[2].length+')';box.appendChild(hd);
+    var ul=document.createElement('ul');ul.className='vs';
+    bl[2].forEach(function(it){
+      var li=document.createElement('li');if(it.atrasado)li.className='atr';
+      li.innerHTML='<div class="d">'+(it.atrasado?'<span class="tag">ATRASADO</span>':'')+esc(it.desc)+'</div><div class="m">vence <b>'+esc(it.validade)+'</b>'+(it.atrasado&&!it.secao?' · retirar já':'')+(it.regra==='FRIO'?' · <span class="tag frio">3 DIAS ANTES</span>':'')+'</div><div class="m">📍 '+esc(it.local||'sem local no cadastro')+(it.secao?' · '+esc(it.secao):'')+'</div><div class="bts"><button class="ret">RETIREI</button><button class="nao">NÃO ENCONTRADO</button></div>';
+      li.querySelector('.ret').onclick=function(){vsRetirei(it);};
+      var bn=li.querySelector('.nao');bn.onclick=function(){vsNaoAchei(it,bn);};
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  });
+  if(feitos.length){
+    var hd=document.createElement('div');hd.className='grp ok';hd.textContent='RESOLVIDOS NESTA SEMANA ('+feitos.length+')';box.appendChild(hd);
+    var ul=document.createElement('ul');ul.className='vs';
+    feitos.forEach(function(it){
+      var li=document.createElement('li');li.className='feito';
+      li.innerHTML='<div class="d">'+(it.status==='RETIRADO'?'<span class="tag ok">RETIRADO'+(it.qtd!==''?' · '+esc(it.qtd):'')+'</span>':'<span class="tag nao">NÃO ENCONTRADO</span>')+esc(it.desc)+'</div><div class="m">vence '+esc(it.validade)+(it.quem?' · '+esc(it.quem):'')+(it.em?' · '+esc(it.em):'')+'</div><button class="desf">DESFAZER</button>';
+      var b=li.querySelector('.desf');b.onclick=function(){vsDesfazer(it,b);};
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  }
 }
 
 // ===== FOTOS DO SITE — v66 =====
