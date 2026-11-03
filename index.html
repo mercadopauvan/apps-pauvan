@@ -299,6 +299,30 @@ ul.tf li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .valTabs{display:flex;gap:6px;margin:0 0 10px}
 .valTabs button{flex:1;border:2px solid #a16207;background:#fff;color:#a16207;border-radius:12px;font-size:14px;font-weight:800;padding:10px 4px}
 .valTabs button.on{background:#a16207;color:#fff}
+.faixa.semvenda,.btn.semvenda{background:#0d9488}
+.psvTabs{display:flex;gap:6px;margin:0 0 10px}
+.psvTabs button{flex:1;border:2px solid #0d9488;background:#fff;color:#0d9488;border-radius:12px;font-size:14px;font-weight:800;padding:10px 4px}
+.psvTabs button.on{background:#0d9488;color:#fff}
+#psvLista .grp{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;background:#ccfbf1;color:#134e4a;font-weight:800;font-size:13px;letter-spacing:.4px;padding:10px 12px;border-radius:10px;margin:14px 0 8px}
+#psvLista .grp .sx{font-size:16px;line-height:1}
+#psvLista .loc{font-size:13px;font-weight:700;color:#115e59;margin:10px 2px 6px}
+#psvLista .vazio{font-size:16px;margin-top:24px;line-height:1.5}
+ul.psv{list-style:none;padding:0;margin:0}
+ul.psv li{border:2px solid var(--borda);border-radius:14px;padding:12px;margin-bottom:10px;background:#fff}
+ul.psv li.feito{background:#f1f5f9;border-color:#cbd5e1;color:#64748b}
+ul.psv li .d{font-weight:700;font-size:16px;line-height:1.25}
+ul.psv li .m{font-size:13px;color:var(--muted);margin-top:4px}
+ul.psv li .tag{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px;margin-right:6px;background:#b91c1c;color:#fff;vertical-align:2px}
+ul.psv li .tag.ok{background:#64748b}
+ul.psv li .bts{display:flex;gap:8px;margin-top:10px}
+ul.psv li .bts button{flex:1;border:0;border-radius:12px;font-size:14px;font-weight:800;padding:12px 4px;color:#fff;background:#0d9488}
+ul.psv li .bts button.nao{background:#b91c1c}
+ul.psv li .bts button.sec{background:#fff;color:#0f766e;border:2px solid #0d9488}
+ul.psv li .pq{font-size:15px;font-weight:800;color:#991b1b;margin-top:10px}
+ul.psv li .outro{display:flex;gap:8px;margin-top:8px}
+ul.psv li .outro input{flex:1;min-width:0;border:2px solid var(--borda);border-radius:10px;padding:10px;font-size:15px}
+ul.psv li .outro button{border:0;border-radius:10px;background:#0d9488;color:#fff;font-weight:800;padding:0 14px}
+ul.psv li .desf{margin-top:8px;border:1px solid #94a3b8;background:#fff;color:#475569;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:700}
 ul.cv{list-style:none;padding:0;margin:0}
 ul.cv li{border:2px solid var(--borda);border-radius:14px;padding:12px;margin-bottom:10px}
 ul.cv li.atr{border-color:#b91c1c}
@@ -382,6 +406,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 <symbol id="ic-conf" viewBox="0 0 24 24"><path d="M9 5H6v16h12V5h-3M9 3h6v4H9zM9 13l2 2 4-4"/></symbol>
 <symbol id="ic-cont" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></symbol>
 <symbol id="ic-sino" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></symbol>
+<symbol id="ic-graf" viewBox="0 0 24 24"><path d="M4 4v16h16M8 16v-4M12 16V8M16 16v-6"/></symbol>
 <symbol id="ic-scan" viewBox="0 0 24 24"><path d="M3 7V4h3M18 4h3v3M21 17v3h-3M6 20H3v-3M7 8v8M10 8v8M13 8v8M17 8v8"/></symbol>
 </defs></svg>
 <section class="tela" id="tHome">
@@ -482,6 +507,15 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div class="contTop"><span id="valTit">Conferência de validade</span><span id="valProg"></span></div>
   <p class="dica" id="valDica" style="text-align:left;margin:0 0 10px"></p>
   <div id="valLista"></div>
+</section>
+
+<!-- 12. PRODUTO SEM VENDA (v87) -->
+<section class="tela" id="tPSV">
+  <div class="faixa semvenda"><span id="faixaPSV"></span><button onclick="irTipo()">TROCAR</button></div>
+  <div class="psvTabs" id="psvTabs"></div>
+  <div class="contTop"><span id="psvTit">Produto sem venda</span><span id="psvProg"></span></div>
+  <p class="dica" id="psvDica" style="text-align:left;margin:0 0 10px"></p>
+  <div id="psvLista"></div>
 </section>
 
 <!-- 10. VENCIDOS DA SEMANA (v79) -->
@@ -617,7 +651,7 @@ var API_URL = 'https://script.google.com/macros/s/AKfycby5E_gkrNjAOsBgpYbrfJvXaK
 var FB_CFG={apiKey:'AIzaSyC4lagk9rwIo-_G5sZxV0GPyhcaTvJz0ng',authDomain:'apps-pauvan.firebaseapp.com',projectId:'apps-pauvan',storageBucket:'apps-pauvan.firebasestorage.app',messagingSenderId:'442345355000',appId:'1:442345355000:web:b311386f57ad07527dad0d'},FB_VAPID='BDmanVUsM42_JEf3CDuth5vPV_hHXt2fPMmF2hUH9E9tiZOLHt8fVvwiBFvj519E3PGjJAq33EagY4F12vX_rQw',fbMsg=null; // v63: notificações
 var NOVA_HOME=/^https?:/.test(API_URL);
 if(NOVA_HOME){try{document.querySelector('header').style.background='#104800';}catch(e){}}
-var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont'],CONFIRMACAO:['LOJA E RECEBIMENTO','Conferência Tati','confirmar o que ainda tem na loja','#0f766e','conf'],FOTOS:['LOJA E RECEBIMENTO','Fotos do site','fotografar produtos sem foto no site','#be185d','foto'],PRECOS_OFF:['LOJA E RECEBIMENTO','Preços off-line','etiqueta colocada → ativar o preço','#0369a1','tag'],VALIDADES:['LOJA E RECEBIMENTO','Validades','conferência de validade e troca de frente','#a16207','conf']};
+var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont'],CONFIRMACAO:['LOJA E RECEBIMENTO','Conferência Tati','confirmar o que ainda tem na loja','#0f766e','conf'],FOTOS:['LOJA E RECEBIMENTO','Fotos do site','fotografar produtos sem foto no site','#be185d','foto'],PRECOS_OFF:['LOJA E RECEBIMENTO','Preços off-line','etiqueta colocada → ativar o preço','#0369a1','tag'],VALIDADES:['LOJA E RECEBIMENTO','Validades','conferência de validade e troca de frente','#a16207','conf'],SEMVENDA:['LOJA E RECEBIMENTO','Produto sem venda','produto com saldo que não está vendendo','#0d9488','graf']};
 var resumoCache={};try{resumoCache=JSON.parse(localStorage.getItem('ci_resumo')||'{}')||{};}catch(e){}
 
 var PESSOAS = [];
@@ -672,7 +706,7 @@ function confirmarPin(){
 $('pin1').addEventListener('keydown',function(e){if(e.key==='Enter'){if(pinNovo)$('pin2').focus();else confirmarPin();}});
 $('pin2').addEventListener('keydown',function(e){if(e.key==='Enter')confirmarPin();});
 $('pin1').addEventListener('input',function(){if(!pinNovo&&this.value.replace(/\D/g,'').length===4)confirmarPin();});
-var NOMES_TIPO={VALIDADES:'VALIDADES',MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',CONFIRMACAO:'CONFERÊNCIA TATI',FOTOS:'FOTOS DO SITE',PRECOS_OFF:'PREÇOS OFF-LINE'};
+var NOMES_TIPO={SEMVENDA:'PRODUTO SEM VENDA',VALIDADES:'VALIDADES',MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',CONFIRMACAO:'CONFERÊNCIA TATI',FOTOS:'FOTOS DO SITE',PRECOS_OFF:'PREÇOS OFF-LINE'};
 function irTipo(){
   vsPend=null;
   reenviarFila();
@@ -684,7 +718,7 @@ function irTipo(){
 }
 function renderTipos(){
   var box=$('listaTipo');box.innerHTML='';
-  var defs={MERCADO:['mercado','CONSUMO DO MERCADO','produto usado pela loja'],PROPRIO:['proprio','CONSUMO PRÓPRIO','produto retirado pela família'],AVARIA:['avaria','AVARIA / VENCIDO','produto perdido, com foto'],REBAIXAS:['rebaixas','REBAIXAS','avisar que uma rebaixa terminou'],CONTAGEM:['contagem','CONTAGEM DIA D','contar o que tem na gôndola'],CONFERENCIA:['conferencia','CONFERÊNCIA','conferir as notas que chegaram'],CONFIRMACAO:['confirmacao','CONFERÊNCIA TATI','confirmar o que ainda tem na loja'],FOTOS:['fotos','FOTOS DO SITE','fotografar produtos sem foto no site'],PRECOS_OFF:['precosoff','PREÇOS OFF-LINE','etiqueta colocada → ativar o preço'],VALIDADES:['validades','VALIDADES','troca de frente']};
+  var defs={MERCADO:['mercado','CONSUMO DO MERCADO','produto usado pela loja'],PROPRIO:['proprio','CONSUMO PRÓPRIO','produto retirado pela família'],AVARIA:['avaria','AVARIA / VENCIDO','produto perdido, com foto'],REBAIXAS:['rebaixas','REBAIXAS','avisar que uma rebaixa terminou'],CONTAGEM:['contagem','CONTAGEM DIA D','contar o que tem na gôndola'],CONFERENCIA:['conferencia','CONFERÊNCIA','conferir as notas que chegaram'],CONFIRMACAO:['confirmacao','CONFERÊNCIA TATI','confirmar o que ainda tem na loja'],FOTOS:['fotos','FOTOS DO SITE','fotografar produtos sem foto no site'],PRECOS_OFF:['precosoff','PREÇOS OFF-LINE','etiqueta colocada → ativar o preço'],VALIDADES:['validades','VALIDADES','troca de frente'],SEMVENDA:['semvenda','PRODUTO SEM VENDA','produto com saldo que não está vendendo']};
   appsCache.forEach(function(a){var d=defs[a];if(!d)return;var b=document.createElement('button');b.className='btn '+d[0];b.innerHTML=d[1]+'<br><span style="font-size:14px;font-weight:400">'+d[2]+'</span>';b.onclick=function(){escolherTipo(a);};box.appendChild(b);});
   if(!box.children.length)box.innerHTML=appsOk?'<p class="dica" style="font-size:17px;margin-top:24px;line-height:1.5">Seu acesso ainda não foi liberado.<br>Peça ao Celio para liberar.</p>':'<p class="dica">Carregando…</p>';
 }
@@ -699,6 +733,7 @@ if(t==='CONTAGEM'){irCont();return;}
   if(t==='FOTOS'){irFS();return;}
   if(t==='PRECOS_OFF'){irPO();return;}
   if(t==='VALIDADES'){irVAL();return;} // v81
+  if(t==='SEMVENDA'){irPSV();return;} // v87
   if(t==='CONFERENCIA'){irConf();return;}
   var f=$('faixa');f.className='faixa '+t.toLowerCase();
   $('faixaTxt').textContent=NOMES_TIPO[t]+' · '+quem;
@@ -1258,6 +1293,107 @@ function cvFechMapa(){try{return JSON.parse(localStorage.getItem('cv_fech')||'{}
 function cvFechado(k,tudo){var m=cvFechMapa();if(m[k]!==undefined)return !!m[k];return !!tudo&&k.indexOf('ATRASADOS')<0;}
 function cvGuardaFech(k,v){var m=cvFechMapa();m[k]=v?1:0;try{localStorage.setItem('cv_fech',JSON.stringify(m));}catch(e){}}
 
+// ===== PRODUTO SEM VENDA — v87 =====
+var psvCache=null,psvAba=null,psvNao={};
+var PSV_ABAS={ALERTA:'ALERTA','30':'30 DIAS','60':'60 DIAS'};
+function irPSV(){
+  pararCamera();$('faixaPSV').textContent='PRODUTO SEM VENDA · '+quem;mostrar('tPSV');
+  try{psvCache=JSON.parse(localStorage.getItem('ci_psv')||'null');}catch(e){}
+  renderPSV();carregarPSV();
+}
+function carregarPSV(){
+  api({acao:'semVenda',quem:quem}).then(function(r){
+    if(r&&r.ok){psvCache={abas:r.abas||[],tudo:!!r.tudo,hist:Number(r.hist)||0,itens:r.itens||[]};try{localStorage.setItem('ci_psv',JSON.stringify(psvCache));}catch(e){}renderPSV();}
+    else if(r&&r.erro){toast(r.erro,'err');}
+  }).catch(function(){});
+}
+function psvAbasOk(){return ['ALERTA','30','60'].filter(function(a){return psvCache&&psvCache.abas.indexOf(a)>=0;});}
+function psvCont(){
+  var tabs=$('psvTabs');tabs.innerHTML='';
+  psvAbasOk().forEach(function(a){
+    var n=a==='ALERTA'&&psvCache.hist<7?0:psvCache.itens.filter(function(i){return i.aba===a&&!i.resp;}).length;
+    var b=document.createElement('button');b.textContent=PSV_ABAS[a]+(n?' ('+n+')':'');b.className=a===psvAba?'on':'';
+    b.onclick=function(){if(psvAba===a)return;psvAba=a;renderPSV();try{window.scrollTo(0,0);}catch(e){}};tabs.appendChild(b);
+  });
+  var its=psvCache.itens.filter(function(i){return i.aba===psvAba;}),ok=its.filter(function(i){return i.resp;}).length;
+  $('psvProg').textContent=its.length&&!(psvAba==='ALERTA'&&psvCache.hist<7)?ok+' / '+its.length+' respondidos':'';
+}
+function renderPSV(){
+  var box=$('psvLista');box.innerHTML='';
+  if(!psvCache){$('psvTabs').innerHTML='';box.innerHTML='<p class="dica">Carregando…</p>';return;}
+  var abas=psvAbasOk();
+  if(!abas.length){$('psvTabs').innerHTML='';box.innerHTML='<p class="dica vazio">Nenhuma lista liberada para você.<br>Peça ao Celio.</p>';return;}
+  if(abas.indexOf(psvAba)<0)psvAba=abas[0];
+  psvCont();
+  var tudo=psvCache.tudo;
+  if(psvAba==='ALERTA'){
+    $('psvTit').textContent='Vende todo dia e parou de vender';
+    $('psvDica').innerHTML='produto que vende todo dia, tem saldo no sistema e está há dias sem vender. veja se está na gôndola e responda.';
+    if(psvCache.hist<7){box.innerHTML='<p class="dica vazio">🚧 em construção — aguardando histórico de vendas<br><small>'+psvCache.hist+' de 7 dias de histórico</small></p>';return;}
+  }else{
+    $('psvTit').textContent='Sem venda há '+psvAba+' dias';
+    $('psvDica').innerHTML='produto com saldo no sistema que não vendeu nada nos últimos '+psvAba+' dias. veja se está na gôndola e responda.';
+  }
+  var its=psvCache.itens.filter(function(i){return i.aba===psvAba;});
+  if(!its.length){box.innerHTML='<p class="dica vazio">Nada nesta lista. 👍</p>';return;}
+  function ord(a,b){return String(a.local||'~').localeCompare(String(b.local||'~'))||(a.resp?1:0)-(b.resp?1:0)||String(a.desc).localeCompare(String(b.desc));}
+  var grupos={},ordem=[];
+  its.forEach(function(i){var g=tudo?String(i.quem||'Ney').toUpperCase():'MINHA LISTA';if(!grupos[g]){grupos[g]=[];ordem.push(g);}grupos[g].push(i);});
+  ordem.sort();
+  ordem.forEach(function(g){psvBloco(box,g,grupos[g].sort(ord),tudo);});
+}
+// cada bloco encolhe/abre ao tocar no título (mesma lógica do Validades); os itens só são montados quando o bloco abre
+function psvBloco(box,tit,lista,tudo){
+  var pend=lista.filter(function(i){return !i.resp;}).length,k='psv'+psvAba+'|'+tit,m=cvFechMapa(),fech=m[k]!==undefined?!!m[k]:(tudo&&lista.length>40);
+  var hd=document.createElement('div');hd.className='grp';hd.innerHTML='<span>'+esc(tit)+' ('+pend+(pend!==lista.length?' de '+lista.length:'')+')</span><span class="sx">'+(fech?'▸':'▾')+'</span>';box.appendChild(hd);
+  var ul=document.createElement('ul');ul.className='psv';box.appendChild(ul);var cheio=false;
+  function encher(){if(cheio)return;cheio=true;var ult=null;lista.forEach(function(it){var lc=it.local||'sem local no cadastro';if(lc!==ult){ult=lc;var s=document.createElement('div');s.className='loc';s.textContent='📍 '+lc;ul.appendChild(s);}ul.appendChild(psvItem(it));});}
+  if(fech)ul.style.display='none';else encher();
+  hd.onclick=function(){var f=ul.style.display!=='none';if(!f)encher();ul.style.display=f?'none':'';hd.querySelector('.sx').textContent=f?'▸':'▾';cvGuardaFech(k,f);};
+}
+function psvNum(v){return String(v==null?'':v).replace('.',',');}
+function psvItem(it){
+  var li=document.createElement('li');
+  var info='<div class="d"><span class="tag'+(it.resp?' ok':'')+'">'+(it.resp?'OK':esc(it.dias)+' DIAS')+'</span>'+esc(it.desc)+'</div>'+
+    '<div class="m">SKU '+esc(it.sku)+(it.media&&Number(String(it.media).replace(',','.'))>0?' · média '+esc(psvNum(it.media))+'/dia':'')+' · saldo <b>'+esc(psvNum(it.saldo))+'</b>'+(it.fam?' · família '+esc(it.fam):'')+(psvCache.tudo&&it.quem?' · '+esc(it.quem):'')+'</div>';
+  if(it.resp){
+    li.className='feito';
+    li.innerHTML=info+'<div class="m"><b>'+esc(it.resp)+'</b>'+(it.motivo?': '+esc(it.motivo):'')+'<br>'+esc(it.por)+' · '+esc(it.hora)+'</div><button class="desf">DESFAZER</button>';
+    var bd=li.querySelector('.desf');bd.onclick=function(){psvResp(it,'DESFAZER','',bd,li);};return li;
+  }
+  if(!psvNao[it.id]){
+    li.innerHTML=info+'<div class="bts"><button class="sim">ESTÁ NA GÔNDOLA</button><button class="nao">NÃO ESTÁ</button></div>';
+    var bs=li.querySelector('.sim');bs.onclick=function(){psvResp(it,'GONDOLA','',bs,li);};
+    li.querySelector('.nao').onclick=function(){vibra();psvNao[it.id]=1;li.replaceWith(psvItem(it));};
+    return li;
+  }
+  li.innerHTML=info+'<div class="pq">Não estava na gôndola. O que aconteceu?</div><div class="bts"><button class="r">REPUS AGORA</button><button class="nao e">NÃO TEM NO ESTOQUE</button></div><div class="bts"><button class="sec o">OUTRO</button><button class="sec v">VOLTAR</button></div><div class="outro" style="display:none"><input type="text" maxlength="80" placeholder="o que aconteceu? (curto)"><button>SALVAR</button></div>';
+  var br=li.querySelector('.r'),be=li.querySelector('.e'),bo=li.querySelector('.o'),bv=li.querySelector('.v'),ou=li.querySelector('.outro'),inp=ou.querySelector('input'),bsv=ou.querySelector('button');
+  br.onclick=function(){psvResp(it,'REPUS','',br,li);};
+  be.onclick=function(){psvResp(it,'SEMESTOQUE','',be,li);};
+  bo.onclick=function(){ou.style.display='flex';inp.focus();};
+  bv.onclick=function(){delete psvNao[it.id];li.replaceWith(psvItem(it));};
+  bsv.onclick=function(){var t=inp.value.trim();if(!t){toast('Escreva o que aconteceu','err');inp.focus();return;}psvResp(it,'OUTRO',t,bsv,li);};
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')bsv.click();});
+  return li;
+}
+function psvResp(it,resp,motivo,b,li){
+  if(resp==='DESFAZER'&&b.dataset.c!=='1'){b.dataset.c='1';b.textContent='DESFAZER? TOQUE DE NOVO';setTimeout(function(){b.dataset.c='';b.textContent='DESFAZER';},3000);return;}
+  vibra();var tx=b.textContent;b.textContent='…';b.disabled=true;
+  api({acao:'psvResponder',quem:quem,token:token,id:it.id,resposta:resp,motivo:motivo}).then(function(r){
+    if(r&&r.ok){
+      delete psvNao[it.id];
+      if(resp==='DESFAZER'){it.resp='';it.motivo='';it.por='';it.hora='';toast('Voltou para a lista','ok');}
+      else{it.resp=r.resposta;it.motivo=motivo;it.por=quem;it.hora=r.hora;toast('Registrado','ok');}
+      try{localStorage.setItem('ci_psv',JSON.stringify(psvCache));}catch(e){}
+      li.replaceWith(psvItem(it));psvCont();return;
+    }
+    b.disabled=false;b.textContent=tx;
+    if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(e){}irPin();return;}
+    toast('Não deu: '+(r&&r.erro||''),'err');
+  }).catch(function(){b.disabled=false;b.textContent=tx;toast('Sem internet — tente de novo','err');});
+}
+
 // ===== VENCIDOS DA SEMANA — v79 =====
 var vsCache=null,vsPend=null;
 var VS_DIA=['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
@@ -1678,17 +1814,19 @@ function irHome(){
   var ab='';try{ab=new URLSearchParams(location.search).get('abrir')||'';if(ab)history.replaceState(null,'',location.pathname);}catch(e){}
   if(ab==='rebaixas'&&appsCache.indexOf('REBAIXAS')>=0){escolherTipo('REBAIXAS');return;}
   if(ab==='precosoff'&&appsCache.indexOf('PRECOS_OFF')>=0){escolherTipo('PRECOS_OFF');return;}
+  if(ab==='semvenda'&&appsCache.indexOf('SEMVENDA')>=0){escolherTipo('SEMVENDA');return;} // v87
   mostrar('tHome');renderHome();atualizarPushUI();
   api({acao:'resumoHome',quem:quem}).then(function(r){if(r&&r.ok){resumoCache=r;try{localStorage.setItem('ci_resumo',JSON.stringify(r));}catch(e){}renderHome();}}).catch(function(){});
 }
 function renderHome(){
   var box=$('nhLista');box.innerHTML='';var grupo='';
-  ['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES'].forEach(function(a){
+  ['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA'].forEach(function(a){
     if(appsCache.indexOf(a)<0)return;var d=HOME_DEF[a];
     if(d[0]!==grupo){grupo=d[0];var t=document.createElement('h3');t.textContent=grupo;box.appendChild(t);}
     var sub=d[2];
     if(a==='CONFERENCIA'&&resumoCache.conf!=null)sub=resumoCache.conf?(resumoCache.conf+(resumoCache.conf===1?' nota esperando':' notas esperando')):'nenhuma nota esperando';
     if(a==='REBAIXAS'&&resumoCache.reb!=null)sub=resumoCache.reb?(resumoCache.reb+(resumoCache.reb===1?' vigente':' vigentes')):'nenhuma vigente';
+    if(a==='SEMVENDA'&&resumoCache.psv)sub=resumoCache.psv; // v87
     if(a==='PRECOS_OFF'&&resumoCache.poff!=null)sub=(resumoCache.poff?resumoCache.poff+' para etiquetar':'nenhuma etiqueta pendente')+(resumoCache.poffConf?' · '+resumoCache.poffConf+' aguardando ativação':''); // v76
     var b=document.createElement('button');b.className='nhR';
     b.innerHTML='<span class="ib" style="background:'+d[3]+'"><svg class="nhIc"><use href="#ic-'+d[4]+'"/></svg></span><span><b>'+d[1]+'</b><i>'+esc(sub)+'</i></span><span class="ar">›</span>';
