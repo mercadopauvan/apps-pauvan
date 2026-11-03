@@ -613,7 +613,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div class="desc" id="rebDesc"></div>
   <div class="cod" id="rebInfo"></div>
   <div class="mot"><button id="btAcabou" onclick="setMotReb('ACABOU')">✅ ACABOU<br><span style="font-size:12px;font-weight:400">vendeu tudo antes da validade</span></button><button id="btVenceu" onclick="setMotReb('VENCEU')">⏰ VENCEU<br><span style="font-size:12px;font-weight:400">chegou a validade e sobrou</span></button></div>
-  <div id="sobraBox" style="display:none"><div class="dica" style="text-align:left;margin:8px 0 4px">Quantas unidades sobraram?</div><input type="text" id="sobra" inputmode="decimal" placeholder="quantidade que sobrou"></div>
+  <div id="sobraBox" style="display:none"><div class="dica" style="text-align:left;margin:8px 0 4px">Quantas unidades sobraram? (opcional)</div><input type="text" id="sobra" inputmode="decimal" placeholder="opcional"></div>
   <button class="btn ok" style="margin-top:14px" onclick="confirmarReb()">CONFIRMAR</button>
   <button class="btn cancel" onclick="fecharReb()">CANCELAR</button>
 </div>
@@ -797,7 +797,7 @@ function confirmarReb(){
   if(!rebAtual)return;
   if(!motReb){toast('Marque ACABOU ou VENCEU','err');return;}
   var sobra=$('sobra').value.trim();
-  if(motReb==='VENCEU'&&!sobra){toast('Informe quantas sobraram','err');return;}
+  // v90: quantidade que sobrou é opcional no VENCEU
   var it=rebAtual;fecharReb();toast('Encerrando…');
   api({acao:'encerrarRebaixa',id:it.id,motivo:motReb,sobra:sobra,token:token,quem:quem}).then(function(r){
     if(r&&r.ok){toast('Rebaixa encerrada: '+(it.desc.length>26?it.desc.slice(0,26)+'…':it.desc),'ok');carregarReb();}
