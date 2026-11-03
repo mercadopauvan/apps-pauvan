@@ -274,6 +274,7 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 .nhPush span{flex:1}.nhPush button{border:0;border-radius:10px;background:#b45309;color:#fff;font-weight:800;padding:9px 12px;font-size:13px}
 .avLbl{display:block;font-size:13px;color:#6b7280;margin:12px 2px 4px;font-weight:600}
 .avIn{width:100%;font-size:17px;padding:12px;border:2px solid #e5e7eb;border-radius:12px;font-family:inherit;background:#fff;margin-bottom:4px}
+.avLista{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}.avOp{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid #e5e7eb;border-radius:12px;background:#fff;font-size:17px}.avOp input{width:22px;height:22px;accent-color:#b45309;flex:none}.avOp span{flex:1}.avOp i{font-style:normal;font-size:13px;color:#15803d}.avOp i.off{color:#9ca3af}.avOp.avTodos{font-weight:700} /* v91 */
 /* v81: Validades — troca de frente */
 .faixa.validades,.btn.validades{background:#a16207}
 #valLista .grp{background:#fef3c7;color:#78350f;font-weight:800;font-size:13px;letter-spacing:.4px;padding:10px 12px;border-radius:10px;margin:14px 0 8px}
@@ -432,7 +433,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 
 <section class="tela" id="tAviso">
   <div class="faixa preco"><span>ENVIAR AVISO</span><button onclick="irTipo()">VOLTAR</button></div>
-  <label class="avLbl" for="avPara">Para quem</label><select id="avPara" class="avIn"></select>
+  <label class="avLbl" for="avPara">Para quem</label><div id="avPara" class="avLista"></div>
   <label class="avLbl" for="avTit">Título</label><input id="avTit" class="avIn" placeholder="Aviso do Pauvan" maxlength="60">
   <label class="avLbl" for="avTx">Mensagem</label><textarea id="avTx" class="avIn" rows="5" maxlength="400" placeholder="Escreva o aviso"></textarea>
   <button class="btn ok" id="avBt" onclick="enviarAviso()" style="margin-top:12px">ENVIAR AVISO</button>
@@ -1892,14 +1893,28 @@ function ativarPush(){
   });
 }
 function irAviso(){
-  tipoAtual='AVISO';mostrar('tAviso');var s=$('avPara');s.innerHTML='';
-  [['TODOS','Todos']].concat(PESSOAS.map(function(n){return [n,n];})).forEach(function(x){var o=document.createElement('option');o.value=x[0];o.textContent=x[1];s.appendChild(o);});
-  $('avRes').textContent='';
+  tipoAtual='AVISO';mostrar('tAviso');$('avPara').innerHTML='';avMontar(null);$('avRes').textContent='';
+  api({acao:'avisoPessoas',quem:quem,token:token}).then(function(r){if(r&&r.ok)avMontar(r.ativos||{});}).catch(function(){});
+}
+function avMontar(at){ // v91: caixinhas para escolher várias pessoas + quem ativou os avisos
+  var box=$('avPara'),sel={};box.querySelectorAll('input:checked').forEach(function(c){sel[c.value]=1;});
+  var tem=Object.keys(sel).length;box.innerHTML='';
+  [['TODOS','Todos']].concat(PESSOAS.map(function(n){return [n,n];})).forEach(function(x){
+    var l=document.createElement('label');l.className='avOp'+(x[0]==='TODOS'?' avTodos':'');
+    var c=document.createElement('input');c.type='checkbox';c.value=x[0];c.checked=tem?!!sel[x[0]]:x[0]==='TODOS';
+    c.onchange=function(){vibra();if(c.value==='TODOS'){if(c.checked)box.querySelectorAll('input').forEach(function(o){if(o!==c)o.checked=false;});}else if(c.checked){var t=box.querySelector('input[value="TODOS"]');if(t)t.checked=false;}};
+    var s=document.createElement('span');s.textContent=x[1];l.appendChild(c);l.appendChild(s);
+    if(at&&x[0]!=='TODOS'){var i=document.createElement('i'),k=at[semAc(x[0]).toLowerCase().trim()]||0;i.textContent=k?'🔔 '+k+(k>1?' celulares':' celular'):'sem avisos';if(!k)i.className='off';l.appendChild(i);}
+    box.appendChild(l);
+  });
 }
 function enviarAviso(){
   var tx=$('avTx').value.trim();if(!tx){toast('Escreva a mensagem','err');return;}
+  var ps=[].map.call($('avPara').querySelectorAll('input:checked'),function(c){return c.value;});
+  if(!ps.length){toast('Escolha para quem','err');return;}
+  var para=ps.indexOf('TODOS')>=0?'TODOS':ps;
   $('avBt').disabled=true;$('avRes').textContent='Enviando…';
-  api({acao:'enviarAviso',quem:quem,token:token,para:$('avPara').value,titulo:$('avTit').value.trim(),texto:tx}).then(function(r){
+  api({acao:'enviarAviso',quem:quem,token:token,para:para,titulo:$('avTit').value.trim(),texto:tx}).then(function(r){
     $('avBt').disabled=false;
     if(r&&r.ok){$('avRes').textContent=r.aparelhos?('Enviado para '+r.enviados+' de '+r.aparelhos+' celular(es).'):'Ninguém desse grupo ativou os avisos ainda.';if(r.enviados){$('avTx').value='';$('avTit').value='';}}
     else{$('avRes').textContent='';toast((r&&r.erro)||'Erro ao enviar','err');}
