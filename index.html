@@ -2202,7 +2202,7 @@ function mostrarResConf(r){
   if(r.resultado==='OK'){h='<div class="resultado ok">✅ '+(nv.length?'Bateu. ':'Tudo certo com esta nota. ')+'Obrigado!</div>';}
   else{h='<div class="resultado div">⚠ Não bateu em '+r.itens.length+' item(ns). Reconte e lance de novo:<ul>'+r.itens.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>';}
   if(nv.length)h+='<div class="resultado" style="background:#fef3c7;color:#92400e">📦 '+nv.length+' item(ns) não veio/recusado — devolução pendente (o Celio resolve):<ul>'+nv.map(function(x){return '<li>'+esc(x.produto)+(x.qtd?' ('+(x.status==='RECUSADO'?'recusou ':'faltou ')+x.qtd+')':(x.status==='RECUSADO'?' (recusado)':''))+'</li>';}).join('')+'</ul></div>';
-  if(r.alertaCobranca)h+='<div class="resultado div">📄 '+esc(r.alertaCobranca)+'</div>';
+  if(r.alertaCobranca)h+='<div class="resultado div"'+(/^Nota bonificada/.test(r.alertaCobranca)?' style="background:#fef3c7;color:#92400e;border-color:#fcd34d"':'')+'>📄 '+esc(r.alertaCobranca)+'</div>'; // v92
   b.innerHTML=h;
 }
 </script>
