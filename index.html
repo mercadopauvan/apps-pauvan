@@ -300,6 +300,9 @@ ul.tf li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .valTabs button{flex:1;border:2px solid #a16207;background:#fff;color:#a16207;border-radius:12px;font-size:14px;font-weight:800;padding:10px 4px}
 .valTabs button.on{background:#a16207;color:#fff}
 .faixa.semvenda,.btn.semvenda{background:#0d9488}
+div.grp.dob{cursor:pointer;user-select:none;position:relative;padding-right:32px!important}
+div.grp.dob::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px}
+div.grp.dob.fech::after{content:'▸'}
 .psvTabs{display:flex;gap:6px;margin:0 0 10px}
 .psvTabs button{flex:1;border:2px solid #0d9488;background:#fff;color:#0d9488;border-radius:12px;font-size:14px;font-weight:800;padding:10px 4px}
 .psvTabs button.on{background:#0d9488;color:#fff}
@@ -1292,6 +1295,21 @@ function renderCV(box){
 function cvFechMapa(){try{return JSON.parse(localStorage.getItem('cv_fech')||'{}')||{};}catch(e){return {};}}
 function cvFechado(k,tudo){var m=cvFechMapa();if(m[k]!==undefined)return !!m[k];return !!tudo&&k.indexOf('ATRASADOS')<0;}
 function cvGuardaFech(k,v){var m=cvFechMapa();m[k]=v?1:0;try{localStorage.setItem('cv_fech',JSON.stringify(m));}catch(e){}}
+
+// ===== v89: em todos os módulos, tocar no título de um grupo encolhe/abre os itens dele (o aparelho lembra a escolha) =====
+(function(){
+  function chave(hd){var box=hd.parentNode;return (box&&box.id||'')+'|'+hd.textContent.replace(/[▸▾]/g,'').replace(/\s*\([^)]*\)\s*$/,'').trim();}
+  function mapa(){try{return JSON.parse(localStorage.getItem('grp_fech')||'{}')||{};}catch(e){return {};}}
+  function alvo(hd){var x=hd.nextElementSibling;return x&&x.tagName==='UL'?x:null;}
+  function ok(hd){return !!hd&&hd.tagName==='DIV'&&hd.classList.contains('grp')&&!hd.classList.contains('tg')&&!hd.closest('#psvLista');}
+  function aplica(hd,f){var u=alvo(hd);if(!u)return;u.style.display=f?'none':'';hd.classList.toggle('fech',!!f);}
+  document.addEventListener('click',function(e){
+    var hd=e.target&&e.target.closest?e.target.closest('div.grp'):null;if(!ok(hd)||!alvo(hd))return;
+    var f=!hd.classList.contains('fech');aplica(hd,f);var m=mapa();m[chave(hd)]=f?1:0;try{localStorage.setItem('grp_fech',JSON.stringify(m));}catch(x){}
+  });
+  function marca(){var m=null;document.querySelectorAll('div.grp').forEach(function(hd){if(!ok(hd)||hd.dataset.gi||!alvo(hd))return;hd.dataset.gi='1';hd.classList.add('dob');if(!m)m=mapa();if(m[chave(hd)])aplica(hd,true);});}
+  try{new MutationObserver(marca).observe(document.body,{childList:true,subtree:true});}catch(e){}
+})();
 
 // ===== PRODUTO SEM VENDA — v87 =====
 var psvCache=null,psvAba=null,psvNao={};
