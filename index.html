@@ -182,7 +182,7 @@ ul.cnf li{border:2px solid var(--borda);border-radius:14px;padding:12px;margin-b
 ul.cnf li .f{font-weight:800;font-size:17px}
 ul.cnf li .n{font-size:14px;color:var(--muted);margin-top:2px}
 ul.cnf li .b{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:6px;margin-right:6px}
-.b.sem{background:#fef3c7;color:#92400e} .b.prog{background:#e0f2fe;color:#075985} .b.ok{background:#dcfce7;color:#166534} .b.div{background:#fee2e2;color:#991b1b} .b.novo{background:#fef3c7;color:#92400e} .b.bonif{background:#fce7f3;color:#9d174d} .b.semcad{background:#fee2e2;color:#991b1b} .b.dev{background:#ede9fe;color:#5b21b6} .parBox{background:#fce7f3;color:#9d174d;font-weight:700;font-size:14px;border-radius:8px;padding:8px 10px;margin:8px 0} #confItens li.sepConf{background:none!important;border:0!important;box-shadow:none!important;padding:10px 4px 2px!important;min-height:0!important;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;cursor:default;display:block} /* v94 */ .b.avi{background:#fee2e2;color:#991b1b} .b.ave{background:#ffedd5;color:#9a3412}
+.b.sem{background:#fef3c7;color:#92400e} .b.prog{background:#e0f2fe;color:#075985} .b.ok{background:#dcfce7;color:#166534} .b.div{background:#fee2e2;color:#991b1b} .b.novo{background:#fef3c7;color:#92400e} .b.bonif{background:#fce7f3;color:#9d174d} .b.semcad{background:#fee2e2;color:#991b1b} .b.dev{background:#ede9fe;color:#5b21b6} .parBox{background:#fce7f3;color:#9d174d;font-weight:700;font-size:14px;border-radius:8px;padding:8px 10px;margin:8px 0} #confItens li.sepConf{background:none!important;border:0!important;box-shadow:none!important;padding:10px 4px 2px!important;min-height:0!important;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;cursor:default;display:block} /* v94 */ .b.avi{background:#fee2e2;color:#991b1b} #confExtras{margin-top:10px} .exTit{font-size:13px;font-weight:700;color:#0f766e;text-transform:uppercase;margin:6px 2px} .exLin{display:flex;gap:8px;align-items:center;background:#f0fdfa;border:2px solid #99f6e4;border-radius:12px;padding:10px 12px;margin-bottom:6px;font-size:15px} .exLin>div{flex:1} .exLin small{display:block;color:#64748b;font-size:12px;margin-top:2px} .exDel{border:0;background:#fee2e2;color:#991b1b;font-weight:700;border-radius:8px;padding:8px 10px;font-family:inherit} .btn.exAdd{background:#fff;color:#0f766e;border:2px dashed #14b8a6} #fotoExtra{display:none} #cardExtra .lin{display:flex;gap:8px;align-items:center;margin-top:6px} #cardExtra .lin label{font-size:13px;color:var(--muted);min-width:90px} #cardExtra .lin input{flex:1;font-size:18px;padding:10px 12px} #cardExtra .val{display:flex;gap:8px;align-items:center;margin-top:8px} #cardExtra .val input[type=date]{flex:1;font-size:17px;padding:10px;border:2px solid var(--borda);border-radius:12px} #cardExtra .val button{border:2px solid var(--borda);background:#fff;border-radius:12px;padding:10px 8px;font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap} #cardExtra .val button.on{border-color:#0e7490;background:#ecfeff;color:#0e7490} #confItens li.dv .st{background:#dc2626!important;color:#fff!important} /* v96 */ .b.ave{background:#ffedd5;color:#9a3412}
 .avBox{background:#fef2f2;border:2px solid #fca5a5;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:14px;color:#7f1d1d}.avBox.emi{background:#fff7ed;border-color:#fdba74;color:#7c2d12}.avBox .b{margin:0 0 4px}.avTx{margin-top:4px;font-weight:400}.avIt{margin:4px 0 0 18px;padding:0}.avBox .avIt li{border:0!important;padding:0!important;background:none!important;box-shadow:none!important;border-radius:0!important;margin:2px 0!important;min-height:0!important;display:list-item!important;list-style:disc;font-weight:700;cursor:inherit}.avAss{margin-top:4px;font-style:italic;font-size:13px}.avCi{margin-top:4px;color:#166534;font-weight:700}.avBts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.avBt{flex:1;min-width:120px;border:0;border-radius:10px;padding:10px 12px;font-size:15px;font-weight:700;background:#b91c1c;color:#fff;font-family:inherit}.avBox.emi .avBt{background:#c2410c}.avBt.rec{background:#7f1d1d}.avBt:disabled{opacity:.6} /* v93 */
 ul.cnf li.conc{opacity:.8;background:#f8fafc}
 ul.cnf li.grp{background:#fff;box-shadow:5px 5px 0 -2px #fff,5px 5px 0 0 var(--borda),10px 10px 0 -2px #fff,10px 10px 0 0 var(--borda);margin:0 10px 22px 0}
@@ -597,6 +597,23 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div class="formas" id="trAut"><button data-a="Celio">Celio</button><button data-a="Amanda">Amanda</button><button data-a="NINGUEM">NINGUÉM</button></div>
   <button class="btn ok" onclick="salvarTroca()">GRAVAR TROCA</button>
   <button class="btn cancel" onclick="fecharTroca()">CANCELAR</button>
+</div>
+
+<!-- v96: PRODUTO QUE VEIO A MAIS -->
+<div class="card" id="cardExtra">
+  <div class="desc">Produto que veio a mais (fora da nota)</div>
+  <p class="dica" style="text-align:left">registre o que chegou além da nota. o Celio é avisado e lança no sistema depois.</p>
+  <div class="linha"><input id="exBusca" type="text" placeholder="bipar, código ou nome do produto" autocomplete="off"><button class="btn sec" style="width:auto;margin:0;padding:10px 12px;font-size:15px" onclick="escanear('fotoExtra')">📷</button></div>
+  <input type="file" id="fotoExtra" accept="image/*" capture="environment">
+  <ul class="res" id="exRes"></ul>
+  <div id="exSel" class="trsel" style="display:none"></div>
+  <div class="formas" id="exUnBt"><button data-u="UN">UNIDADE</button><button data-u="CX">CAIXA</button><button data-u="KG">KG</button></div>
+  <div class="lin"><label>Quantos vieram a mais?</label><input id="exQtd" type="text" inputmode="decimal" placeholder="ex.: 2"></div>
+  <div class="lin" id="exPesoLin"><label>Peso total (kg) — se pesou</label><input id="exPeso" type="text" inputmode="decimal" placeholder="opcional"></div>
+  <div class="val"><input type="date" id="exVal"><button class="sv" id="exSemVal" onclick="exToggleSemVal()">SEM VALIDADE</button></div>
+  <div class="lin"><label>Observação</label><input id="exObs" type="text" placeholder="opcional"></div>
+  <button class="btn ok" id="exBt" onclick="salvarExtra()">GRAVAR</button>
+  <button class="btn cancel" onclick="$('cardExtra').classList.remove('on')">CANCELAR</button>
 </div>
 
 <!-- CARD DE COBRANÇA (ao concluir) -->
@@ -1808,14 +1825,15 @@ function renderConfNF(){
   var f=semAc(($('confBusca').value||'').trim()).toUpperCase();
   var ul=$('confItens');ul.innerHTML='';var feitos=0;
   var ordC=confNF.itens.map(function(i,k){return [i,k];}),todosC=confNF.itens.every(function(i){return i.status!=='PENDENTE';}),sepC=false; // v94: pendentes no topo, conferidos descendo
-  if(!todosC&&nf.status!=='CONCLUIDA')ordC.sort(function(a,b){return (a[0].status==='PENDENTE'?0:1)-(b[0].status==='PENDENTE'?0:1)||a[1]-b[1];});
+  var rkC=function(i){return i.diverg&&i.status==='CONFERIDO'?0:(i.status==='PENDENTE'?1:2);},ordenaC=(!todosC&&nf.status!=='CONCLUIDA')||confNF.itens.some(function(i){return i.diverg&&i.status==='CONFERIDO';}); // v96: divergentes no topo, depois pendentes
+  if(ordenaC)ordC.sort(function(a,b){return rkC(a[0])-rkC(b[0])||a[1]-b[1];});
   ordC.forEach(function(xC){var i=xC[0];
     if(i.status!=='PENDENTE')feitos++;
     if(i.grupoDe)return; // v95: o bonificado do mesmo produto conta junto na linha da compra
-    if(!todosC&&nf.status!=='CONCLUIDA'&&i.status!=='PENDENTE'&&!sepC&&!f){sepC=true;var sp=document.createElement('li');sp.className='sepConf';sp.textContent='já conferidos';ul.appendChild(sp);}
+    if(ordenaC&&rkC(i)===2&&!sepC&&!f){sepC=true;var sp=document.createElement('li');sp.className='sepConf';sp.textContent='já conferidos';ul.appendChild(sp);}
     if(f&&semAc(i.produto).toUpperCase().indexOf(f)<0&&i.codigo.indexOf(f)<0&&i.sku.indexOf(f)<0)return;
     var li=document.createElement('li');
-    var cls=i.status==='CONFERIDO'?'ok':(i.status==='NAO VEIO'||i.status==='RECUSADO'?'nv':'pd');if(i.diverg&&nf.status==='CONCLUIDA')cls+=' dv';
+    var cls=i.status==='CONFERIDO'?'ok':(i.status==='NAO VEIO'||i.status==='RECUSADO'?'nv':'pd');if(i.diverg&&i.status==='CONFERIDO')cls+=' dv';
     li.className=cls;
     var res='';
     if(i.status==='CONFERIDO'){res=i.lotes.map(function(l){return l.qtdDig+' '+unLote(l)+(l.pecas?' ('+l.pecas+' pç)':'')+(l.validade&&l.validade!=='SEM VALIDADE'?' · val. '+l.validade:'');}).join(' + ');var l0=i.lotes[0];if(l0&&l0.emb)res+=' · '+l0.emb+(l0.qtdEmb?' ×'+l0.qtdEmb:'');if(l0&&l0.codStatus==='NOVO')res+=' · ⚠ código não cadastrado';}
@@ -1823,11 +1841,12 @@ function renderConfNF(){
     if(i.status==='NAO VEIO'||i.status==='RECUSADO')tr+=(tr?'<br>':'')+'📦 '+(i.motivo?esc(i.motivo)+' · ':'')+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
     if(i.faltaQtd)tr+=(tr?'<br>':'')+'📦 '+(i.faltaTipo==='RECUSADO'?'recusou ':'faltou ')+esc(i.faltaQtd)+(i.motivo?' · '+esc(i.motivo):'')+' · '+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
     li.innerHTML='<div class="d">'+esc(i.produto)+(i.novo?' <span class="b semcad">SEM CADASTRO</span>':(i.novoCad?' <span class="b novo">NOVO</span>':''))+(i.devolver?' <span class="b dev">↩ DEVOLVER '+(String(i.devolver).toUpperCase()==='TOTAL'?'TUDO':esc(i.devolver))+'</span>':'')+(i.avDev?' <span class="b avi">⛔ DEVOLVER '+(i.avDev.qtd==='TUDO'?'TUDO':esc(i.avDev.qtd))+'</span>':'')+(i.bonifItem&&!nf.bonif?' <span class="b bonif">🎁 BONIFICADO</span>':'')+(i.grupo?' <span class="b bonif">compra + 🎁 bonificado</span>':'')+'<small>'+(i.sku?'SKU '+esc(i.sku)+' · ':'')+'cód. '+esc(i.codigo)+(i.un==='KG'?' · por kg':(i.un!=='UN'?' · em '+esc(i.un):''))+'</small>'+(res?'<div class="q">'+esc(res)+'</div>':'')+(tr?'<div class="q" style="color:#7c2d12">'+tr+'</div>':'')+'</div>'
-      +'<span class="st">'+(i.status==='CONFERIDO'?'✓':(i.status==='NAO VEIO'||i.status==='RECUSADO'?i.status.replace('NAO','NÃO'):(i.diverg&&nf.status==='CONCLUIDA'?'RECONTAR':'conferir')))+'</span>';
+      +'<span class="st">'+(i.diverg&&i.status==='CONFERIDO'?(nf.status==='CONCLUIDA'?'RECONTAR':'NÃO CONFERE'):i.status==='CONFERIDO'?'✓':(i.status==='NAO VEIO'||i.status==='RECUSADO'?i.status.replace('NAO','NÃO'):(i.diverg&&nf.status==='CONCLUIDA'?'RECONTAR':'conferir')))+'</span>';
     li.onclick=function(){abrirConfItem(i);};
     ul.appendChild(li);
   });
   $('btConcluir').style.display=feitos===confNF.itens.length&&confNF.itens.length?'block':'none';
+  try{renderExtras();}catch(e){} // v96
   if(nf.status==='CONCLUIDA'&&!$('confRes').innerHTML)mostrarResConf(nf.resultado==='OK'?{resultado:'OK',itens:[]}:{resultado:'DIVERGENTE',itens:confNF.itens.filter(function(i){return i.diverg;}).map(function(i){return i.produto;})});
 }
 function semAc(s){return String(s||'').normalize?String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,''):String(s||'');}
@@ -2172,7 +2191,7 @@ function enviarConf(p,aplicar){
       $('ccRec').style.display='';try{$('cardConf').scrollIntoView({behavior:'smooth'});}catch(e){}
       toast('Não confere — reconte este item','err');return;}
     if(r&&r.ok&&r.grupo)setTimeout(function(){if(confNF&&confNF.idNf===p.idNf)carregarConfNF();},300); // v95: atualiza as linhas de compra + bonificado
-    if(r&&r.ok){if(confReconte[p.idItem])confReconte[p.idItem]=2;vibra();aplicar();if(confNF.nf&&confNF.nf.status==='PENDENTE')confNF.nf.status='EM CONFERENCIA';$('confRes').innerHTML='';fecharConf();renderConfNF();toast('Gravado','ok');}
+    if(r&&r.ok){var dvR=r.confere===false;if(confReconte[p.idItem])confReconte[p.idItem]=2;vibra();aplicar();(confNF.itens||[]).forEach(function(x){if(x.idItem===p.idItem)x.diverg=dvR;});if(confNF.nf&&confNF.nf.status==='PENDENTE')confNF.nf.status='EM CONFERENCIA';$('confRes').innerHTML='';fecharConf();renderConfNF();if(dvR)toast('Gravado, mas NÃO CONFERE com a nota. Se tiver certeza, siga — a nota fecha com divergência e o Celio decide.','err');else toast('Gravado','ok');} // v96
     else if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(e){}irPin();}
     else toast((r&&r.erro)||'Erro ao gravar','err');
   }).catch(function(){
@@ -2227,6 +2246,44 @@ function salvarTroca(){
       else toast('Sem conexão, tente de novo','err');
     }).catch(function(){toast('Sem conexão, tente de novo','err');});
   });
+}
+// ===== v96: PRODUTO QUE VEIO A MAIS (fora da nota) =====
+var exProd=null,exUn='UN';
+function renderExtras(){
+  var box=$('confExtras');if(!box){box=document.createElement('div');box.id='confExtras';$('confItens').parentNode.insertBefore(box,$('btConcluir'));}
+  var ex=(confNF&&confNF.nf&&confNF.nf.extras)||[],h='';
+  if(ex.length)h+='<div class="exTit">🆕 veio a mais (fora da nota)</div>'+ex.map(function(x){return '<div class="exLin"><div><b>'+esc(x.qtd)+' '+esc(x.un.toLowerCase())+'</b> '+esc(x.produto)+(x.peso?' · '+esc(x.peso)+' kg':'')+(x.validade&&x.validade!=='SEM VALIDADE'?' · val. '+esc(x.validade):'')+'<small>'+esc(x.quem)+' · '+esc(x.em)+(x.status==='LANCADO'?' · ✓ lançado no Plenus':' · aguardando lançamento')+(x.obs?' · '+esc(x.obs):'')+'</small></div>'+(x.status==='PENDENTE'?'<button class="exDel" data-id="'+esc(x.id)+'">REMOVER</button>':'')+'</div>';}).join('');
+  if(!(confNF&&confNF.nf&&confNF.nf.status==='CONCLUIDA'&&!ex.length))h+='<button class="btn exAdd" onclick="abrirExtra()">➕ ADICIONAR PRODUTO QUE VEIO A MAIS</button>';
+  box.innerHTML=h;
+  box.querySelectorAll('.exDel').forEach(function(b){b.onclick=function(){vibra();if(!b.dataset.cf){b.dataset.cf='1';b.textContent='CONFIRMAR?';setTimeout(function(){if(b.isConnected){delete b.dataset.cf;b.textContent='REMOVER';}},4000);return;}b.disabled=true;api({acao:'extraDel',id:b.dataset.id,token:token,quem:quem}).then(function(r){if(r&&r.ok){confNF.nf.extras=r.extras;renderExtras();toast('Removido','ok');}else{b.disabled=false;toast((r&&r.erro)||'Erro','err');}}).catch(function(){b.disabled=false;toast('Sem conexão, tente de novo','err');});};});
+}
+function abrirExtra(){
+  exProd=null;exUn='UN';$('exBusca').value='';$('exRes').innerHTML='';$('exSel').style.display='none';$('exQtd').value='';$('exPeso').value='';$('exVal').value='';$('exVal').disabled=false;$('exSemVal').classList.remove('on');$('exObs').value='';exMarcarUn();
+  $('cardExtra').classList.add('on');setTimeout(function(){$('exBusca').focus();},100);
+}
+function exMarcarUn(){$('exUnBt').querySelectorAll('button').forEach(function(b){b.classList.toggle('on',b.dataset.u===exUn);b.onclick=function(){exUn=b.dataset.u;vibra();exMarcarUn();};});$('exPesoLin').style.display=exUn==='UN'?'none':'';}
+function exEscolher(p){exProd=p;$('exSel').style.display='block';$('exSel').textContent='→ '+p.desc+(p.sku?' (SKU '+p.sku+')':'');$('exRes').innerHTML='';$('exBusca').value='';setTimeout(function(){$('exQtd').focus();},80);}
+function exBuscar(){
+  var v=$('exBusca').value.trim();if(!v)return;var ul=$('exRes');ul.innerHTML='<li>Buscando…</li>';
+  if(/^[\d\s.-]+$/.test(v)){api({acao:'buscar',codigo:v.replace(/\D/g,'')}).then(function(r){ul.innerHTML='';if(r&&r.ok)exEscolher({sku:r.sku,desc:r.desc,codigo:v.replace(/\D/g,'')});else{exEscolher({sku:'',desc:'** NÃO CADASTRADO cód. '+v.replace(/\D/g,''),codigo:v.replace(/\D/g,'')});toast('Código não cadastrado — vai ficar registrado assim','err');}});}
+  else api({acao:'buscarNome',texto:v,kg:false}).then(function(r){ul.innerHTML='';(r&&r.itens||[]).forEach(function(it){var li=document.createElement('li');li.innerHTML='<span>'+esc(it.desc)+'</span><small>'+esc(it.sku)+'</small>';li.onclick=function(){exEscolher({sku:it.sku,desc:it.desc,codigo:''});};ul.appendChild(li);});var li2=document.createElement('li');li2.innerHTML='<span>usar como escrevi: "'+esc(v)+'"</span>';li2.onclick=function(){exEscolher({sku:'',desc:v.toUpperCase(),codigo:''});};ul.appendChild(li2);});
+}
+$('exBusca').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();exBuscar();}});
+$('exBusca').addEventListener('input',function(){if(this.value.trim().length>=3&&!/^\d+$/.test(this.value.trim()))exBuscar();});
+SCAN_CB.fotoExtra=function(cod){$('exBusca').value=cod;exBuscar();};
+$('fotoExtra').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fotoExtra);});
+function exToggleSemVal(){var b=$('exSemVal'),v=$('exVal');b.classList.toggle('on');v.disabled=b.classList.contains('on');if(v.disabled)v.value='';}
+function salvarExtra(){
+  if(!exProd)return toast('Escolha o produto','err');
+  var q=parseFloat(String($('exQtd').value).replace(',','.'));if(!(q>0))return toast('Quantos vieram a mais?','err');
+  var val=$('exSemVal').classList.contains('on')?'SEM VALIDADE':($('exVal').value?br($('exVal').value):'');
+  var p={acao:'extraAdd',idNf:confNF.idNf,sku:exProd.sku,produto:exProd.desc,codigo:exProd.codigo||'',qtd:q,un:exUn,peso:exUn==='UN'?'':$('exPeso').value,validade:val,obs:$('exObs').value.trim(),token:token,quem:quem};
+  $('exBt').disabled=true;
+  api(p).then(function(r){$('exBt').disabled=false;
+    if(r&&r.ok){vibra();confNF.nf.extras=r.extras;$('cardExtra').classList.remove('on');renderExtras();toast('Registrado — o Celio foi avisado','ok');}
+    else if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(e){}irPin();}
+    else toast((r&&r.erro)||'Erro ao gravar','err');
+  }).catch(function(){$('exBt').disabled=false;toast('Sem conexão, tente de novo','err');});
 }
 // ----- conclusão com cobrança -----
 var cobAtual='';
