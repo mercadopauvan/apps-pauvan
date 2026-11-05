@@ -1811,6 +1811,7 @@ function renderConfNF(){
   if(!todosC&&nf.status!=='CONCLUIDA')ordC.sort(function(a,b){return (a[0].status==='PENDENTE'?0:1)-(b[0].status==='PENDENTE'?0:1)||a[1]-b[1];});
   ordC.forEach(function(xC){var i=xC[0];
     if(i.status!=='PENDENTE')feitos++;
+    if(i.grupoDe)return; // v95: o bonificado do mesmo produto conta junto na linha da compra
     if(!todosC&&nf.status!=='CONCLUIDA'&&i.status!=='PENDENTE'&&!sepC&&!f){sepC=true;var sp=document.createElement('li');sp.className='sepConf';sp.textContent='já conferidos';ul.appendChild(sp);}
     if(f&&semAc(i.produto).toUpperCase().indexOf(f)<0&&i.codigo.indexOf(f)<0&&i.sku.indexOf(f)<0)return;
     var li=document.createElement('li');
@@ -1821,7 +1822,7 @@ function renderConfNF(){
     var tr=(i.trocas||[]).map(function(t){return '🔁 '+t.qtdSubst+' trocado(s) por '+t.qtdNovo+' '+esc(t.produtoNovo);}).join('<br>');
     if(i.status==='NAO VEIO'||i.status==='RECUSADO')tr+=(tr?'<br>':'')+'📦 '+(i.motivo?esc(i.motivo)+' · ':'')+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
     if(i.faltaQtd)tr+=(tr?'<br>':'')+'📦 '+(i.faltaTipo==='RECUSADO'?'recusou ':'faltou ')+esc(i.faltaQtd)+(i.motivo?' · '+esc(i.motivo):'')+' · '+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
-    li.innerHTML='<div class="d">'+esc(i.produto)+(i.novo?' <span class="b semcad">SEM CADASTRO</span>':(i.novoCad?' <span class="b novo">NOVO</span>':''))+(i.devolver?' <span class="b dev">↩ DEVOLVER '+(String(i.devolver).toUpperCase()==='TOTAL'?'TUDO':esc(i.devolver))+'</span>':'')+(i.avDev?' <span class="b avi">⛔ DEVOLVER '+(i.avDev.qtd==='TUDO'?'TUDO':esc(i.avDev.qtd))+'</span>':'')+(i.bonifItem&&!nf.bonif?' <span class="b bonif">🎁 BONIFICADO</span>':'')+'<small>'+(i.sku?'SKU '+esc(i.sku)+' · ':'')+'cód. '+esc(i.codigo)+(i.un==='KG'?' · por kg':(i.un!=='UN'?' · em '+esc(i.un):''))+'</small>'+(res?'<div class="q">'+esc(res)+'</div>':'')+(tr?'<div class="q" style="color:#7c2d12">'+tr+'</div>':'')+'</div>'
+    li.innerHTML='<div class="d">'+esc(i.produto)+(i.novo?' <span class="b semcad">SEM CADASTRO</span>':(i.novoCad?' <span class="b novo">NOVO</span>':''))+(i.devolver?' <span class="b dev">↩ DEVOLVER '+(String(i.devolver).toUpperCase()==='TOTAL'?'TUDO':esc(i.devolver))+'</span>':'')+(i.avDev?' <span class="b avi">⛔ DEVOLVER '+(i.avDev.qtd==='TUDO'?'TUDO':esc(i.avDev.qtd))+'</span>':'')+(i.bonifItem&&!nf.bonif?' <span class="b bonif">🎁 BONIFICADO</span>':'')+(i.grupo?' <span class="b bonif">compra + 🎁 bonificado</span>':'')+'<small>'+(i.sku?'SKU '+esc(i.sku)+' · ':'')+'cód. '+esc(i.codigo)+(i.un==='KG'?' · por kg':(i.un!=='UN'?' · em '+esc(i.un):''))+'</small>'+(res?'<div class="q">'+esc(res)+'</div>':'')+(tr?'<div class="q" style="color:#7c2d12">'+tr+'</div>':'')+'</div>'
       +'<span class="st">'+(i.status==='CONFERIDO'?'✓':(i.status==='NAO VEIO'||i.status==='RECUSADO'?i.status.replace('NAO','NÃO'):(i.diverg&&nf.status==='CONCLUIDA'?'RECONTAR':'conferir')))+'</span>';
     li.onclick=function(){abrirConfItem(i);};
     ul.appendChild(li);
@@ -2051,7 +2052,8 @@ function abrirConfItem(i){
     if(i.status==='PENDENTE'){confFaltaSt='RECUSADO';confFaltaTipo=tdA?'TUDO':'PARTE';$('ccFaltaQtd').value=tdA?'':i.avDev.qtd;$('ccMotivo').value=i.avDev.motivo||'devolução prevista pelo Celio';$('ccMotivoLin').style.display='';mostrarFalta();}}
   else{$('ccDev').style.background='#ede9fe';$('ccDev').style.color='#5b21b6';}
   var pbC=$('ccPar');if(!pbC){pbC=document.createElement('div');pbC.id='ccPar';pbC.className='parBox';$('ccDev').parentNode.insertBefore(pbC,$('ccDev').nextSibling);} // v94: bonificado / mesmo produto em 2 itens
-  var prC=i.pares||[];if(prC.length){var nbC=prC.filter(function(o){return o.bonif;}).length+(i.bonifItem?1:0),ncC=prC.length+1-nbC;pbC.style.display='';pbC.textContent=(i.bonifItem?'🎁 este item é o BONIFICADO. ':'')+'este produto vem em '+(prC.length+1)+' itens nesta nota'+(nbC?' ('+ncC+' de compra e '+nbC+' bonificado'+(nbC>1?'s':'')+')':'')+'. conte e lance cada item separado — não some os dois no mesmo item.';}
+  var prC=i.pares||[];if(i.grupo){pbC.style.display='';pbC.textContent='🎁 este produto vem parte comprado e parte bonificado nesta nota. conte tudo junto e lance o total — o app separa sozinho.';}
+  else if(prC.length){var nbC=prC.filter(function(o){return o.bonif;}).length+(i.bonifItem?1:0),ncC=prC.length+1-nbC;pbC.style.display='';pbC.textContent=(i.bonifItem?'🎁 este item é o BONIFICADO. ':'')+'este produto vem em '+(prC.length+1)+' itens nesta nota'+(nbC?' ('+ncC+' de compra e '+nbC+' bonificado'+(nbC>1?'s':'')+')':'')+'. conte e lance cada item separado — não some os dois no mesmo item.';}
   else if(i.bonifItem&&!(confNF.nf&&confNF.nf.bonif)){pbC.style.display='';pbC.textContent='🎁 item BONIFICADO (brinde do fornecedor). lance aqui só o que veio bonificado.';}
   else pbC.style.display='none';
   confAut=(l0&&l0.autorizou)||'';
@@ -2169,6 +2171,7 @@ function enviarConf(p,aplicar){
       vibra();aplicar();confReconte[p.idItem]=1;if(confNF.nf&&confNF.nf.status==='PENDENTE')confNF.nf.status='EM CONFERENCIA';renderConfNF();
       $('ccRec').style.display='';try{$('cardConf').scrollIntoView({behavior:'smooth'});}catch(e){}
       toast('Não confere — reconte este item','err');return;}
+    if(r&&r.ok&&r.grupo)setTimeout(function(){if(confNF&&confNF.idNf===p.idNf)carregarConfNF();},300); // v95: atualiza as linhas de compra + bonificado
     if(r&&r.ok){if(confReconte[p.idItem])confReconte[p.idItem]=2;vibra();aplicar();if(confNF.nf&&confNF.nf.status==='PENDENTE')confNF.nf.status='EM CONFERENCIA';$('confRes').innerHTML='';fecharConf();renderConfNF();toast('Gravado','ok');}
     else if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(e){}irPin();}
     else toast((r&&r.erro)||'Erro ao gravar','err');
