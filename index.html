@@ -182,7 +182,7 @@ ul.cnf li{border:2px solid var(--borda);border-radius:14px;padding:12px;margin-b
 ul.cnf li .f{font-weight:800;font-size:17px}
 ul.cnf li .n{font-size:14px;color:var(--muted);margin-top:2px}
 ul.cnf li .b{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:6px;margin-right:6px}
-.b.sem{background:#fef3c7;color:#92400e} .b.prog{background:#e0f2fe;color:#075985} .b.ok{background:#dcfce7;color:#166534} .b.div{background:#fee2e2;color:#991b1b} .b.novo{background:#fef3c7;color:#92400e} .b.bonif{background:#fce7f3;color:#9d174d} .b.semcad{background:#fee2e2;color:#991b1b} .b.dev{background:#ede9fe;color:#5b21b6} .b.avi{background:#fee2e2;color:#991b1b} .b.ave{background:#ffedd5;color:#9a3412}
+.b.sem{background:#fef3c7;color:#92400e} .b.prog{background:#e0f2fe;color:#075985} .b.ok{background:#dcfce7;color:#166534} .b.div{background:#fee2e2;color:#991b1b} .b.novo{background:#fef3c7;color:#92400e} .b.bonif{background:#fce7f3;color:#9d174d} .b.semcad{background:#fee2e2;color:#991b1b} .b.dev{background:#ede9fe;color:#5b21b6} .parBox{background:#fce7f3;color:#9d174d;font-weight:700;font-size:14px;border-radius:8px;padding:8px 10px;margin:8px 0} #confItens li.sepConf{background:none!important;border:0!important;box-shadow:none!important;padding:10px 4px 2px!important;min-height:0!important;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;cursor:default;display:block} /* v94 */ .b.avi{background:#fee2e2;color:#991b1b} .b.ave{background:#ffedd5;color:#9a3412}
 .avBox{background:#fef2f2;border:2px solid #fca5a5;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:14px;color:#7f1d1d}.avBox.emi{background:#fff7ed;border-color:#fdba74;color:#7c2d12}.avBox .b{margin:0 0 4px}.avTx{margin-top:4px;font-weight:400}.avIt{margin:4px 0 0 18px;padding:0}.avBox .avIt li{border:0!important;padding:0!important;background:none!important;box-shadow:none!important;border-radius:0!important;margin:2px 0!important;min-height:0!important;display:list-item!important;list-style:disc;font-weight:700;cursor:inherit}.avAss{margin-top:4px;font-style:italic;font-size:13px}.avCi{margin-top:4px;color:#166534;font-weight:700}.avBts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.avBt{flex:1;min-width:120px;border:0;border-radius:10px;padding:10px 12px;font-size:15px;font-weight:700;background:#b91c1c;color:#fff;font-family:inherit}.avBox.emi .avBt{background:#c2410c}.avBt.rec{background:#7f1d1d}.avBt:disabled{opacity:.6} /* v93 */
 ul.cnf li.conc{opacity:.8;background:#f8fafc}
 ul.cnf li.grp{background:#fff;box-shadow:5px 5px 0 -2px #fff,5px 5px 0 0 var(--borda),10px 10px 0 -2px #fff,10px 10px 0 0 var(--borda);margin:0 10px 22px 0}
@@ -1807,8 +1807,11 @@ function renderConfNF(){
   if(nf.aviso){$('nfTop').insertAdjacentHTML('beforeend',avBox(nf.aviso,nf.idNf,true));avLigar($('nfTop'),nf.idNf);} // v93
   var f=semAc(($('confBusca').value||'').trim()).toUpperCase();
   var ul=$('confItens');ul.innerHTML='';var feitos=0;
-  confNF.itens.forEach(function(i){
+  var ordC=confNF.itens.map(function(i,k){return [i,k];}),todosC=confNF.itens.every(function(i){return i.status!=='PENDENTE';}),sepC=false; // v94: pendentes no topo, conferidos descendo
+  if(!todosC&&nf.status!=='CONCLUIDA')ordC.sort(function(a,b){return (a[0].status==='PENDENTE'?0:1)-(b[0].status==='PENDENTE'?0:1)||a[1]-b[1];});
+  ordC.forEach(function(xC){var i=xC[0];
     if(i.status!=='PENDENTE')feitos++;
+    if(!todosC&&nf.status!=='CONCLUIDA'&&i.status!=='PENDENTE'&&!sepC&&!f){sepC=true;var sp=document.createElement('li');sp.className='sepConf';sp.textContent='já conferidos';ul.appendChild(sp);}
     if(f&&semAc(i.produto).toUpperCase().indexOf(f)<0&&i.codigo.indexOf(f)<0&&i.sku.indexOf(f)<0)return;
     var li=document.createElement('li');
     var cls=i.status==='CONFERIDO'?'ok':(i.status==='NAO VEIO'||i.status==='RECUSADO'?'nv':'pd');if(i.diverg&&nf.status==='CONCLUIDA')cls+=' dv';
@@ -1818,7 +1821,7 @@ function renderConfNF(){
     var tr=(i.trocas||[]).map(function(t){return '🔁 '+t.qtdSubst+' trocado(s) por '+t.qtdNovo+' '+esc(t.produtoNovo);}).join('<br>');
     if(i.status==='NAO VEIO'||i.status==='RECUSADO')tr+=(tr?'<br>':'')+'📦 '+(i.motivo?esc(i.motivo)+' · ':'')+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
     if(i.faltaQtd)tr+=(tr?'<br>':'')+'📦 '+(i.faltaTipo==='RECUSADO'?'recusou ':'faltou ')+esc(i.faltaQtd)+(i.motivo?' · '+esc(i.motivo):'')+' · '+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
-    li.innerHTML='<div class="d">'+esc(i.produto)+(i.novo?' <span class="b semcad">SEM CADASTRO</span>':(i.novoCad?' <span class="b novo">NOVO</span>':''))+(i.devolver?' <span class="b dev">↩ DEVOLVER '+(String(i.devolver).toUpperCase()==='TOTAL'?'TUDO':esc(i.devolver))+'</span>':'')+(i.avDev?' <span class="b avi">⛔ DEVOLVER '+(i.avDev.qtd==='TUDO'?'TUDO':esc(i.avDev.qtd))+'</span>':'')+'<small>'+(i.sku?'SKU '+esc(i.sku)+' · ':'')+'cód. '+esc(i.codigo)+(i.un==='KG'?' · por kg':(i.un!=='UN'?' · em '+esc(i.un):''))+'</small>'+(res?'<div class="q">'+esc(res)+'</div>':'')+(tr?'<div class="q" style="color:#7c2d12">'+tr+'</div>':'')+'</div>'
+    li.innerHTML='<div class="d">'+esc(i.produto)+(i.novo?' <span class="b semcad">SEM CADASTRO</span>':(i.novoCad?' <span class="b novo">NOVO</span>':''))+(i.devolver?' <span class="b dev">↩ DEVOLVER '+(String(i.devolver).toUpperCase()==='TOTAL'?'TUDO':esc(i.devolver))+'</span>':'')+(i.avDev?' <span class="b avi">⛔ DEVOLVER '+(i.avDev.qtd==='TUDO'?'TUDO':esc(i.avDev.qtd))+'</span>':'')+(i.bonifItem&&!nf.bonif?' <span class="b bonif">🎁 BONIFICADO</span>':'')+'<small>'+(i.sku?'SKU '+esc(i.sku)+' · ':'')+'cód. '+esc(i.codigo)+(i.un==='KG'?' · por kg':(i.un!=='UN'?' · em '+esc(i.un):''))+'</small>'+(res?'<div class="q">'+esc(res)+'</div>':'')+(tr?'<div class="q" style="color:#7c2d12">'+tr+'</div>':'')+'</div>'
       +'<span class="st">'+(i.status==='CONFERIDO'?'✓':(i.status==='NAO VEIO'||i.status==='RECUSADO'?i.status.replace('NAO','NÃO'):(i.diverg&&nf.status==='CONCLUIDA'?'RECONTAR':'conferir')))+'</span>';
     li.onclick=function(){abrirConfItem(i);};
     ul.appendChild(li);
@@ -2047,6 +2050,10 @@ function abrirConfItem(i){
   if(i.avDev){var dvA=$('ccDev'),tdA=i.avDev.qtd==='TUDO';dvA.style.display='';dvA.style.background='#fee2e2';dvA.style.color='#991b1b';dvA.textContent='⛔ devolução prevista pelo Celio: não receber '+(tdA?'o item inteiro':i.avDev.qtd+' '+(i.un==='UN'?'un':i.un))+(i.avDev.motivo?' — '+i.avDev.motivo:'')+(tdA?'. toque em RECUSADO para confirmar.':'. lance só o que fica (as boas), com a validade, e toque em SALVAR.'); // v93
     if(i.status==='PENDENTE'){confFaltaSt='RECUSADO';confFaltaTipo=tdA?'TUDO':'PARTE';$('ccFaltaQtd').value=tdA?'':i.avDev.qtd;$('ccMotivo').value=i.avDev.motivo||'devolução prevista pelo Celio';$('ccMotivoLin').style.display='';mostrarFalta();}}
   else{$('ccDev').style.background='#ede9fe';$('ccDev').style.color='#5b21b6';}
+  var pbC=$('ccPar');if(!pbC){pbC=document.createElement('div');pbC.id='ccPar';pbC.className='parBox';$('ccDev').parentNode.insertBefore(pbC,$('ccDev').nextSibling);} // v94: bonificado / mesmo produto em 2 itens
+  var prC=i.pares||[];if(prC.length){var nbC=prC.filter(function(o){return o.bonif;}).length+(i.bonifItem?1:0),ncC=prC.length+1-nbC;pbC.style.display='';pbC.textContent=(i.bonifItem?'🎁 este item é o BONIFICADO. ':'')+'este produto vem em '+(prC.length+1)+' itens nesta nota'+(nbC?' ('+ncC+' de compra e '+nbC+' bonificado'+(nbC>1?'s':'')+')':'')+'. conte e lance cada item separado — não some os dois no mesmo item.';}
+  else if(i.bonifItem&&!(confNF.nf&&confNF.nf.bonif)){pbC.style.display='';pbC.textContent='🎁 item BONIFICADO (brinde do fornecedor). lance aqui só o que veio bonificado.';}
+  else pbC.style.display='none';
   confAut=(l0&&l0.autorizou)||'';
   $('ccCodLido').value=confCodLido;var st=$('ccCodSt');st.className='codst'+(confCodStatus==='NOVO'?' novo':(confCodStatus?' ok':''));st.textContent=confCodStatus==='NOVO'?'⚠ código não cadastrado — vai ficar registrado para o Celio':(confCodStatus?'✓ cadastrado':'');
   renderTrocasCard();
