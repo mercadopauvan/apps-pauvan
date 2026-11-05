@@ -275,6 +275,7 @@ ul.pcRes{list-style:none;padding:0;margin:0 0 12px}ul.pcRes li{border:1px solid 
 .nhPush span{flex:1}.nhPush button{border:0;border-radius:10px;background:#b45309;color:#fff;font-weight:800;padding:9px 12px;font-size:13px}
 .avLbl{display:block;font-size:13px;color:#6b7280;margin:12px 2px 4px;font-weight:600}
 .avIn{width:100%;font-size:17px;padding:12px;border:2px solid #e5e7eb;border-radius:12px;font-family:inherit;background:#fff;margin-bottom:4px}
+#exRes li.exCod{background:#fff7ed;border-color:#fdba74;cursor:default}#exRes li.exCod span{font-size:15px} /* v98 */
 .avLista{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}.avOp{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid #e5e7eb;border-radius:12px;background:#fff;font-size:17px}.avOp input{width:22px;height:22px;accent-color:#b45309;flex:none}.avOp span{flex:1}.avOp i{font-style:normal;font-size:13px;color:#15803d}.avOp i.off{color:#9ca3af}.avOp.avTodos{font-weight:700} /* v91 */
 /* v81: Validades — troca de frente */
 .faixa.validades,.btn.validades{background:#a16207}
@@ -2259,24 +2260,26 @@ function renderExtras(){
   box.querySelectorAll('.exDel').forEach(function(b){b.onclick=function(){vibra();if(!b.dataset.cf){b.dataset.cf='1';b.textContent='CONFIRMAR?';setTimeout(function(){if(b.isConnected){delete b.dataset.cf;b.textContent='REMOVER';}},4000);return;}b.disabled=true;api({acao:'extraDel',id:b.dataset.id,token:token,quem:quem}).then(function(r){if(r&&r.ok){confNF.nf.extras=r.extras;renderExtras();toast('Removido','ok');}else{b.disabled=false;toast((r&&r.erro)||'Erro','err');}}).catch(function(){b.disabled=false;toast('Sem conexão, tente de novo','err');});};});
 }
 function abrirExtra(){
-  exProd=null;exKg=false;$('exKg').classList.remove('on');$('exKgSt').textContent='OFF';exUn='UN';$('exBusca').value='';$('exRes').innerHTML='';$('exSel').style.display='none';$('exQtd').value='';$('exPeso').value='';$('exVal').value='';$('exVal').disabled=false;$('exSemVal').classList.remove('on');$('exObs').value='';exMarcarUn();
+  exProd=null;exCodPend='';exKg=false;$('exKg').classList.remove('on');$('exKgSt').textContent='OFF';exUn='UN';$('exBusca').value='';$('exRes').innerHTML='';$('exSel').style.display='none';$('exQtd').value='';$('exPeso').value='';$('exVal').value='';$('exVal').disabled=false;$('exSemVal').classList.remove('on');$('exObs').value='';exMarcarUn();
   $('cardExtra').classList.add('on');setTimeout(function(){$('exBusca').focus();},100);
 }
 var exKg=false; // v97: chave de produto por kg (hortifruti) no produto que veio a mais
 function exToggleKg(){exKg=!exKg;vibra();$('exKg').classList.toggle('on',exKg);$('exKgSt').textContent=exKg?'ON':'OFF';exUn=exKg?'KG':'UN';exProd=null;$('exSel').style.display='none';$('exRes').innerHTML='';exMarcarUn();if($('exBusca').value.trim())exBuscar();}
-function exBdj(u){return u==='B500'?0.5:(u==='B600'?0.6:0);} // bandeja de 500/600 g conta como unidade
+function exBdj(u){return u==='B250'?0.25:(u==='B500'?0.5:(u==='B600'?0.6:0));} // bandeja de 500/600 g conta como unidade
 function exMarcarUn(){
-  var bt=exKg?[['KG','⚖️ SOLTO / CAIXA (KG)'],['B500','BANDEJA 500G'],['B600','BANDEJA 600G']]:[['UN','UNIDADE'],['CX','CAIXA'],['KG','KG']];
+  var bt=exKg?[['KG','⚖️ SOLTO / CAIXA (KG)'],['B250','BANDEJA 250G'],['B500','BANDEJA 500G'],['B600','BANDEJA 600G']]:[['UN','UNIDADE'],['CX','CAIXA'],['KG','KG']];
   if(!bt.some(function(x){return x[0]===exUn;}))exUn=bt[0][0];
   var box=$('exUnBt');box.innerHTML='';bt.forEach(function(x){var b=document.createElement('button');b.dataset.u=x[0];b.textContent=x[1];b.classList.toggle('on',x[0]===exUn);b.onclick=function(){exUn=x[0];vibra();exMarcarUn();};box.appendChild(b);});
   $('exPesoLin').style.display=exUn==='CX'?'':'none';
   $('exQtdLb').textContent=exUn==='KG'?'Quantos kg vieram a mais?':(exBdj(exUn)?'Quantas bandejas vieram a mais?':(exUn==='CX'?'Quantas caixas vieram a mais?':'Quantos vieram a mais?'));
   $('exQtd').placeholder=exUn==='KG'?'ex.: 3,5':'ex.: 2';
 }
-function exEscolher(p){exProd=p;if(exKg){var d=String(p.desc||'').toUpperCase();if(/BANDEJA|BDJ/.test(d)){exUn=/600\s*G/.test(d)?'B600':'B500';}else if(/QUILO/.test(String(p.un||''))){exUn='KG';}exMarcarUn();}$('exSel').style.display='block';$('exSel').textContent='→ '+p.desc+(p.sku?' (SKU '+p.sku+')':'');$('exRes').innerHTML='';$('exBusca').value='';setTimeout(function(){$('exQtd').focus();},80);}
+var exCodPend=''; // v98: código bipado que não está no cadastro (ex.: uva núbia com código novo)
+function exAvisoCod(){var ul=$('exRes');ul.innerHTML='';if(!exCodPend)return;var a=document.createElement('li');a.className='exCod';a.innerHTML='<span>🔎 código <b>'+esc(exCodPend)+'</b> não está no cadastro. Digite o nome do produto acima (ex.: núbia) e escolha o que já existe.</span>';ul.appendChild(a);var b=document.createElement('li');b.innerHTML='<span>não achei — gravar como NÃO CADASTRADO</span>';b.onclick=function(){exEscolher({sku:'',desc:'** NÃO CADASTRADO cód. '+exCodPend,codigo:exCodPend});};ul.appendChild(b);}
+function exEscolher(p){if(exCodPend&&!p.codigo){p.codigo=exCodPend;p.codNovo=true;}exProd=p;if(exKg){var d=String(p.desc||'').toUpperCase();if(/BANDEJA|BDJ/.test(d)){var gm=d.match(/(250|500|600)\s*G/);exUn='B'+(gm?gm[1]:'500');}else if(/QUILO/.test(String(p.un||''))){exUn='KG';}exMarcarUn();}$('exSel').style.display='block';$('exSel').textContent='→ '+p.desc+(p.sku?' (SKU '+p.sku+')':'')+(p.codNovo?' · código novo '+p.codigo:'');$('exRes').innerHTML='';$('exBusca').value='';setTimeout(function(){$('exQtd').focus();},80);}
 function exBuscar(){
   var v=$('exBusca').value.trim();if(!v)return;var ul=$('exRes');ul.innerHTML='<li>Buscando…</li>';
-  if(/^[\d\s.-]+$/.test(v)){api({acao:'buscar',codigo:v.replace(/\D/g,'')}).then(function(r){ul.innerHTML='';if(r&&r.ok)exEscolher({sku:r.sku,desc:r.desc,codigo:v.replace(/\D/g,'')});else{exEscolher({sku:'',desc:'** NÃO CADASTRADO cód. '+v.replace(/\D/g,''),codigo:v.replace(/\D/g,'')});toast('Código não cadastrado — vai ficar registrado assim','err');}});}
+  if(/^[\d\s.-]+$/.test(v)){api({acao:'buscar',codigo:v.replace(/\D/g,'')}).then(function(r){ul.innerHTML='';if(r&&r.ok)exEscolher({sku:r.sku,desc:r.desc,codigo:v.replace(/\D/g,'')});else{exCodPend=v.replace(/\D/g,'');$('exBusca').value='';exAvisoCod();toast('Código novo — procure o produto pelo nome','err');setTimeout(function(){$('exBusca').focus();},80);}});}
   else api({acao:'buscarNome',texto:v,kg:exKg?'todos':false}).then(function(r){ul.innerHTML='';(r&&r.itens||[]).filter(function(it){return !exKg||/QUILO/.test(String(it.un||''))||/BANDEJA|BDJ/.test(String(it.desc||'').toUpperCase());}).forEach(function(it){var li=document.createElement('li');li.innerHTML='<span>'+esc(it.desc)+'</span><small>'+esc(it.sku)+'</small>';li.onclick=function(){exEscolher({sku:it.sku,desc:it.desc,codigo:'',un:it.un});};ul.appendChild(li);});var li2=document.createElement('li');li2.innerHTML='<span>usar como escrevi: "'+esc(v)+'"</span>';li2.onclick=function(){exEscolher({sku:'',desc:v.toUpperCase(),codigo:''});};ul.appendChild(li2);});
 }
 $('exBusca').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();exBuscar();}});
@@ -2288,7 +2291,7 @@ function salvarExtra(){
   if(!exProd)return toast('Escolha o produto','err');
   var q=parseFloat(String($('exQtd').value).replace(',','.'));if(!(q>0))return toast('Quantos vieram a mais?','err');
   var val=$('exSemVal').classList.contains('on')?'SEM VALIDADE':($('exVal').value?br($('exVal').value):'');
-  var bj=exBdj(exUn),obs=$('exObs').value.trim();if(bj)obs=('BANDEJA '+Math.round(bj*1000)+'G'+(obs?' · '+obs:''));
+  var bj=exBdj(exUn),obs=$('exObs').value.trim();if(bj)obs=('BANDEJA '+Math.round(bj*1000)+'G'+(obs?' · '+obs:''));if(exProd.codNovo&&exProd.sku)obs='CÓDIGO NOVO '+exProd.codigo+' (incluir no cadastro)'+(obs?' · '+obs:'');
   var p={acao:'extraAdd',idNf:confNF.idNf,sku:exProd.sku,produto:exProd.desc,codigo:exProd.codigo||'',qtd:q,un:bj?'UN':exUn,peso:bj?String(Math.round(q*bj*1000)/1000):(exUn==='CX'?$('exPeso').value:''),validade:val,obs:obs,token:token,quem:quem};
   $('exBt').disabled=true;
   api(p).then(function(r){$('exBt').disabled=false;
