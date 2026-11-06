@@ -360,6 +360,14 @@ ul.cv li .corr{margin-top:8px;border:1px solid #a16207;background:#fff;color:#a1
 #lcRes{list-style:none;padding:0;margin:4px 0} #lcRes li{padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:4px;display:flex;justify-content:space-between;gap:8px;font-size:14px;cursor:pointer} #lcRes li small{color:#64748b}
 ul.cv li .tag.curta{background:#7c3aed} ul.cv li .tag.jreb{background:#0f766e} ul.cv li.curta{border-color:#7c3aed}
 #valLista .grp.curta{background:#7c3aed;color:#fff}
+ul.cv li .bts.vdL{margin-top:6px} ul.cv li .bts.vdL button.vd{background:#fff;color:#7c3aed;border:2px solid #7c3aed} /* v100 */
+ul.cv li .vdBox{margin-top:10px} ul.cv li .vdLb{font-size:12px;font-weight:800;color:#475569;text-transform:uppercase}
+ul.cv li .vdDt{display:flex;gap:8px;align-items:center;margin-top:6px;font-size:14px} ul.cv li .vdDt s{color:#94a3b8} ul.cv li .vdDt input{flex:1;font-size:17px;padding:9px 10px;border:2px solid #7c3aed;border-radius:10px;font-family:inherit;min-width:0}
+ul.cv li .vdMsg{margin-top:8px;border-radius:10px;padding:9px 10px;font-size:13.5px;line-height:1.4;background:#f8fafc;color:#475569}
+ul.cv li .vdMsg.vok{background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46} ul.cv li .vdMsg.vaz{background:#eff6ff;border:1px solid #93c5fd;color:#1e3a8a} ul.cv li .vdMsg.ver{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b}
+ul.cv li.vdOn{border-color:#7c3aed}
+#valLista .grp.vcHd{background:#ede9fe;color:#5b21b6;display:flex;justify-content:space-between;cursor:pointer}
+.vcIt{border:1px solid #e5e7eb;border-radius:12px;background:#fff;padding:10px;margin-bottom:8px;font-size:13.5px}.vcIt .q{font-size:12px;color:#64748b;font-weight:700;margin-bottom:3px}.vcIt .pill{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px;color:#fff;margin-right:5px}
 ul.psv li .pv{font-size:13px;margin-top:6px;color:#9a3412;background:#fff7ed;border-radius:8px;padding:5px 8px}
 /* v79: Vencidos da semana */
 #vsBtn{display:none;width:100%;border:0;border-radius:14px;background:#7f1d1d;color:#fff;font-size:16px;font-weight:800;padding:13px 12px;margin:0 0 10px;text-align:left}
@@ -1227,7 +1235,7 @@ function irVAL(){
   renderVAL();carregarVAL();
 }
 function carregarVAL(){
-  api({acao:'validades',quem:quem}).then(function(r){if(r&&r.ok){valCache={trocas:r.trocas||[],feitos:r.feitos||[],verTudo:!!r.verTudo,cv:r.cv||{itens:[]},locais:r.locais||[]};try{localStorage.setItem('ci_val',JSON.stringify(valCache));}catch(e){}renderVAL();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
+  api({acao:'validades',quem:quem}).then(function(r){if(r&&r.ok){valCache={trocas:r.trocas||[],feitos:r.feitos||[],verTudo:!!r.verTudo,cv:r.cv||{itens:[]},locais:r.locais||[],corr:r.corr||[]};try{localStorage.setItem('ci_val',JSON.stringify(valCache));}catch(e){}renderVAL();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
 }
 function valMarcar(it,b,desf){
   if(desf&&b.dataset.c!=='1'){b.dataset.c='1';b.textContent='DESFAZER? TOQUE DE NOVO';setTimeout(function(){b.dataset.c='';b.textContent='DESFAZER';},3000);return;}
@@ -1282,11 +1290,11 @@ function renderVAL(){
 
 // ===== CONFERÊNCIA DE VALIDADE — v82 =====
 function cvNum(v){v=String(v==null?'':v).trim().replace(',','.');return v===''?null:Number(v);}
-function cvSalvar(it,b,naoTem,area,est){
+function cvSalvar(it,b,naoTem,area,est,novaVal){
   if(!naoTem){var a=cvNum(area);if(a==null||isNaN(a)||a<0){toast('Informe a quantidade da área de venda','err');return;}var e=cvNum(est);if(e!=null&&(isNaN(e)||e<0)){toast('Quantidade do estoque inválida','err');return;}}
   vibra();b.textContent='…';
-  api({acao:'cvSalvar',id:it.id,token:token,quem:quem,area:area,estoque:est,naoTem:naoTem?'1':''}).then(function(r){
-    if(r&&r.ok){delete cvAberto[it.id];toast(naoTem?'Registrado: não tem mais':(r.critica==='SUGERIR REBAIXA'?'Salvo — vai sobrar '+r.sobra+', o Celio vai decidir':'Salvo'),'ok');carregarVAL();}
+  api({acao:'cvSalvar',id:it.id,token:token,quem:quem,area:area,estoque:est,naoTem:naoTem?'1':'',novaVal:novaVal||''}).then(function(r){
+    if(r&&r.ok){delete cvAberto[it.id];toast(r.vd?(r.vd.caso==='NOVA'?'Validade '+r.vd.nova.slice(0,5)+' registrada — obrigado!':'Validade corrigida para '+r.vd.nova.slice(0,5)):(naoTem?'Registrado: não tem mais':(r.critica==='SUGERIR REBAIXA'?'Salvo — vai sobrar '+r.sobra+', o Celio vai decidir':'Salvo')),'ok');carregarVAL();}
     else if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(e){}irPin();}
     else{toast('Não deu: '+(r&&r.erro||''),'err');renderVAL();}
   }).catch(function(){toast('Sem internet — tente de novo','err');renderVAL();});
@@ -1302,13 +1310,32 @@ function cvItem(it,modo){
   }
   var soEst=modo==='est';
   h+='<div class="qq"><label>ÁREA DE VENDA'+(soEst?'':' *')+'<input class="ia" type="text" inputmode="decimal" value="'+esc(soEst||cvAberto[it.id]?it.area:'')+'"'+(soEst?' disabled':'')+'></label><label>ESTOQUE<input class="ie" type="text" inputmode="decimal" value="'+esc(cvAberto[it.id]?it.estoque:'')+'" placeholder="'+(soEst?'':'opcional')+'"></label><div class="tt">TOTAL<b class="it">'+(soEst||cvAberto[it.id]?esc(it.total):'0')+'</b></div></div>';
-  h+='<div class="bts"><button class="ok">'+(soEst?'SALVAR ESTOQUE':'CONFERIDO')+'</button>'+(soEst?'':'<button class="nao">NÃO TEM MAIS</button>')+'</div>'+(soEst?'':lcLink(it,'CV'));
+  if(!soEst)h+='<div class="vdBox" style="display:none"><div class="vdLb">VALIDADE QUE VOCÊ ENCONTROU</div><div class="vdDt"><s>'+esc(it.validade)+'</s> ➜ <input type="date" class="vdIn"></div><div class="vdMsg"></div></div>'; // v100
+  h+='<div class="bts"><button class="ok">'+(soEst?'SALVAR ESTOQUE':'CONFERIDO')+'</button>'+(soEst?'':'<button class="nao">NÃO TEM MAIS</button>')+'</div>'+(soEst?'':'<div class="bts vdL"><button class="vd">📅 VALIDADE DIFERENTE</button></div>'+lcLink(it,'CV'));
   li.innerHTML=h;lcLigar(li,it,'CV');
   var ia=li.querySelector('.ia'),ie=li.querySelector('.ie'),tt=li.querySelector('.it');
   function soma(){tt.textContent=String(((cvNum(ia.value)||0)+(cvNum(ie.value)||0))).replace('.',',');}
   ia.oninput=soma;ie.oninput=soma;
-  var bo=li.querySelector('.ok');bo.onclick=function(){if(soEst&&cvNum(ie.value)==null){toast('Informe o estoque','err');return;}cvSalvar(it,bo,false,ia.value,ie.value);};
-  var bn=li.querySelector('.nao');if(bn)bn.onclick=function(){if(bn.dataset.c!=='1'){bn.dataset.c='1';bn.textContent='CONFIRMA? TOQUE DE NOVO';setTimeout(function(){bn.dataset.c='';bn.textContent='NÃO TEM MAIS';},3000);return;}cvSalvar(it,bn,true,'','');};
+  var bo=li.querySelector('.ok');bo.onclick=function(){
+    if(vdOn){if(!vdSt){toast('Escolha a validade que você encontrou','err');return;}if(vdSt.caso==='EXISTE'){cvSalvar(it,bo,true,'','');return;}cvSalvar(it,bo,false,ia.value,ie.value,vdSt.nova);return;}
+    if(soEst&&cvNum(ie.value)==null){toast('Informe o estoque','err');return;}cvSalvar(it,bo,false,ia.value,ie.value);};
+  // v100: VALIDADE DIFERENTE
+  var vdOn=false,vdSt=null,vb=li.querySelector('.vd'),vbox=li.querySelector('.vdBox'),vin=li.querySelector('.vdIn'),vmsg=li.querySelector('.vdMsg'),qq=li.querySelector('.qq');
+  function vdFechar(){vdOn=false;vdSt=null;vbox.style.display='none';li.querySelector('.vdL').style.display='';qq.style.display='';bo.textContent='CONFERIDO';bo.disabled=false;bn.textContent='NÃO TEM MAIS';li.classList.remove('vdOn');}
+  if(vb)vb.onclick=function(){vibra();vdOn=true;vdSt=null;vbox.style.display='block';li.querySelector('.vdL').style.display='none';li.classList.add('vdOn');vmsg.className='vdMsg';vmsg.innerHTML='Escolha a data que está no produto.';var p=String(it.validade).split('/');vin.value=p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';bo.textContent='SALVAR';bo.disabled=true;bn.textContent='VOLTAR';try{vin.focus();if(vin.showPicker)vin.showPicker();}catch(e){}};
+  if(vin)vin.onchange=function(){
+    var m=String(vin.value).match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return;var nova=m[3]+'/'+m[2]+'/'+m[1];vdSt=null;bo.disabled=true;qq.style.display='';vmsg.className='vdMsg';vmsg.textContent='conferindo…';
+    api({acao:'cvValCheck',quem:quem,token:token,id:it.id,novaVal:nova}).then(function(r){
+      if(!vdOn)return;
+      if(r&&r.reauth){irPin();return;}
+      if(!r||!r.ok){vmsg.className='vdMsg ver';vmsg.textContent=(r&&r.erro)||'Não deu';return;}
+      vdSt=r;var cur=nova.slice(0,5),lis=String(it.validade);
+      if(r.caso==='CORRIGIR'){vmsg.className='vdMsg vok';vmsg.innerHTML='✏️ <b>'+r.dif+(r.dif>1?' dias':' dia')+' de diferença</b> — o lançamento vai ser corrigido de '+esc(lis.slice(0,5))+' para '+esc(cur)+' e a conta de venda usa '+esc(cur)+'.';bo.textContent='SALVAR COM '+cur;bo.disabled=false;bn.textContent='VOLTAR';}
+      else if(r.caso==='NOVA'){vmsg.className='vdMsg vok';vmsg.innerHTML='✅ A validade <b>'+esc(nova)+'</b> vai ser registrada com a quantidade que você contar. Obrigado!';bo.textContent='SALVAR COM '+cur;bo.disabled=false;bn.textContent='VOLTAR';}
+      else{qq.style.display='none';vmsg.className='vdMsg vaz';vmsg.innerHTML='📅 <b>Essa validade já está no cadastro</b>'+(r.existe&&(r.existe.nf||r.existe.chegou)?' (chegou'+(r.existe.nf?' na NF '+esc(r.existe.nf):'')+(r.existe.chegou?' em '+esc(r.existe.chegou.slice(0,5)):'')+')':'')+'.<br>Ela vai aparecer numa lista mais para frente — <b>não é a hora de conferir esse lote</b>.<br><br>Agora procure só o de <b>'+esc(lis.slice(0,5))+'</b>. Se não tiver nenhum, toque em NÃO TEM '+esc(lis.slice(0,5))+'.';bo.textContent='NÃO TEM '+lis.slice(0,5);bo.disabled=false;bn.textContent='VOLTAR E PROCURAR '+lis.slice(0,5);}
+    }).catch(function(){vmsg.className='vdMsg ver';vmsg.textContent='Sem conexão — tente de novo';});
+  };
+  var bn=li.querySelector('.nao');if(bn)bn.onclick=function(){if(vdOn){vibra();vdFechar();return;}if(bn.dataset.c!=='1'){bn.dataset.c='1';bn.textContent='CONFIRMA? TOQUE DE NOVO';setTimeout(function(){bn.dataset.c='';bn.textContent='NÃO TEM MAIS';},3000);return;}cvSalvar(it,bn,true,'','');};
   return li;
 }
 function renderCV(box){
@@ -1318,6 +1345,7 @@ function renderCV(box){
   var pend=its.filter(function(i){return i.status==='PENDENTE'||cvAberto[i.id];}),feitos=its.filter(function(i){return i.status!=='PENDENTE'&&!cvAberto[i.id];});
   $('valProg').textContent=feitos.length+' / '+its.length+' conferidos';
   lcAprovar(box,valCache.locais,'CV'); // v99
+  vcLista(box,valCache.corr); // v100
   if(!its.length){box.insertAdjacentHTML('beforeend','<p class="dica" style="font-size:16px;margin-top:20px">Nada para conferir nesta semana. 👍</p>');return;}
   function ord(a,b){return String(a.local||'~').localeCompare(String(b.local||'~'))||String(a.validade).split('/').reverse().join('').localeCompare(String(b.validade).split('/').reverse().join(''))||String(a.desc).localeCompare(String(b.desc));} // v84: dentro do local, validade mais próxima primeiro
   var curta=pend.filter(function(i){return i.janela==='CURTA'&&i.status==='PENDENTE';}).sort(ord); // v99: chegou com validade curta = prioridade
@@ -1363,6 +1391,17 @@ function cvGuardaFech(k,v){var m=cvFechMapa();m[k]=v?1:0;try{localStorage.setIte
   try{new MutationObserver(marca).observe(document.body,{childList:true,subtree:true});}catch(e){}
 })();
 
+// ===== v100: validades corrigidas (só o Celio vê) =====
+var vcAberto=false;
+function vcLista(box,lista){
+  if(!lista||!lista.length)return;
+  var hd=document.createElement('div');hd.className='grp vcHd';hd.innerHTML='<span>📅 VALIDADES CORRIGIDAS — 7 dias ('+lista.length+')</span><span>'+(vcAberto?'▲':'▼')+'</span>';hd.onclick=function(){vcAberto=!vcAberto;renderVAL();};box.appendChild(hd);
+  if(!vcAberto)return;
+  var cor={'CORRIGIDA':'#7c3aed','VALIDADE NOVA':'#0f766e','JA EXISTIA':'#2563eb'};
+  lista.forEach(function(x){var d=document.createElement('div');d.className='vcIt';
+    d.innerHTML='<div class="q">'+esc(x.quem)+' · '+esc(x.em)+(x.nf?' · NF '+esc(x.nf)+' '+esc(x.forn):'')+(x.conf?' · conferida por '+esc(x.conf):'')+'</div><span class="pill" style="background:'+(cor[x.tipo]||'#475569')+'">'+esc(x.tipo==='JA EXISTIA'?'JÁ EXISTIA':x.tipo)+'</span><b>'+esc(x.desc)+'</b><br>'+(x.tipo==='JA EXISTIA'?'procurou '+esc(x.lista.slice(0,5))+', achou '+esc(x.achada)+' (vem depois)':(x.tipo==='VALIDADE NOVA'?'não achou '+esc(x.lista.slice(0,5))+' · registrou '+esc(x.achada):esc(x.lista.slice(0,5))+' ➜ <b>'+esc(x.achada.slice(0,5))+'</b> ('+esc(x.dias)+' dias)'));
+    box.appendChild(d);});
+}
 // ===== v99: "NÃO FICA AQUI" (local / repositora errados) + aprovação do Celio =====
 var lcOpc=null,lcIt=null,lcMod='',lcLocal='',lcRep='',lcSec='';
 function lcLink(it,mod){ // linha embaixo do item: link ou "aguardando o Celio"
