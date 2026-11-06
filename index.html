@@ -348,6 +348,19 @@ ul.cv li .bts button{flex:1;border-radius:12px;font-size:15px;font-weight:800;pa
 ul.cv li .bts button.nao{background:#fff;color:#475569;border-color:#94a3b8}
 ul.cv li .corr{margin-top:8px;border:1px solid #a16207;background:#fff;color:#a16207;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:700}
 #valLista .grp.atr{background:#b91c1c;color:#fff}
+.lcLk{display:block;margin:8px auto 0;border:0;background:none;color:#b45309;font-weight:800;font-size:14px;text-decoration:underline;font-family:inherit} /* v99 */
+.lcAg{margin-top:8px;font-size:13px;color:#92400e;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:6px 8px}
+#valLista .grp.lcHd,#psvLista .grp.lcHd{background:#b45309;color:#fff}
+.lcAp{border:2px solid #fcd34d;background:#fffbeb;border-radius:14px;padding:12px;margin-bottom:10px}
+.lcAp .q{font-size:12px;color:#92400e;font-weight:800} .lcAp .d{font-weight:800;font-size:15px;margin:4px 0} .lcAp .t{font-size:14px;color:#334155;line-height:1.4} .lcAp .t s{color:#94a3b8} .lcAp .o{font-size:13px;color:#475569;margin-top:4px;font-style:italic}
+.lcAp .bts{display:flex;gap:8px;margin-top:10px} .lcAp .bts button{flex:1;border:0;border-radius:12px;font-size:14px;font-weight:800;padding:12px 4px;color:#fff;background:#0d9488;font-family:inherit} .lcAp .bts button.nao{background:#b91c1c}
+#cardLocal .lcChips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px} #cardLocal .lcChips button{border:2px solid #e5e7eb;border-radius:999px;padding:8px 11px;font-size:14px;font-weight:700;color:#334155;background:#fff;font-family:inherit} #cardLocal .lcChips button.on{border-color:#d97706;background:#fffbeb;color:#92400e} #cardLocal .lcChips button.ou{border-style:dashed}
+#cardLocal .lb{font-size:12px;font-weight:800;color:#64748b;margin-top:10px;text-transform:uppercase} #cardLocal .lcCar{color:#94a3b8;font-size:14px}
+#cardLocal input{width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px;border:2px solid var(--borda);border-radius:12px;font-family:inherit;margin-top:6px}
+#lcRes{list-style:none;padding:0;margin:4px 0} #lcRes li{padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:4px;display:flex;justify-content:space-between;gap:8px;font-size:14px;cursor:pointer} #lcRes li small{color:#64748b}
+ul.cv li .tag.curta{background:#7c3aed} ul.cv li .tag.jreb{background:#0f766e} ul.cv li.curta{border-color:#7c3aed}
+#valLista .grp.curta{background:#7c3aed;color:#fff}
+ul.psv li .pv{font-size:13px;margin-top:6px;color:#9a3412;background:#fff7ed;border-radius:8px;padding:5px 8px}
 /* v79: Vencidos da semana */
 #vsBtn{display:none;width:100%;border:0;border-radius:14px;background:#7f1d1d;color:#fff;font-size:16px;font-weight:800;padding:13px 12px;margin:0 0 10px;text-align:left}
 #vsBtn small{display:block;font-weight:400;font-size:13px;opacity:.9;margin-top:2px}
@@ -616,6 +629,20 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div class="lin"><label>Observação</label><input id="exObs" type="text" placeholder="opcional"></div>
   <button class="btn ok" id="exBt" onclick="salvarExtra()">GRAVAR</button>
   <button class="btn cancel" onclick="$('cardExtra').classList.remove('on')">CANCELAR</button>
+</div>
+
+<!-- v99: NÃO FICA AQUI (local / repositora errados) -->
+<div class="card" id="cardLocal">
+  <div class="desc">Onde esse produto fica?</div>
+  <p class="dica" style="text-align:left;margin:4px 0 0"><b id="lcProd"></b><br><span id="lcAntes"></span></p>
+  <div class="lb">locais mais usados</div>
+  <div class="lcChips" id="lcLocais"></div>
+  <div id="lcBuscaBox" style="display:none"><input id="lcBusca" type="text" placeholder="digite o local (ex.: freezer, C4, ponta)" autocomplete="off"><ul id="lcRes"></ul></div>
+  <div class="lb">quem repõe</div>
+  <div class="lcChips" id="lcReps"></div>
+  <input id="lcObs" type="text" maxlength="120" placeholder="observação (opcional)">
+  <button class="btn ok" id="lcBt" onclick="lcEnviar()" style="background:#d97706">ENVIAR PARA O CELIO</button>
+  <button class="btn cancel" onclick="$('cardLocal').classList.remove('on')">CANCELAR</button>
 </div>
 
 <!-- CARD DE COBRANÇA (ao concluir) -->
@@ -1200,7 +1227,7 @@ function irVAL(){
   renderVAL();carregarVAL();
 }
 function carregarVAL(){
-  api({acao:'validades',quem:quem}).then(function(r){if(r&&r.ok){valCache={trocas:r.trocas||[],feitos:r.feitos||[],verTudo:!!r.verTudo,cv:r.cv||{itens:[]}};try{localStorage.setItem('ci_val',JSON.stringify(valCache));}catch(e){}renderVAL();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
+  api({acao:'validades',quem:quem}).then(function(r){if(r&&r.ok){valCache={trocas:r.trocas||[],feitos:r.feitos||[],verTudo:!!r.verTudo,cv:r.cv||{itens:[]},locais:r.locais||[]};try{localStorage.setItem('ci_val',JSON.stringify(valCache));}catch(e){}renderVAL();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
 }
 function valMarcar(it,b,desf){
   if(desf&&b.dataset.c!=='1'){b.dataset.c='1';b.textContent='DESFAZER? TOQUE DE NOVO';setTimeout(function(){b.dataset.c='';b.textContent='DESFAZER';},3000);return;}
@@ -1264,10 +1291,10 @@ function cvSalvar(it,b,naoTem,area,est){
     else{toast('Não deu: '+(r&&r.erro||''),'err');renderVAL();}
   }).catch(function(){toast('Sem internet — tente de novo','err');renderVAL();});
 }
-function cvCrit(it){if(it.status==='NAO TEM')return '<span class="tag nao">NÃO TEM MAIS</span>';var t='';if(it.critica==='VAI VENDER')t='<span class="tag ok">VAI VENDER</span>';else if(it.critica==='SUGERIR REBAIXA')t='<span class="tag reb">SUGERIR REBAIXA</span>';else if(it.critica==='SEM MEDIA')t='<span class="tag sm">SEM HISTÓRICO</span>';if(it.estPend)t+='<span class="tag est">ESTOQUE NÃO CONFERIDO</span>';return t;}
+function cvCrit(it){if(it.status==='NAO TEM')return '<span class="tag nao">NÃO TEM MAIS</span>';var t='';if(it.critica==='VAI VENDER')t='<span class="tag ok">VAI VENDER</span>';else if(it.critica==='SUGERIR REBAIXA')t='<span class="tag reb">SUGERIR REBAIXA</span>';else if(/^JA NA REBAIXA/.test(it.critica||''))t='<span class="tag jreb">JÁ ESTÁ NA REBAIXA'+esc(String(it.critica).replace(/^JA NA REBAIXA/,''))+'</span>';else if(it.critica==='SEM MEDIA')t='<span class="tag sm">SEM HISTÓRICO</span>';if(it.estPend)t+='<span class="tag est">ESTOQUE NÃO CONFERIDO</span>';return t;}
 function cvItem(it,modo){
-  var li=document.createElement('li');if(it.atrasado&&it.status==='PENDENTE')li.className='atr';if(modo==='feito')li.className='feito';
-  var h='<div class="d">'+(it.atrasado&&it.status==='PENDENTE'?'<span class="tag">ATRASADO</span>':'')+(modo==='feito'?cvCrit(it):'')+esc(it.desc)+'</div><div class="m">validade <b>'+esc(it.validade)+'</b>'+(valCache.cv.tudo&&modo!=='feito'?' · '+esc(it.para)+' ('+esc(it.janela)+' dias)':'')+(it.secao?' · '+esc(it.secao):'')+'</div>';
+  var li=document.createElement('li');if(it.atrasado&&it.status==='PENDENTE')li.className='atr';if(it.janela==='CURTA'&&it.status==='PENDENTE')li.className='curta';if(modo==='feito')li.className='feito';
+  var h='<div class="d">'+(it.janela==='CURTA'&&it.status==='PENDENTE'?'<span class="tag curta">⏰ VALIDADE CURTA</span>':'')+(it.atrasado&&it.status==='PENDENTE'?'<span class="tag">ATRASADO</span>':'')+(modo==='feito'?cvCrit(it):'')+esc(it.desc)+'</div><div class="m">validade <b>'+esc(it.validade)+'</b>'+(valCache.cv.tudo&&modo!=='feito'?' · '+esc(it.para)+(it.janela==='CURTA'?' (chegou com validade curta)':' ('+esc(it.janela)+' dias)'):'')+(it.secao?' · '+esc(it.secao):'')+'</div>';
   if(it.ney)h+='<div class="ney">Ney conferiu'+(it.ney.em?' em '+esc(String(it.ney.em).slice(0,5)):'')+': '+(it.ney.st==='NAO TEM'?'<b>não tinha mais</b>':'<b>'+esc(it.ney.total)+'</b> (área '+esc(it.ney.area)+(it.ney.est!==''?' + estoque '+esc(it.ney.est):' · estoque não conferido')+')')+'</div>';
   if(modo==='feito'){
     h+='<div class="m">'+(it.status==='NAO TEM'?'':'área '+esc(it.area)+(it.estoque!==''?' + estoque '+esc(it.estoque):'')+' = <b>'+esc(it.total)+'</b> · ')+esc(it.quem)+' · '+esc(it.em)+'</div><button class="corr">CORRIGIR</button>';
@@ -1275,8 +1302,8 @@ function cvItem(it,modo){
   }
   var soEst=modo==='est';
   h+='<div class="qq"><label>ÁREA DE VENDA'+(soEst?'':' *')+'<input class="ia" type="text" inputmode="decimal" value="'+esc(soEst||cvAberto[it.id]?it.area:'')+'"'+(soEst?' disabled':'')+'></label><label>ESTOQUE<input class="ie" type="text" inputmode="decimal" value="'+esc(cvAberto[it.id]?it.estoque:'')+'" placeholder="'+(soEst?'':'opcional')+'"></label><div class="tt">TOTAL<b class="it">'+(soEst||cvAberto[it.id]?esc(it.total):'0')+'</b></div></div>';
-  h+='<div class="bts"><button class="ok">'+(soEst?'SALVAR ESTOQUE':'CONFERIDO')+'</button>'+(soEst?'':'<button class="nao">NÃO TEM MAIS</button>')+'</div>';
-  li.innerHTML=h;
+  h+='<div class="bts"><button class="ok">'+(soEst?'SALVAR ESTOQUE':'CONFERIDO')+'</button>'+(soEst?'':'<button class="nao">NÃO TEM MAIS</button>')+'</div>'+(soEst?'':lcLink(it,'CV'));
+  li.innerHTML=h;lcLigar(li,it,'CV');
   var ia=li.querySelector('.ia'),ie=li.querySelector('.ie'),tt=li.querySelector('.it');
   function soma(){tt.textContent=String(((cvNum(ia.value)||0)+(cvNum(ie.value)||0))).replace('.',',');}
   ia.oninput=soma;ie.oninput=soma;
@@ -1290,15 +1317,19 @@ function renderCV(box){
   $('valDica').innerHTML='Conte o produto com essa validade: <b>área de venda</b> (obrigatório) e <b>estoque/depósito</b>. Se não achar nenhum, toque em <b>NÃO TEM MAIS</b>. A lista está na ordem dos locais da loja.';
   var pend=its.filter(function(i){return i.status==='PENDENTE'||cvAberto[i.id];}),feitos=its.filter(function(i){return i.status!=='PENDENTE'&&!cvAberto[i.id];});
   $('valProg').textContent=feitos.length+' / '+its.length+' conferidos';
-  if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:20px">Nada para conferir nesta semana. 👍</p>';return;}
+  lcAprovar(box,valCache.locais,'CV'); // v99
+  if(!its.length){box.insertAdjacentHTML('beforeend','<p class="dica" style="font-size:16px;margin-top:20px">Nada para conferir nesta semana. 👍</p>');return;}
   function ord(a,b){return String(a.local||'~').localeCompare(String(b.local||'~'))||String(a.validade).split('/').reverse().join('').localeCompare(String(b.validade).split('/').reverse().join(''))||String(a.desc).localeCompare(String(b.desc));} // v84: dentro do local, validade mais próxima primeiro
+  var curta=pend.filter(function(i){return i.janela==='CURTA'&&i.status==='PENDENTE';}).sort(ord); // v99: chegou com validade curta = prioridade
+  pend=pend.filter(function(i){return curta.indexOf(i)<0;});
   var blocos=[],atr=pend.filter(function(i){return i.atrasado&&!i.semSecao;}).sort(ord),sem=pend.filter(function(i){return i.semSecao;}).sort(ord),grupos={},ordem=[];
+  if(curta.length)blocos.push(['⏰ CHEGOU COM VALIDADE CURTA','curta',curta]);
   pend.filter(function(i){return !i.atrasado&&!i.semSecao;}).forEach(function(i){var g=tudo?(String(i.para).toUpperCase()+' · '+i.janela+' DIAS'):'MINHA LISTA';if(!grupos[g]){grupos[g]=[];ordem.push(g);}grupos[g].push(i);});
   ordem.sort();
   if(atr.length)blocos.push(['⚠ ATRASADOS — semana passada','atr',atr]);
   ordem.forEach(function(g){blocos.push([g,'',grupos[g].sort(ord)]);});
   if(sem.length)blocos.push(['SEM SEÇÃO','sem',sem]);
-  if(!pend.length)box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">Tudo conferido nesta semana. 👍</p>';
+  if(!pend.length&&!curta.length)box.insertAdjacentHTML('beforeend','<p class="dica" style="font-size:16px;margin-top:16px">Tudo conferido nesta semana. 👍</p>');
   // v83: cada bloco encolhe/abre ao tocar no título (lembra a escolha no aparelho)
   function bloco(tit,cls,lista,modo,loc){
     var k=tit.replace(/\s*\(.*$/,''),fech=cvFechado(k,tudo);
@@ -1314,7 +1345,7 @@ function renderCV(box){
   if(feitos.length)bloco('CONFERIDOS NESTA SEMANA','ok',feitos.sort(ord),'feito',false);
 }
 function cvFechMapa(){try{return JSON.parse(localStorage.getItem('cv_fech')||'{}')||{};}catch(e){return {};}}
-function cvFechado(k,tudo){var m=cvFechMapa();if(m[k]!==undefined)return !!m[k];return !!tudo&&k.indexOf('ATRASADOS')<0;}
+function cvFechado(k,tudo){var m=cvFechMapa();if(m[k]!==undefined)return !!m[k];return !!tudo&&k.indexOf('ATRASADOS')<0&&k.indexOf('CURTA')<0;}
 function cvGuardaFech(k,v){var m=cvFechMapa();m[k]=v?1:0;try{localStorage.setItem('cv_fech',JSON.stringify(m));}catch(e){}}
 
 // ===== v89: em todos os módulos, tocar no título de um grupo encolhe/abre os itens dele (o aparelho lembra a escolha) =====
@@ -1332,6 +1363,61 @@ function cvGuardaFech(k,v){var m=cvFechMapa();m[k]=v?1:0;try{localStorage.setIte
   try{new MutationObserver(marca).observe(document.body,{childList:true,subtree:true});}catch(e){}
 })();
 
+// ===== v99: "NÃO FICA AQUI" (local / repositora errados) + aprovação do Celio =====
+var lcOpc=null,lcIt=null,lcMod='',lcLocal='',lcRep='',lcSec='';
+function lcLink(it,mod){ // linha embaixo do item: link ou "aguardando o Celio"
+  if(it.sug)return '<div class="lcAg">📍 sugerido por '+esc(it.sug.quem)+': <b>'+esc(it.sug.local)+'</b> · '+esc(it.sug.rep)+' — aguardando o Celio</div>';
+  return '<button class="lcLk">📍 não fica aqui / não é meu</button>';
+}
+function lcLigar(li,it,mod){var b=li.querySelector('.lcLk');if(b)b.onclick=function(e){e.stopPropagation();abrirLocal(it,mod);};}
+function abrirLocal(it,mod){
+  vibra();lcIt=it;lcMod=mod;lcLocal='';lcRep='';lcSec='';
+  $('lcProd').textContent=it.desc;$('lcAntes').textContent='hoje: '+(it.local||'sem local')+' · '+((mod==='CV'?it.rep:it.quem)||'sem repositora');
+  $('lcBusca').value='';$('lcRes').innerHTML='';$('lcBuscaBox').style.display='none';$('lcObs').value='';
+  $('cardLocal').classList.add('on');lcMontar();
+  if(!lcOpc)api({acao:'locaisOpcoes',quem:quem,token:token}).then(function(r){if(r&&r.ok){lcOpc={locais:r.locais||[],reps:r.reps||[]};lcMontar();}else if(r&&r.reauth){irPin();}}).catch(function(){toast('Sem conexão','err');});
+}
+function lcMontar(){
+  var bl=$('lcLocais'),br=$('lcReps');bl.innerHTML='';br.innerHTML='';
+  if(!lcOpc){bl.innerHTML='<span class="lcCar">carregando…</span>';return;}
+  var top=lcOpc.locais.slice(0,10).map(function(x){return x.local;});
+  if(lcLocal&&top.indexOf(lcLocal)<0)top.unshift(lcLocal);
+  top.forEach(function(l){var s=document.createElement('button');s.textContent=l;s.className=l===lcLocal?'on':'';s.onclick=function(){lcEscolher(l);};bl.appendChild(s);});
+  var o=document.createElement('button');o.textContent='🔎 outro local…';o.className='ou';o.onclick=function(){$('lcBuscaBox').style.display='block';$('lcBusca').focus();};bl.appendChild(o);
+  lcOpc.reps.forEach(function(p){var s=document.createElement('button');s.textContent=p;s.className=p===lcRep?'on':'';s.onclick=function(){vibra();lcRep=p;lcMontar();};br.appendChild(s);});
+}
+function lcEscolher(l){vibra();lcLocal=l;var o=(lcOpc.locais||[]).filter(function(x){return x.local===l;})[0];lcSec=o?o.secao:'';if(o&&o.rep)lcRep=o.rep;$('lcBuscaBox').style.display='none';$('lcRes').innerHTML='';lcMontar();}
+$('lcBusca').addEventListener('input',function(){
+  var t=semAc(this.value).toLowerCase().trim(),ul=$('lcRes');ul.innerHTML='';if(!t||!lcOpc)return;
+  lcOpc.locais.filter(function(x){return semAc(x.local).toLowerCase().indexOf(t)>=0;}).slice(0,8).forEach(function(x){var li=document.createElement('li');li.innerHTML='<span>'+esc(x.local)+'</span><small>'+esc(x.rep)+'</small>';li.onclick=function(){lcEscolher(x.local);};ul.appendChild(li);});
+  var v=this.value.trim(),li2=document.createElement('li');li2.innerHTML='<span>usar como escrevi: "'+esc(v)+'"</span>';li2.onclick=function(){lcEscolher(v);};ul.appendChild(li2);
+});
+function lcEnviar(){
+  if(!lcLocal)return toast('Escolha onde o produto fica','err');if(!lcRep)return toast('Escolha quem repõe','err');
+  var it=lcIt,b=$('lcBt');b.disabled=true;
+  api({acao:'localSugerir',quem:quem,token:token,modulo:lcMod,sku:it.sku||'',desc:it.desc,localAntes:it.local||'',repAntes:(lcMod==='CV'?it.rep:it.quem)||'',local:lcLocal,rep:lcRep,secao:lcSec,obs:$('lcObs').value.trim()}).then(function(r){
+    b.disabled=false;
+    if(r&&r.ok){vibra();it.sug=r.sug;$('cardLocal').classList.remove('on');toast('Enviado — o Celio vai aprovar','ok');if(lcMod==='CV'){renderVAL();carregarVAL();}else{renderPSV();carregarPSV();}}
+    else if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(e){}irPin();}
+    else toast((r&&r.erro)||'Não deu','err');
+  }).catch(function(){b.disabled=false;toast('Sem conexão, tente de novo','err');});
+}
+function lcAprovar(box,lista,mod){ // bloco "LOCAIS A APROVAR" (só o Celio)
+  if(!lista||!lista.length)return;
+  var hd=document.createElement('div');hd.className='grp tg lcHd';hd.innerHTML='<span>📍 LOCAIS A APROVAR ('+lista.length+')</span>';box.appendChild(hd);
+  lista.forEach(function(x){
+    var d=document.createElement('div');d.className='lcAp';
+    d.innerHTML='<div class="q">'+esc(x.quem)+' · '+esc(String(x.data).slice(0,16))+(x.modulo==='CV'?' · validades':' · sem venda')+'</div><div class="d">'+esc(x.desc)+'</div><div class="t"><s>'+esc(x.localAntes||'sem local')+' · '+esc(x.repAntes||'—')+'</s><br>➜ <b>'+esc(x.local)+' · '+esc(x.rep)+'</b>'+(x.secao?' <small>('+esc(x.secao)+')</small>':'')+'</div>'+(x.obs?'<div class="o">“'+esc(x.obs)+'”</div>':'')+'<div class="bts"><button class="sim">✓ APROVAR</button><button class="nao">RECUSAR</button></div>';
+    function dec(ap,b){vibra();b.textContent='…';d.querySelectorAll('button').forEach(function(z){z.disabled=true;});
+      api({acao:'localDecidir',quem:quem,token:token,id:x.id,aprovar:ap?'1':''}).then(function(r){
+        if(r&&r.ok){toast(ap?'Aprovado — cadastro corrigido':'Recusado','ok');if(mod==='CV'){valCache.locais=r.pend||[];carregarVAL();renderVAL();}else{psvCache.locais=r.pend||[];carregarPSV();renderPSV();}}
+        else{toast((r&&r.erro)||'Não deu','err');d.querySelectorAll('button').forEach(function(z){z.disabled=false;});b.textContent=ap?'✓ APROVAR':'RECUSAR';}
+      }).catch(function(){toast('Sem conexão','err');d.querySelectorAll('button').forEach(function(z){z.disabled=false;});b.textContent=ap?'✓ APROVAR':'RECUSAR';});}
+    var bs=d.querySelector('.sim'),bn=d.querySelector('.nao');bs.onclick=function(){dec(true,bs);};bn.onclick=function(){dec(false,bn);};
+    box.appendChild(d);
+  });
+}
+
 // ===== PRODUTO SEM VENDA — v87 =====
 var psvCache=null,psvAba=null,psvNao={};
 var PSV_ABAS={ALERTA:'ALERTA','30':'30 DIAS','60':'60 DIAS'};
@@ -1342,7 +1428,7 @@ function irPSV(){
 }
 function carregarPSV(){
   api({acao:'semVenda',quem:quem}).then(function(r){
-    if(r&&r.ok){psvCache={abas:r.abas||[],tudo:!!r.tudo,hist:Number(r.hist)||0,itens:r.itens||[]};try{localStorage.setItem('ci_psv',JSON.stringify(psvCache));}catch(e){}renderPSV();}
+    if(r&&r.ok){psvCache={abas:r.abas||[],tudo:!!r.tudo,hist:Number(r.hist)||0,itens:r.itens||[],locais:r.locais||[]};try{localStorage.setItem('ci_psv',JSON.stringify(psvCache));}catch(e){}renderPSV();}
     else if(r&&r.erro){toast(r.erro,'err');}
   }).catch(function(){});
 }
@@ -1364,17 +1450,18 @@ function renderPSV(){
   if(!abas.length){$('psvTabs').innerHTML='';box.innerHTML='<p class="dica vazio">Nenhuma lista liberada para você.<br>Peça ao Celio.</p>';return;}
   if(abas.indexOf(psvAba)<0)psvAba=abas[0];
   psvCont();
+  lcAprovar(box,psvCache.locais,'PSV'); // v99
   var tudo=psvCache.tudo;
   if(psvAba==='ALERTA'){
     $('psvTit').textContent='Vende todo dia e parou de vender';
     $('psvDica').innerHTML='produto que vende todo dia, tem saldo no sistema e está há dias sem vender. veja se está na gôndola e responda.';
-    if(psvCache.hist<7){box.innerHTML='<p class="dica vazio">🚧 em construção — aguardando histórico de vendas<br><small>'+psvCache.hist+' de 7 dias de histórico</small></p>';return;}
+    if(psvCache.hist<7){box.insertAdjacentHTML('beforeend','<p class="dica vazio">🚧 em construção — aguardando histórico de vendas<br><small>'+psvCache.hist+' de 7 dias de histórico</small></p>');return;}
   }else{
     $('psvTit').textContent='Sem venda há '+psvAba+' dias';
     $('psvDica').innerHTML='produto com saldo no sistema que não vendeu nada nos últimos '+psvAba+' dias. veja se está na gôndola e responda.';
   }
   var its=psvCache.itens.filter(function(i){return i.aba===psvAba;});
-  if(!its.length){box.innerHTML='<p class="dica vazio">Nada nesta lista. 👍</p>';return;}
+  if(!its.length){box.insertAdjacentHTML('beforeend','<p class="dica vazio">Nada nesta lista. 👍</p>');return;}
   function ord(a,b){return String(a.local||'~').localeCompare(String(b.local||'~'))||(a.resp?1:0)-(b.resp?1:0)||String(a.desc).localeCompare(String(b.desc));}
   var grupos={},ordem=[];
   its.forEach(function(i){var g=tudo?String(i.quem||'Ney').toUpperCase():'MINHA LISTA';if(!grupos[g]){grupos[g]=[];ordem.push(g);}grupos[g].push(i);});
@@ -1390,18 +1477,19 @@ function psvBloco(box,tit,lista,tudo){
   if(fech)ul.style.display='none';else encher();
   hd.onclick=function(){var f=ul.style.display!=='none';if(!f)encher();ul.style.display=f?'none':'';hd.querySelector('.sx').textContent=f?'▸':'▾';cvGuardaFech(k,f);};
 }
+function psvVal(v){if(!v)return '';var p=String(v).split('|');if(!p[0])return '';return '<div class="pv">⏳ vence <b>'+esc(p[0].slice(0,5))+'</b> · deve sobrar '+esc(p[1]||'?')+' · '+(/^REB/.test(p[2]||'')?'já está na rebaixa'+esc(String(p[2]).replace(/^REB/,'')):'sugestão de rebaixa enviada ao Celio')+'</div>';} // v99
 function psvNum(v){return String(v==null?'':v).replace('.',',');}
 function psvItem(it){
   var li=document.createElement('li');
   var info='<div class="d"><span class="tag'+(it.resp?' ok':'')+'">'+(it.resp?'OK':esc(it.dias)+' DIAS')+'</span>'+esc(it.desc)+'</div>'+
-    '<div class="m">SKU '+esc(it.sku)+(it.media&&Number(String(it.media).replace(',','.'))>0?' · média '+esc(psvNum(it.media))+'/dia':'')+' · saldo <b>'+esc(psvNum(it.saldo))+'</b>'+(it.fam?' · família '+esc(it.fam):'')+(psvCache.tudo&&it.quem?' · '+esc(it.quem):'')+'</div>';
+    '<div class="m">SKU '+esc(it.sku)+(it.media&&Number(String(it.media).replace(',','.'))>0?' · média '+esc(psvNum(it.media))+'/dia':'')+' · saldo <b>'+esc(psvNum(it.saldo))+'</b>'+(it.fam?' · família '+esc(it.fam):'')+(psvCache.tudo&&it.quem?' · '+esc(it.quem):'')+'</div>'+psvVal(it.val);
   if(it.resp){
     li.className='feito';
     li.innerHTML=info+'<div class="m"><b>'+esc(it.resp)+'</b>'+(it.motivo?': '+esc(it.motivo):'')+'<br>'+esc(it.por)+' · '+esc(it.hora)+'</div><button class="desf">DESFAZER</button>';
     var bd=li.querySelector('.desf');bd.onclick=function(){psvResp(it,'DESFAZER','',bd,li);};return li;
   }
   if(!psvNao[it.id]){
-    li.innerHTML=info+'<div class="bts"><button class="sim">ESTÁ NA GÔNDOLA</button><button class="nao">NÃO ESTÁ</button></div>';
+    li.innerHTML=info+'<div class="bts"><button class="sim">ESTÁ NA GÔNDOLA</button><button class="nao">NÃO ESTÁ</button></div>'+lcLink(it,'PSV');lcLigar(li,it,'PSV');
     var bs=li.querySelector('.sim');bs.onclick=function(){psvResp(it,'GONDOLA','',bs,li);};
     li.querySelector('.nao').onclick=function(){vibra();psvNao[it.id]=1;li.replaceWith(psvItem(it));};
     return li;
