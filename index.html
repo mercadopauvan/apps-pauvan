@@ -1057,19 +1057,24 @@ function buscar(cod){
     if(lidoTrava)$('camLidoTx').textContent='informe a quantidade e salve'; // v74: fica escuro até SALVAR/CANCELAR
   }).catch(function(e){$('status').textContent='';toast('Erro ao consultar: '+e,'err');liberarLeitura();});
 }
+// v108 (07/11/2026): pacotes da produção da padaria — mostrar PACOTE em vez de UNIDADE (1 = 1 pacote)
+var SKU_PAD={'45391':1,'46775':1,'46824':1,'46966':1,'46782':1,'46783':1,'47367':1,'47368':1,'47369':1};
+function pctPad(p){if(!p||!SKU_PAD[String(p.sku)])return null;var d=String(p.desc||'').toUpperCase(),m=d.match(/PCT\s*(\d+)\s*UN/);if(m)return{t:'PACOTE COM '+m[1]+' UNIDADES',s:'1 = 1 pacote inteiro ('+m[1]+' salgados) · é isso que vai para a baixa'};m=d.match(/(\d+(?:[.,]\d+)?)\s*KG/);return{t:'PACOTE'+(m?' DE '+m[1].replace('.',',')+' KG':''),s:'1 = 1 pacote inteiro · é isso que vai para a baixa'};}
 function abrirCard(p){
   produtoAtual=p;
+  var pcT=pctPad(p);if(pcT)p.un='UNIDADE';
   $('cardNF').style.display=p.nf?'block':'none';
   $('cardDesc').textContent=p.desc||('Código '+p.codigo);
   $('cardCod').textContent=(p.sku?'SKU '+p.sku+' · ':'')+'cód. '+p.codigo;
   var kg=/QUILO|KG|LITRO/i.test(p.un);
   $('cardUn').textContent=kg?(/LITRO/i.test(p.un)?'L':'kg'):'un';
   var q=$('qtd');q.value=kg?'':'1';q.placeholder=kg?'peso em kg':'';
-  var et=$('cardEtiq');
+  var et=$('cardEtiq');et.textContent='';et.style.cssText='display:none;margin-top:8px;font-size:14px;color:#14532d;font-weight:600';
   if(p.pesoSug){q.value=String(p.pesoSug.toFixed(3)).replace('.',',');et.textContent='Etiqueta R$ '+p.etiqTotal.toFixed(2).replace('.',',')+' → peso calculado. Confira com o PESO da etiqueta.';et.style.display='block';}else{et.style.display='none';}
   // v75: produto por kg com código de barras e peso na descrição (ex.: UVA 500G) → pede em unidades e converte para kg
   p.pesoUn=0;
   if(kg&&!p.pesoSug&&/QUILO|KG/i.test(p.un)&&p.codigo&&p.codigo!==p.sku&&/^\d{8,14}$/.test(p.codigo)){var pw=pesoDaDesc(p.desc);if(pw){p.pesoUn=pw;$('cardUn').textContent='un';q.value='1';q.placeholder='';mostraConv();}}
+  if(pcT){$('cardUn').textContent='pct';et.innerHTML='📦 <b>'+esc(pcT.t)+'</b><br>'+esc(pcT.s);et.style.cssText='display:block;margin-top:8px;font-size:14px;font-weight:600;background:#fff7ed;color:#9a3412;border:1px solid #fdba74;border-radius:10px;padding:8px 10px';}
   var av=tipoAtual==='AVARIA';
   $('cardAv').style.display=av?'block':'none';$('card').classList.toggle('compacto',av);
   if(av){motivoAtual=null;fotoAtual='';fotoAtual2='';$('btVenc').classList.remove('on');$('btAvar').classList.remove('on');$('validade').style.display='none';$('validade').value='';$('fotoPrev').style.display='none';$('fotoPrev').src='';$('fotoPrev2').style.display='none';$('fotoPrev2').src='';rotuloFoto1();$('btFotoAv2').textContent='📷 Foto 2 — produtos (mostrando a quantidade)';}
