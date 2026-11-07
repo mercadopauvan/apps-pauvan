@@ -367,6 +367,7 @@ ul.cv li .vdMsg{margin-top:8px;border-radius:10px;padding:9px 10px;font-size:13.
 ul.cv li .vdMsg.vok{background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46} ul.cv li .vdMsg.vaz{background:#eff6ff;border:1px solid #93c5fd;color:#1e3a8a} ul.cv li .vdMsg.ver{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b}
 ul.cv li.vdOn{border-color:#7c3aed}
 #valLista .grp.vcHd{background:#ede9fe;color:#5b21b6;display:flex;justify-content:space-between;cursor:pointer}
+#grupos .blq{flex:1 1 100%;width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:12px;padding:8px;margin:0 0 2px;background:#fff}#grupos .blq h4{margin:0 0 6px;font-size:12px;letter-spacing:.5px;color:#64748b}#grupos .blq .bb{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}#grupos .blq .bb button{padding:10px 4px;font-size:13px;min-height:0;margin:0;width:100%;border:2px solid #16a34a;border-radius:10px;background:#fff;font-weight:700;color:#0f172a}#grupos .blq.ins{background:#fff7ed;border-color:#fdba74}#grupos .blq.ins .bb button{border-color:#ea580c} /* v107 */
 .vaHd{background:#0f766e!important;color:#fff!important}.vaBox{background:#fff;border:2px dashed #0f766e;border-radius:12px;padding:12px;margin:6px 0 14px}.vaBt{display:flex;gap:8px}.vaBt button{flex:1;padding:14px 6px;border-radius:10px;border:0;font-weight:700;font-size:15px}.vaScan{background:#0f766e;color:#fff}.vaNome{background:#e2e8f0;color:#0f172a}.vaProd{background:#f0fdfa;border-radius:10px;padding:10px;margin-bottom:10px}.vaProd .d{font-weight:800;font-size:16px}.vaProd .m{font-size:13px;color:#475569;margin-top:2px}.vaLb{font-size:12px;font-weight:800;color:#0f766e;margin:8px 0 4px}.vaDt input{font-size:18px;padding:10px;border:2px solid #0f766e;border-radius:10px;width:100%;box-sizing:border-box;margin-bottom:8px}.vaRes{border-radius:10px;padding:10px;margin-top:10px;font-size:14px}.vaRes.ok{background:#dcfce7;color:#14532d}.vaBusca{margin-top:10px}.vaIn{width:100%;box-sizing:border-box;font-size:16px;padding:10px;border:2px solid #cbd5e1;border-radius:10px}.vaUl,.vaMeus{list-style:none;margin:6px 0 0;padding:0}.vaUl li{display:flex;justify-content:space-between;gap:8px;padding:10px;border-bottom:1px solid #e5e7eb;font-size:14px}.vaUl small{color:#64748b}.vaMeus li{background:#f8fafc;border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:13px} /* v104 */ .vaF{margin:0!important;padding:0!important}.vaF>li{list-style:none;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:none!important}
 .vcIt{border:1px solid #e5e7eb;border-radius:12px;background:#fff;padding:10px;margin-bottom:8px;font-size:13.5px}.vcIt .q{font-size:12px;color:#64748b;font-weight:700;margin-bottom:3px}.vcIt .pill{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px;color:#fff;margin-right:5px}
 ul.psv li .pv{font-size:13px;margin-top:6px;color:#9a3412;background:#fff7ed;border-radius:8px;padding:5px 8px}
@@ -890,10 +891,17 @@ function renderGrupos(aberto){
   } else {
     var g=gruposCache[aberto];
     var t=document.createElement('div');t.className='titulo';t.textContent=g.grupo+' — escolha';box.appendChild(t);
+    var blqs={},ordB=[]; // v107: bloquinhos (coluna BLOCO da aba ATALHOS)
     g.itens.forEach(function(it){
+      if(it.bloco){if(!blqs[it.bloco]){blqs[it.bloco]=[];ordB.push(it.bloco);}blqs[it.bloco].push(it);return;}
       var b=document.createElement('button');b.className='item';b.textContent=it.botao;
       if(!it.ok)b.style.opacity='.5';
       b.onclick=function(){abrirItem(it);};box.appendChild(b);
+    });
+    ordB.forEach(function(nb){
+      var d=document.createElement('div');d.className='blq'+(/INSUMO/i.test(nb)?' ins':'');d.innerHTML='<h4>'+esc(nb)+'</h4><div class="bb"></div>';
+      blqs[nb].forEach(function(it){var b=document.createElement('button');b.textContent=it.botao;if(!it.ok)b.style.opacity='.5';b.onclick=function(){abrirItem(it);};d.querySelector('.bb').appendChild(b);});
+      box.appendChild(d);
     });
     var v=document.createElement('button');v.className='voltar';v.textContent='← voltar';v.onclick=function(){renderGrupos(null);};box.appendChild(v);
   }
