@@ -367,6 +367,7 @@ ul.cv li .vdMsg{margin-top:8px;border-radius:10px;padding:9px 10px;font-size:13.
 ul.cv li .vdMsg.vok{background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46} ul.cv li .vdMsg.vaz{background:#eff6ff;border:1px solid #93c5fd;color:#1e3a8a} ul.cv li .vdMsg.ver{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b}
 ul.cv li.vdOn{border-color:#7c3aed}
 #valLista .grp.vcHd{background:#ede9fe;color:#5b21b6;display:flex;justify-content:space-between;cursor:pointer}
+.vaHd{background:#0f766e!important;color:#fff!important}.vaBox{background:#fff;border:2px dashed #0f766e;border-radius:12px;padding:12px;margin:6px 0 14px}.vaBt{display:flex;gap:8px}.vaBt button{flex:1;padding:14px 6px;border-radius:10px;border:0;font-weight:700;font-size:15px}.vaScan{background:#0f766e;color:#fff}.vaNome{background:#e2e8f0;color:#0f172a}.vaProd{background:#f0fdfa;border-radius:10px;padding:10px;margin-bottom:10px}.vaProd .d{font-weight:800;font-size:16px}.vaProd .m{font-size:13px;color:#475569;margin-top:2px}.vaLb{font-size:12px;font-weight:800;color:#0f766e;margin:8px 0 4px}.vaDt input{font-size:18px;padding:10px;border:2px solid #0f766e;border-radius:10px;width:100%;box-sizing:border-box;margin-bottom:8px}.vaRes{border-radius:10px;padding:10px;margin-top:10px;font-size:14px}.vaRes.ok{background:#dcfce7;color:#14532d}.vaBusca{margin-top:10px}.vaIn{width:100%;box-sizing:border-box;font-size:16px;padding:10px;border:2px solid #cbd5e1;border-radius:10px}.vaUl,.vaMeus{list-style:none;margin:6px 0 0;padding:0}.vaUl li{display:flex;justify-content:space-between;gap:8px;padding:10px;border-bottom:1px solid #e5e7eb;font-size:14px}.vaUl small{color:#64748b}.vaMeus li{background:#f8fafc;border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:13px} /* v104 */ .vaF{margin:0!important;padding:0!important}.vaF>li{list-style:none;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:none!important}
 .vcIt{border:1px solid #e5e7eb;border-radius:12px;background:#fff;padding:10px;margin-bottom:8px;font-size:13.5px}.vcIt .q{font-size:12px;color:#64748b;font-weight:700;margin-bottom:3px}.vcIt .pill{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px;color:#fff;margin-right:5px}
 ul.psv li .pv{font-size:13px;margin-top:6px;color:#9a3412;background:#fff7ed;border-radius:8px;padding:5px 8px}
 /* v79: Vencidos da semana */
@@ -534,6 +535,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div class="contTop"><span id="valTit">Conferência de validade</span><span id="valProg"></span></div>
   <p class="dica" id="valDica" style="text-align:left;margin:0 0 10px"></p>
   <div id="valLista"></div>
+  <input type="file" id="fotoVA" accept="image/*" capture="environment" style="display:none">
 </section>
 
 <!-- 12. PRODUTO SEM VENDA (v87) -->
@@ -1235,7 +1237,7 @@ function irVAL(){
   renderVAL();carregarVAL();
 }
 function carregarVAL(){
-  api({acao:'validades',quem:quem}).then(function(r){if(r&&r.ok){valCache={trocas:r.trocas||[],feitos:r.feitos||[],verTudo:!!r.verTudo,cv:r.cv||{itens:[]},locais:r.locais||[],corr:r.corr||[]};try{localStorage.setItem('ci_val',JSON.stringify(valCache));}catch(e){}renderVAL();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
+  api({acao:'validades',quem:quem}).then(function(r){if(r&&r.ok){valCache={trocas:r.trocas||[],feitos:r.feitos||[],verTudo:!!r.verTudo,cv:r.cv||{itens:[]},locais:r.locais||[],corr:r.corr||[],avs:r.avs||[]};try{localStorage.setItem('ci_val',JSON.stringify(valCache));}catch(e){}renderVAL();}else if(r&&r.erro){toast(r.erro,'err');}}).catch(function(){});
 }
 function valMarcar(it,b,desf){
   if(desf&&b.dataset.c!=='1'){b.dataset.c='1';b.textContent='DESFAZER? TOQUE DE NOVO';setTimeout(function(){b.dataset.c='';b.textContent='DESFAZER';},3000);return;}
@@ -1346,7 +1348,7 @@ function renderCV(box){
   $('valProg').textContent=feitos.length+' / '+its.length+' conferidos';
   lcAprovar(box,valCache.locais,'CV'); // v99
   vcLista(box,valCache.corr); // v100
-  if(!its.length){box.insertAdjacentHTML('beforeend','<p class="dica" style="font-size:16px;margin-top:20px">Nada para conferir nesta semana. 👍</p>');return;}
+  if(!its.length){box.insertAdjacentHTML('beforeend','<p class="dica" style="font-size:16px;margin-top:20px">Nada para conferir nesta semana. 👍</p>');vaBloco(box);return;}
   function ord(a,b){return String(a.local||'~').localeCompare(String(b.local||'~'))||String(a.validade).split('/').reverse().join('').localeCompare(String(b.validade).split('/').reverse().join(''))||String(a.desc).localeCompare(String(b.desc));} // v84: dentro do local, validade mais próxima primeiro
   var curta=pend.filter(function(i){return i.janela==='CURTA'&&i.status==='PENDENTE';}).sort(ord); // v99: chegou com validade curta = prioridade
   pend=pend.filter(function(i){return curta.indexOf(i)<0;});
@@ -1371,6 +1373,7 @@ function renderCV(box){
   if(tudo){var ep=its.filter(function(i){return i.status==='CONFERIDO'&&i.estPend&&!cvAberto[i.id];}).sort(ord);
     if(ep.length)bloco('ESTOQUE NÃO CONFERIDO','',ep,'est',false);}
   if(feitos.length)bloco('CONFERIDOS NESTA SEMANA','ok',feitos.sort(ord),'feito',false);
+  vaBloco(box); // v104
 }
 function cvFechMapa(){try{return JSON.parse(localStorage.getItem('cv_fech')||'{}')||{};}catch(e){return {};}}
 function cvFechado(k,tudo){var m=cvFechMapa();if(m[k]!==undefined)return !!m[k];return !!tudo&&k.indexOf('ATRASADOS')<0&&k.indexOf('CURTA')<0;}
@@ -1397,9 +1400,9 @@ function vcLista(box,lista){
   if(!lista||!lista.length)return;
   var hd=document.createElement('div');hd.className='grp vcHd';hd.innerHTML='<span>📅 VALIDADES CORRIGIDAS — 7 dias ('+lista.length+')</span><span>'+(vcAberto?'▲':'▼')+'</span>';hd.onclick=function(){vcAberto=!vcAberto;renderVAL();};box.appendChild(hd);
   if(!vcAberto)return;
-  var cor={'CORRIGIDA':'#7c3aed','VALIDADE NOVA':'#0f766e','JA EXISTIA':'#2563eb'};
+  var cor={'CORRIGIDA':'#7c3aed','VALIDADE NOVA':'#0f766e','JA EXISTIA':'#2563eb','ACHADA NA LOJA':'#b45309','ACHADA (JA EXISTIA)':'#b45309'};
   lista.forEach(function(x){var d=document.createElement('div');d.className='vcIt';
-    d.innerHTML='<div class="q">'+esc(x.quem)+' · '+esc(x.em)+(x.nf?' · NF '+esc(x.nf)+' '+esc(x.forn):'')+(x.conf?' · conferida por '+esc(x.conf):'')+'</div><span class="pill" style="background:'+(cor[x.tipo]||'#475569')+'">'+esc(x.tipo==='JA EXISTIA'?'JÁ EXISTIA':x.tipo)+'</span><b>'+esc(x.desc)+'</b><br>'+(x.tipo==='JA EXISTIA'?'procurou '+esc(x.lista.slice(0,5))+', achou '+esc(x.achada)+' (vem depois)':(x.tipo==='VALIDADE NOVA'?'não achou '+esc(x.lista.slice(0,5))+' · registrou '+esc(x.achada):esc(x.lista.slice(0,5))+' ➜ <b>'+esc(x.achada.slice(0,5))+'</b> ('+esc(x.dias)+' dias)'));
+    d.innerHTML='<div class="q">'+esc(x.quem)+' · '+esc(x.em)+(x.nf?' · NF '+esc(x.nf)+' '+esc(x.forn):'')+(x.conf?' · conferida por '+esc(x.conf):'')+'</div><span class="pill" style="background:'+(cor[x.tipo]||'#475569')+'">'+esc(x.tipo==='JA EXISTIA'?'JÁ EXISTIA':(x.tipo==='ACHADA (JA EXISTIA)'?'ACHADA NA LOJA (já existia)':(x.tipo==='ACHADA NA LOJA'?'ACHADA NA LOJA (nova)':x.tipo)))+'</span><b>'+esc(x.desc)+'</b><br>'+(/^ACHADA/.test(x.tipo)?'validade <b>'+esc(x.achada)+'</b> · '+esc(x.qtd)+' un'+(x.crit?' · '+esc(x.crit==='SUGERIR REBAIXA'?'SUGERIR REBAIXA (sobra '+x.sobra+')':x.crit):''):'')+(/^ACHADA/.test(x.tipo)?'':x.tipo==='JA EXISTIA'?'procurou '+esc(x.lista.slice(0,5))+', achou '+esc(x.achada)+' (vem depois)':(x.tipo==='VALIDADE NOVA'?'não achou '+esc(x.lista.slice(0,5))+' · registrou '+esc(x.achada):esc(x.lista.slice(0,5))+' ➜ <b>'+esc(x.achada.slice(0,5))+'</b> ('+esc(x.dias)+' dias)'));
     box.appendChild(d);});
 }
 // ===== v99: "NÃO FICA AQUI" (local / repositora errados) + aprovação do Celio =====
@@ -2025,6 +2028,69 @@ SCAN_CB.fotoConf=function(cod){
 $('fotoConf').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fotoConf);});
 SCAN_CB.fotoCodEmb=function(cod){$('ccCodLido').value=cod;vibra();beep();checarCodLido();};
 $('fotoCodEmb').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fotoCodEmb);});
+// ===== v104: VALIDADE FORA DA LISTA (a repositora lança um lote que não veio na lista) =====
+var vaProd=null,vaSalvo=null,vaRes=null;
+function vaBloco(box){
+  var hd=document.createElement('div');hd.className='grp vaHd';hd.innerHTML='<span>➕ VALIDADE FORA DA LISTA</span>';box.appendChild(hd);
+  var d=document.createElement('div');d.className='vaBox';box.appendChild(d);
+  if(vaSalvo){
+    d.innerHTML='<div class="vaProd"><div class="d">'+esc(vaSalvo.desc)+'</div><div class="m">validade '+esc(vaSalvo.val)+' · '+esc(vaSalvo.total)+' un</div></div><div class="vaRes ok">✅ <b>Salvo!</b> Validade lançada.</div><div class="vaBt" style="margin-top:10px"><button class="vaScan">📷 BIPAR OUTRO</button><button class="vaNome">🔎 BUSCAR PELO NOME</button></div>';
+    d.querySelector('.vaScan').onclick=function(){vaSalvo=null;vaBipar();};d.querySelector('.vaNome').onclick=function(){vaSalvo=null;vaRes=[];renderVAL();setTimeout(function(){var i=document.querySelector('.vaIn');if(i)i.focus();},50);};
+  }else if(vaProd){
+    var p=vaProd;
+    d.innerHTML='<div class="vaProd"><div class="d">'+esc(p.desc)+'</div><div class="m">SKU '+esc(p.sku)+(p.secao?' · '+esc(p.secao):'')+(p.local?' · 📍 '+esc(p.local):'')+(p.media!==''&&p.media!=null?' · vende ~'+String(p.media).replace('.',',')+' por dia':'')+'</div></div>'+
+      '<div class="vaLb">VALIDADE QUE ESTÁ NO PRODUTO *</div><div class="vaDt"><input type="date" class="vaVal"></div>'+
+      '<ul class="cv vaF"><li><div class="qq"><label>ÁREA DE VENDA *<input class="ia" type="text" inputmode="decimal"></label><label>ESTOQUE<input class="ie" type="text" inputmode="decimal" placeholder="opcional"></label><div class="tt">TOTAL<b class="it">0</b></div></div>'+
+      '<div class="bts"><button class="ok">SALVAR</button><button class="nao">CANCELAR</button></div></li></ul>';
+    var ia=d.querySelector('.ia'),ie=d.querySelector('.ie'),tt=d.querySelector('.it'),vv=d.querySelector('.vaVal'),bo=d.querySelector('.ok');
+    function soma(){tt.textContent=String(((cvNum(ia.value)||0)+(cvNum(ie.value)||0))).replace('.',',');}
+    ia.oninput=soma;ie.oninput=soma;
+    d.querySelector('.nao').onclick=function(){vibra();vaProd=null;renderVAL();};
+    bo.onclick=function(){
+      var m=String(vv.value).match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m){toast('Escolha a validade que está no produto','err');return;}
+      var a=cvNum(ia.value);if(a==null||isNaN(a)||a<0){toast('Informe a quantidade da área de venda','err');return;}
+      var e=cvNum(ie.value);if(e!=null&&(isNaN(e)||e<0)){toast('Quantidade do estoque inválida','err');return;}
+      if(!(a+(e||0))){toast('Quantidade zerada','err');return;}
+      var val=m[3]+'/'+m[2]+'/'+m[1];vibra();bo.textContent='…';bo.disabled=true;
+      api({acao:'cvAvulso',quem:quem,token:token,sku:p.sku,validade:val,area:ia.value,estoque:ie.value}).then(function(r){
+        if(r&&r.ok){vaSalvo={desc:p.desc,val:val,total:String(a+(e||0)).replace('.',',')};vaProd=null;toast('Salvo!','ok');carregarVAL();renderVAL();}
+        else if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(x){}irPin();}
+        else{toast('Não deu: '+(r&&r.erro||''),'err');bo.textContent='SALVAR';bo.disabled=false;}
+      }).catch(function(){toast('Sem internet — tente de novo','err');bo.textContent='SALVAR';bo.disabled=false;});
+    };
+  }else{
+    d.innerHTML='<div class="vaBt"><button class="vaScan">📷 BIPAR PRODUTO</button><button class="vaNome">🔎 BUSCAR PELO NOME</button></div>'+(vaRes?'<div class="vaBusca"><input class="vaIn" type="search" placeholder="nome do produto" enterkeyhint="search"><ul class="vaUl"></ul></div>':'');
+    d.querySelector('.vaScan').onclick=vaBipar;
+    d.querySelector('.vaNome').onclick=function(){vaRes=vaRes?null:[];renderVAL();setTimeout(function(){var i=document.querySelector('.vaIn');if(i)i.focus();},50);};
+    if(vaRes){
+      var inp=d.querySelector('.vaIn'),ul=d.querySelector('.vaUl');
+      vaRes.forEach(function(it){var li=document.createElement('li');li.innerHTML='<span>'+esc(it.desc)+'</span><small>'+esc(it.sku)+'</small>';li.onclick=function(){vibra();vaAbrir({sku:it.sku});};ul.appendChild(li);});
+      inp.onkeydown=function(ev){if(ev.key!=='Enter')return;ev.preventDefault();var v=inp.value.trim();if(!v)return;inp.blur();
+        if(/^[\d\s.-]+$/.test(v)){vaAbrir({codigo:v.replace(/\D/g,'')});return;}
+        ul.innerHTML='<li><span>Procurando…</span></li>';
+        api({acao:'buscarNome',texto:v,kg:'todos'}).then(function(r){vaRes=(r&&r.itens)||[];if(!vaRes.length)toast('Nada encontrado com "'+v+'"','err');renderVAL();var i=document.querySelector('.vaIn');if(i)i.value=v;}).catch(function(){toast('Sem conexão','err');});};
+    }
+  }
+  var avs=(valCache&&valCache.avs)||[];
+  if(avs.length){
+    var h2=document.createElement('div');h2.className='grp ok';h2.innerHTML='<span>LANÇADOS POR MIM — 7 DIAS ('+avs.length+')</span>';box.appendChild(h2);
+    var ul2=document.createElement('ul');ul2.className='vaMeus';
+    avs.forEach(function(x){var li=document.createElement('li');li.innerHTML='<b>'+esc(x.desc)+'</b><br>validade '+esc(String(x.val).slice(0,5))+' · '+esc(x.qtd)+' un · '+esc(x.em);ul2.appendChild(li);});
+    box.appendChild(ul2);
+  }
+}
+function vaBipar(){vibra();escanear('fotoVA');}
+function vaAbrir(q){
+  toast('Buscando o produto…');
+  api({acao:'cvAvInfo',quem:quem,token:token,codigo:q.codigo||'',sku:q.sku||''}).then(function(r){
+    if(r&&r.ok){vaProd=r;vaRes=null;vaSalvo=null;renderVAL();setTimeout(function(){var b=document.querySelector('.vaBox');if(b)b.scrollIntoView({block:'start',behavior:'smooth'});},60);}
+    else if(r&&r.reauth){irPin();}
+    else toast((r&&r.erro)||'Produto não encontrado','err');
+  }).catch(function(){toast('Sem conexão — tente de novo','err');});
+}
+SCAN_CB.fotoVA=function(cod){vibra();vaAbrir({codigo:cod});};
+$('fotoVA').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fotoVA);});
+
 // ===== v62: TELA INICIAL NOVA + CONSULTA PREÇO (só no app hospedado; o link antigo continua igual) =====
 function irHome(){
   var h=new Date().getHours(),sd=h<12?'Bom dia':(h<18?'Boa tarde':'Boa noite');
