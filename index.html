@@ -2248,7 +2248,9 @@ function abrirConfItem(i){
   confKgUn=i.un==='KG'&&!!i.unPlenus&&!/QUILO/.test(i.unPlenus);
   var fb=$('ccFormas');fb.innerHTML='';
   confKgCx=emb&&(i.unPlenus?/QUILO/.test(i.unPlenus):/\bKG\s*\**\s*$/i.test(i.produto)); // nota em caixa, vendido por kg: sem opção UNIDADE
-  var fs=i.un==='KG'?(confKgUn?[['KG','⚖️ KG + peças']]:[['KG','⚖️ KG'],['PECAS','🔢 PEÇAS']]):(confKgCx?[['CAIXA','📦 CAIXAS'],['KGCX','⚖️ PESEI (KG)']]:[['UNIDADE','UNIDADE'],['CAIXA','📦 CAIXA / FARDO / DISPLAY']]);
+  var lingCx=i.un==='KG'&&!confKgUn&&/\bLING\w*\.?\s.*\b(CALABRESA|TOSCANA)\b/.test(semAc(i.produto||'').toUpperCase())&&!/FININHA/.test(semAc(i.produto||'').toUpperCase()); // v106: linguiça calabresa/toscana: KG ou CAIXAS (kg por caixa)
+  if(lingCx)confKgCx=true;
+  var fs=lingCx?[['KG','⚖️ KG'],['CAIXA','📦 CAIXAS']]:i.un==='KG'?(confKgUn?[['KG','⚖️ KG + peças']]:[['KG','⚖️ KG'],['PECAS','🔢 PEÇAS']]):(confKgCx?[['CAIXA','📦 CAIXAS'],['KGCX','⚖️ PESEI (KG)']]:[['UNIDADE','UNIDADE'],['CAIXA','📦 CAIXA / FARDO / DISPLAY']]);
   var nomeHf=semAc(i.produto||'').toUpperCase(); // v33: hortifruti com regra própria
   var ehHf=i.horti&&!/SUCO|REFRESCO|NECTAR|BEBIDA|SABOR|GELATINA|GELEIA|PASSA|IOGURTE|SORVETE|BALA|DOCE|SOPA|CONGELAD|\bPO\b/.test(nomeHf); // v39: regra de hortifruti só para fruta/verdura in natura (suco de uva em pó segue UNIDADE / DP)
   confPesoObrig=ehHf&&/BROCOL|COUVE.?FLOR|REPOLHO ROXO|ACELGA/.test(nomeHf);confUva=ehHf&&/\bUVAS?\b/.test(nomeHf);
