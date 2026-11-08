@@ -3168,7 +3168,7 @@ HOME_DEF.CONTAGEM_ESTOQUE=['LOJA E RECEBIMENTO','Contagem de estoque','contar o 
 HOME_DEF.ETIQUETAS=['LOJA E RECEBIMENTO','Pedir etiqueta','etiqueta de preço pequena ou grande','#7c3aed','tag'];
 HOME_DEF.ETIQUETAS_FILA=['LOJA E RECEBIMENTO','Fila de etiquetas','imprimir as etiquetas pedidas','#9333ea','tag'];
 NOMES_TIPO.CONTAGEM_ESTOQUE='CONTAGEM DE ESTOQUE';NOMES_TIPO.ETIQUETAS='PEDIR ETIQUETA';NOMES_TIPO.ETIQUETAS_FILA='FILA DE ETIQUETAS';
-var HOME_ORDEM=['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA','CONTAGEM_ESTOQUE','ETIQUETAS','ETIQUETAS_FILA'];
+var HOME_ORDEM={lista:['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA','CONTAGEM_ESTOQUE','ETIQUETAS','ETIQUETAS_FILA'],forEach:function(fn){var cel=semAc(quem||'').toLowerCase().trim()==='celio';this.lista.forEach(function(a){if(cel&&a==='ETIQUETAS_FILA')return;fn(a);});}}; // a fila do Celio fica em GESTÃO
 function v9SubHtml(a,sub){
   var r=resumoCache||{},sel=function(n,t){return '<span class="v9Selo">'+n+'</span> '+esc(t);};
   if(a==='CONTAGEM_ESTOQUE'&&r.cta)return sel(r.cta,r.cta===1?'produto para contar':'produtos para contar');
@@ -3177,8 +3177,9 @@ function v9SubHtml(a,sub){
   return esc(sub);
 }
 function v9Gestao(box){
-  [['📦','Contagem de estoque',function(){var r=resumoCache||{};return r.ctaDec?'<span class="v9Selo">'+r.ctaDec+'</span> a decidir'+(r.ctaAg?' · '+r.ctaAg+' aguardando':''):(r.ctaAg?r.ctaAg+' aguardando contagem':'pedir, decidir e histórico');},irGC,'#0f766e','cont'],
-   ['👀','Validade na frente',function(){var r=resumoCache||{};return r.vfSum?'<span class="v9Selo">'+r.vfSum+'</span> lote(s) sumido(s) para decidir':'acerto das repositoras e lotes sumidos';},irGV,'#a16207','conf']].forEach(function(x){
+  var gl=[];if(appsCache.indexOf('ETIQUETAS_FILA')>=0)gl.push(['🏷️','Fila de etiquetas',function(){var r=resumoCache||{};return r.etqFila?'<span class="v9Selo">'+r.etqFila+'</span> na fila para imprimir':'nenhuma etiqueta na fila';},irEF,'#9333ea','tag']);
+  gl.concat([['📦','Contagem de estoque',function(){var r=resumoCache||{};return r.ctaDec?'<span class="v9Selo">'+r.ctaDec+'</span> a decidir'+(r.ctaAg?' · '+r.ctaAg+' aguardando':''):(r.ctaAg?r.ctaAg+' aguardando contagem':'pedir, decidir e histórico');},irGC,'#0f766e','cont'],
+   ['👀','Validade na frente',function(){var r=resumoCache||{};return r.vfSum?'<span class="v9Selo">'+r.vfSum+'</span> lote(s) sumido(s) para decidir':'acerto das repositoras e lotes sumidos';},irGV,'#a16207','conf']]).forEach(function(x){
     var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:'+x[4]+'"><svg class="nhIc"><use href="#ic-'+x[5]+'"/></svg></span><span><b>'+x[1]+'</b><i>'+x[2]()+'</i></span><span class="ar">›</span>';
     b.onclick=function(){vibra();x[3]();};box.appendChild(b);
   });
