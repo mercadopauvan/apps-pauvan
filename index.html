@@ -929,7 +929,7 @@ $('btTrocarQuem').onclick=function(){pararCamera();quem=null;token=null;try{loca
 
 // ===== TIPO =====
 function escolherTipo(t){
-  if(v9Escolher(t))return; // v109
+  if(typeof v9Escolher==='function'&&v9Escolher(t))return; // v109
   tipoAtual=t;
   if(t==='REBAIXAS'){irReb();return;}
 if(t==='CONTAGEM'){irCont();return;}
@@ -2261,14 +2261,14 @@ function irHome(){
   if(ab==='rebaixas'&&appsCache.indexOf('REBAIXAS')>=0){escolherTipo('REBAIXAS');return;}
   if(ab==='precosoff'&&appsCache.indexOf('PRECOS_OFF')>=0){escolherTipo('PRECOS_OFF');return;}
   if(ab==='semvenda'&&appsCache.indexOf('SEMVENDA')>=0){escolherTipo('SEMVENDA');return;} // v87
-  if(v9Abrir(ab))return; // v109
+  if(typeof v9Abrir==='function'&&v9Abrir(ab))return; // v109
   var abM={validades:'VALIDADES',fotos:'FOTOS',conferencia:'CONFERENCIA'};if(abM[ab]&&appsCache.indexOf(abM[ab])>=0){escolherTipo(abM[ab]);return;} // v103: avisos automáticos
   mostrar('tHome');renderHome();atualizarPushUI();
   api({acao:'resumoHome',quem:quem}).then(function(r){if(r&&r.ok){resumoCache=r;try{localStorage.setItem('ci_resumo',JSON.stringify(r));}catch(e){}renderHome();}}).catch(function(){});
 }
 function renderHome(){
   var box=$('nhLista');box.innerHTML='';var grupo='';
-  HOME_ORDEM.forEach(function(a){ // v109
+  (typeof HOME_ORDEM!=='undefined'?HOME_ORDEM:['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA']).forEach(function(a){ // v109
     if(appsCache.indexOf(a)<0)return;var d=HOME_DEF[a];
     if(d[0]!==grupo){grupo=d[0];var t=document.createElement('h3');t.textContent=grupo;box.appendChild(t);}
     var sub=d[2];
@@ -2277,11 +2277,11 @@ function renderHome(){
     if(a==='SEMVENDA'&&resumoCache.psv)sub=resumoCache.psv; // v87
     if(a==='PRECOS_OFF'&&resumoCache.poff!=null)sub=(resumoCache.poff?resumoCache.poff+' para etiquetar':'nenhuma etiqueta pendente')+(resumoCache.poffConf?' · '+resumoCache.poffConf+' aguardando ativação':''); // v76
     var b=document.createElement('button');b.className='nhR';
-    b.innerHTML='<span class="ib" style="background:'+d[3]+'"><svg class="nhIc"><use href="#ic-'+d[4]+'"/></svg></span><span><b>'+d[1]+'</b><i>'+v9SubHtml(a,sub)+'</i></span><span class="ar">›</span>';
+    b.innerHTML='<span class="ib" style="background:'+d[3]+'"><svg class="nhIc"><use href="#ic-'+d[4]+'"/></svg></span><span><b>'+d[1]+'</b><i>'+(typeof v9SubHtml==='function'?v9SubHtml(a,sub):esc(sub))+'</i></span><span class="ar">›</span>';
     b.onclick=function(){vibra();escolherTipo(a);};box.appendChild(b);
   });
   if(!box.children.length)box.innerHTML=appsOk?'<p class="dica" style="font-size:16px;margin-top:20px;line-height:1.5">Seus outros módulos ainda não foram liberados.<br>Peça ao Celio para liberar.</p>':'<p class="dica">Carregando…</p>';
-  if(semAc(quem||'').toLowerCase().trim()==='celio'){var g=document.createElement('h3');g.textContent='GESTÃO';box.appendChild(g);var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:#b45309"><svg class="nhIc"><use href="#ic-sino"/></svg></span><span><b>Enviar aviso</b><i>notificação no celular da equipe</i></span><span class="ar">›</span>';b.onclick=function(){vibra();irAviso();};box.appendChild(b);v9Gestao(box);} // v63 · v109: contagem e validade na frente
+  if(semAc(quem||'').toLowerCase().trim()==='celio'){var g=document.createElement('h3');g.textContent='GESTÃO';box.appendChild(g);var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:#b45309"><svg class="nhIc"><use href="#ic-sino"/></svg></span><span><b>Enviar aviso</b><i>notificação no celular da equipe</i></span><span class="ar">›</span>';b.onclick=function(){vibra();irAviso();};box.appendChild(b);if(typeof v9Gestao==='function')v9Gestao(box);} // v63 · v109: contagem e validade na frente
 }
 // ----- v63: notificações (Firebase) -----
 function pushSuportado(){return NOVA_HOME&&('Notification' in window)&&('serviceWorker' in navigator);}
@@ -3199,7 +3199,7 @@ function v9Abrir(ab){
 }
 ['fotoET','fotoCE','fotoGC'].forEach(function(id){try{$(id).addEventListener('change',function(){lerFotoPara(this,SCAN_CB[id]);});}catch(e){}});
 try{$('etIn').onkeydown=function(e){if(e.key==='Enter')v9Busca('etIn','etRes',etAbrir);};$('hfOutroIn').onkeydown=function(e){if(e.key==='Enter')hfOutro();};}catch(e){}
-try{if($('tScan').classList.contains('on'))v9Layout(tipoAtual);}catch(e){}
+try{if($('tScan').classList.contains('on'))v9Layout(tipoAtual);if($('tHome').classList.contains('on'))renderHome();navDepois(navTela());}catch(e){}
 
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script></body>
