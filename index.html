@@ -692,7 +692,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div id="ccTrocas"></div>
   <div id="ccAut" style="display:none"><div class="dica" style="text-align:left;margin:8px 0 4px;color:#b45309;font-weight:700">⚠ Validade com menos de 30 dias — quem autorizou receber?</div><div class="formas" id="ccAutBt"></div></div>
   <div class="lin" id="ccMotivoLin" style="display:none"><label>Motivo</label><input id="ccMotivo" type="text" placeholder="por que não veio / foi recusado? ex.: carcaça ruim"></div>
-  <div id="ccFalta" style="display:none;margin-top:8px"><div class="dica" id="ccFaltaTit" style="text-align:left;margin:0 0 4px;font-weight:700"></div><div class="formas" id="ccFaltaBt"><button data-t="TUDO" onclick="setFalta('TUDO')">TUDO</button><button data-t="PARTE" onclick="setFalta('PARTE')">SÓ UMA PARTE</button></div><div class="lin" id="ccFaltaQtdLin" style="display:none"><label id="ccFaltaQtdLb">Quantas?</label><input id="ccFaltaQtd" type="text" inputmode="decimal" placeholder="ex.: 3"></div><div class="dica" id="ccFaltaDica" style="text-align:left;display:none;color:#92400e;font-weight:700">Lance acima só o que ficou (as boas), com a validade, e toque em SALVAR.</div></div>
+  <div id="ccFalta" style="display:none;margin-top:8px"><div class="dica" id="ccFaltaTit" style="text-align:left;margin:0 0 4px;font-weight:700"></div><div class="formas" id="ccFaltaBt"><button data-t="TUDO" onclick="setFalta('TUDO')">TUDO</button><button data-t="PARTE" onclick="setFalta('PARTE')">SÓ UMA PARTE</button></div><div class="formas" id="ccFaltaUn" style="display:none"><button type="button" data-u="UN" onclick="setFaltaUn('UN')">UNIDADE</button><button type="button" data-u="CX" onclick="setFaltaUn('CX')">📦 CAIXA / FARDO</button></div><div class="lin" id="ccFaltaQtdLin" style="display:none"><label id="ccFaltaQtdLb">Quantas?</label><input id="ccFaltaQtd" type="text" inputmode="decimal" placeholder="ex.: 3"></div><div class="lin" id="ccFaltaFatLin" style="display:none"><label>Vem quantas por caixa?</label><input id="ccFaltaFat" type="text" inputmode="numeric" placeholder="ex.: 4"></div><div class="dica" id="ccFaltaDica" style="text-align:left;display:none;color:#92400e;font-weight:700">Lance acima só o que ficou (as boas), com a validade, e toque em SALVAR.</div></div>
   <button class="btn mais" onclick="addLote()">+ outra validade</button>
   <button class="btn ok" onclick="salvarConfItem()">SALVAR</button>
   <button class="btn troca" onclick="abrirTroca()">🔁 VEIO OUTRO NO LUGAR</button>
@@ -2425,7 +2425,8 @@ function abrirConfItem(i){
   var eb=$('ccEmb');eb.style.display=(i.un==='KG'&&i.horti)||confUva?'block':'none';
   if(eb.style.display==='block'){var bb=$('ccEmbBt');bb.innerHTML='';[['BANDEJA 500G','Bandeja 500g'],['BANDEJA 250G','Bandeja 250g'],['SACOLA/KG','Saco / kg'],['OUTRO','Outro']].forEach(function(x){var b=document.createElement('button');b.textContent=x[1];b.dataset.e=x[0];b.onclick=function(){setEmb(x[0]);};bb.appendChild(b);});setEmb(confEmb,true);}
   $('ccMotivo').value=i.motivo||'';$('ccMotivoLin').style.display=(i.motivo||i.status==='NAO VEIO'||i.status==='RECUSADO')?'':'none';
-  confFaltaSt=i.faltaQtd?(i.faltaTipo||'RECUSADO'):'';confFaltaTipo=i.faltaQtd?'PARTE':'';$('ccFaltaQtd').value=i.faltaQtd||'';mostrarFalta(); // v46
+  confFaltaSt=i.faltaQtd?(i.faltaTipo||'RECUSADO'):'';confFaltaTipo=i.faltaQtd?'PARTE':'';confFaltaUn='UN';$('ccFaltaFat').value=''; // v110: devolução por caixa
+  $('ccFaltaQtd').value=i.faltaQtd||'';mostrarFalta(); // v46
   if(i.avDev){var dvA=$('ccDev'),tdA=i.avDev.qtd==='TUDO';dvA.style.display='';dvA.style.background='#fee2e2';dvA.style.color='#991b1b';dvA.textContent='⛔ devolução prevista pelo Celio: não receber '+(tdA?'o item inteiro':i.avDev.qtd+' '+(i.un==='UN'?'un':i.un))+(i.avDev.motivo?' — '+i.avDev.motivo:'')+(tdA?'. toque em RECUSADO para confirmar.':'. lance só o que fica (as boas), com a validade, e toque em SALVAR.'); // v93
     if(i.status==='PENDENTE'){confFaltaSt='RECUSADO';confFaltaTipo=tdA?'TUDO':'PARTE';$('ccFaltaQtd').value=tdA?'':i.avDev.qtd;$('ccMotivo').value=i.avDev.motivo||'devolução prevista pelo Celio';$('ccMotivoLin').style.display='';mostrarFalta();}}
   else{$('ccDev').style.background='#ede9fe';$('ccDev').style.color='#5b21b6';}
@@ -2507,7 +2508,7 @@ function salvarConfItem(){
   if(lotes[0]&&!lotes[0].codLido)lotes[0].codLido=confCodLido;
   if(precisaAut()&&!confAut){checarAut();return toast('Validade com menos de 30 dias: quem autorizou receber?','err');}
   lotes.forEach(function(x){x.autorizou=valCurta(x.validade)?confAut:'';});
-  var parcial=null;if(confFaltaSt&&confFaltaTipo==='PARTE'){var fq=parseFloat(String($('ccFaltaQtd').value).replace(',','.'));if(!(fq>0))return toast('Informe quantas '+(confFaltaSt==='RECUSADO'?'recusou':'faltaram'),'err');var fm=$('ccMotivo').value.trim();if(!fm){$('ccMotivo').focus();return toast('Escreva o motivo','err');}parcial={st:confFaltaSt,qtd:fq,motivo:fm};} // v46
+  var parcial=null;if(confFaltaSt&&confFaltaTipo==='PARTE'){var fq=parseFloat(String($('ccFaltaQtd').value).replace(',','.'));if(!(fq>0))return toast('Informe quantas '+(confFaltaSt==='RECUSADO'?'recusou':'faltaram'),'err');var fm=$('ccMotivo').value.trim();if(!fm){$('ccMotivo').focus();return toast('Escreva o motivo','err');}if(confFaltaUn==='CX'&&confFaltaPodeCx()){var ff=parseFloat(String($('ccFaltaFat').value).replace(',','.'));if(!(ff>0)){$('ccFaltaFat').focus();return toast('Informe quantas vêm por caixa','err');}fm+=' ('+String(fq).replace('.',',')+' cx/fd c/ '+String(ff).replace('.',',')+')';fq=Math.round(fq*ff*1000)/1000;}parcial={st:confFaltaSt,qtd:fq,motivo:fm};} // v46
   enviarConf({acao:'salvarConfItem',idNf:confNF.idNf,idItem:confItemAtual.idItem,lotes:lotes,token:token,quem:quem,tentativa:confReconte[confItemAtual.idItem]?2:1,parcial:parcial?JSON.stringify(parcial):''},function(){confItemAtual.faltaQtd=parcial?parcial.qtd:0;confItemAtual.faltaTipo=parcial?parcial.st:'';confItemAtual.motivo=parcial?parcial.motivo:'';
     confItemAtual.status='CONFERIDO';confItemAtual.lotes=lotes.map(function(l){return {forma:l.forma,qtdDig:l.qtdDig,fator:l.fator,validade:l.validade,quem:quem,pecas:l.pecas===''?null:l.pecas,emb:l.emb,qtdEmb:l.qtdEmb,codLido:l.codLido,codStatus:l.codStatus,autorizou:l.autorizou||''};});
   });
@@ -2528,8 +2529,16 @@ function mostrarFalta(){
   $('ccFaltaTit').textContent=rc?'Recusou tudo ou só uma parte?':'Não veio nada ou só faltou uma parte?';
   $('ccFaltaBt').querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x.dataset.t===confFaltaTipo);});
   $('ccFaltaQtdLin').style.display=p?'flex':'none';$('ccFaltaDica').style.display=p?'':'none';
-  $('ccFaltaQtdLb').textContent=rc?'Quantas recusou? (un ou kg)':'Quantas faltaram? (un ou kg)';
+  var podeCx=p&&confFaltaPodeCx();if(!podeCx)confFaltaUn='UN';
+  $('ccFaltaUn').style.display=podeCx?'flex':'none';$('ccFaltaUn').querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x.dataset.u===confFaltaUn);});
+  var cxF=podeCx&&confFaltaUn==='CX';$('ccFaltaFatLin').style.display=cxF?'flex':'none';
+  if(cxF&&!$('ccFaltaFat').value){var f0=(confLotes[0]&&confLotes[0].fator)||(confItemAtual&&confItemAtual.fator)||'';$('ccFaltaFat').value=f0;}
+  $('ccFaltaQtdLb').textContent=cxF?(rc?'Quantas caixas/fardos recusou?':'Quantas caixas/fardos faltaram?'):(rc?'Quantas recusou? (un ou kg)':'Quantas faltaram? (un ou kg)');
 }
+// v110: devolução/falta parcial também por caixa ou fardo (vira unidades com o fator)
+var confFaltaUn='UN';
+function confFaltaPodeCx(){var i=confItemAtual;if(!i||i.un==='KG'||confKgCx||confKgUn||confPesoObrig)return false;return true;}
+function setFaltaUn(u){confFaltaUn=u;vibra();mostrarFalta();setTimeout(function(){$(u==='CX'&&!$('ccFaltaFat').value?'ccFaltaFat':'ccFaltaQtd').focus();},80);}
 // v50: quando a resposta se perde (o servidor gravou, mas o celular recebeu falha), confere na planilha antes de acusar "Sem conexão"
 function confServidor(){var q={acao:'confItens',idNf:confNF.idNf};return api(q).catch(function(){return new Promise(function(ok){setTimeout(ok,2000);}).then(function(){return api(q);});});}
 function confBateu(p,it){
