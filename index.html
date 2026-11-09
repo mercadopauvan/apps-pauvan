@@ -822,6 +822,14 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div id="efLista"></div>
   <div class="v9Acoes" id="efAcoes"></div>
 </section>
+<!-- v110.3: FILA DE PREÇOS ON-LINE (Nath) -->
+<section class="tela" id="tPF">
+  <div class="faixa etq"><span id="faixaPF"></span><button onclick="irTipo()">VOLTAR</button></div>
+  <div class="v9Tabs" id="pfTabs"></div>
+  <div class="v9Info" id="pfAviso"></div>
+  <div id="pfLista"></div>
+  <div class="v9Acoes" id="pfAcoes"></div>
+</section>
 <!-- v109: CONTAGEM DE ESTOQUE (quem conta) -->
 <section class="tela" id="tCE">
   <div class="faixa cta"><span id="faixaCE"></span><button onclick="irTipo()">VOLTAR</button></div>
@@ -3193,21 +3201,55 @@ function gvRender(){
   var inf=document.createElement('div');inf.className='v9Info';inf.innerHTML='🧹 A confrontação tirou <b>'+gvC.tirados+'</b> lote(s) já vendido(s) das listas desta semana (conferência de validade e vencidos).'+(gvC.confrontoEm?' Última confrontação: '+esc(gvC.confrontoEm)+'.':'');box.appendChild(inf);
 }
 
+// ---------- v110.3: 💲 FILA DE PREÇOS ON-LINE (Nath e Celio) ----------
+var pfAba='FILA',pfC=null,pfSel={};
+function irPF(){pararCamera();$('faixaPF').textContent='💲 PREÇOS ON-LINE · '+quem;mostrar('tPF');pfSel={};pfRender();pfCarregar();}
+function pfCarregar(){v9Api({acao:'pfFila'},function(r){pfC=r;pfRender();});}
+function pfRender(){
+  var tb=$('pfTabs'),box=$('pfLista'),ac=$('pfAcoes'),av=$('pfAviso');box.innerHTML='';ac.innerHTML='';av.innerHTML='';
+  var c=pfC||{fila:[],emAt:[],ativados:[]};
+  tb.innerHTML='';[['FILA','A ATIVAR',c.fila.length],['EM','EM ATIVAÇÃO',c.emAt.length],['OK','ATIVADOS HOJE',c.ativados.length]].forEach(function(t){var b=document.createElement('button');b.type='button';b.className=pfAba===t[0]?'on':'';b.textContent=t[1]+(t[2]?' ('+t[2]+')':'');b.onclick=function(){pfAba=t[0];pfSel={};pfRender();};tb.appendChild(b);});
+  if(!pfC){box.innerHTML='<p class="dica">Carregando…</p>';return;}
+  function preco(o){return '<b>'+brl(o.novo)+'</b>'+(o.atual?' <s style="color:#94a3b8">'+brl(o.atual)+'</s>':'');}
+  if(pfAba==='OK'){
+    av.innerHTML='Hoje: <b>'+c.ativados.length+'</b> '+(c.ativados.length===1?'preço ativado':'preços ativados')+' no caixa.';
+    if(!c.ativados.length){box.innerHTML='<p class="dica">Nada ativado hoje ainda.</p>';return;}
+    var ul=document.createElement('ul');ul.className='v9L';c.ativados.forEach(function(o){var li=document.createElement('li');var por=o.ativPor||'CLAUDE';li.innerHTML='<div class="v9D">'+esc(o.desc)+'</div><div class="v9M">SKU '+esc(o.sku)+' · '+preco(o)+' · etiqueta: '+esc(o.quem)+'</div><span class="v9Tag ok">'+(/claude/i.test(por)?'🤖 CLAUDE':'🙋 '+esc(por.toUpperCase()))+' · '+esc(String(o.ativEm).slice(11,16))+'</span>';ul.appendChild(li);});box.appendChild(ul);return;
+  }
+  var its=pfAba==='FILA'?c.fila:c.emAt;
+  if(pfAba==='FILA')av.innerHTML='Etiquetas já colocadas na gôndola pelas repositoras. 🤖 Próxima ativação automática do Claude: <b>'+esc(c.proxima||'')+'</b>. O que você marcar como <b>VOU ATIVAR</b> sai da lista do Claude.';
+  else av.innerHTML='Ative no Plenus (Ativar Preços Off-Line) e depois confirme aqui. Se passar de 2 h sem confirmar, volta para a fila do Claude.';
+  if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">'+(pfAba==='FILA'?'Nenhum preço esperando ativação. 👍':'Nada em ativação.')+'</p>';return;}
+  var mt=document.createElement('button');mt.type='button';mt.className='v9Link';mt.textContent='☑ marcar todos';mt.onclick=function(){var tod=its.every(function(o){return pfSel[o.id];});its.forEach(function(o){pfSel[o.id]=!tod;});pfRender();};box.appendChild(mt);
+  var ul=document.createElement('ul');ul.className='v9L sel';
+  its.forEach(function(o){var li=document.createElement('li');li.className=pfSel[o.id]?'on':'';
+    li.innerHTML='<span class="ck">'+(pfSel[o.id]?'☑':'☐')+'</span><div><div class="v9D">'+esc(o.desc)+(o.fardo?' <span class="v9Tag az">fardo/caixa</span>':'')+'</div><div class="v9M">SKU '+esc(o.sku)+' · '+preco(o)+' · etiqueta: '+esc(o.quem)+' '+esc(String(o.confEm).slice(11,16))+(pfAba==='EM'?' · separado por '+esc(o.resPor)+' às '+esc(String(o.resEm).slice(11,16)):'')+(o.obs?' · <span style="color:#b91c1c">'+esc(o.obs)+'</span>':'')+'</div></div>';
+    li.onclick=function(){pfSel[o.id]=!pfSel[o.id];vibra();pfRender();};ul.appendChild(li);});
+  box.appendChild(ul);
+  var ids=its.filter(function(o){return pfSel[o.id];}).map(function(o){return o.id;});
+  function bt(tx,cls,op,msg){var b=document.createElement('button');b.className='btn '+cls;b.textContent=tx+(ids.length?' ('+ids.length+')':'');b.disabled=!ids.length;b.onclick=function(){b.disabled=true;v9Api({acao:'pfAcao',op:op,ids:JSON.stringify(ids)},function(){toast(msg,'ok');pfSel={};if(op==='RESERVAR')pfAba='EM';pfCarregar();},function(){b.disabled=false;});};ac.appendChild(b);}
+  if(pfAba==='FILA')bt('VOU ATIVAR OS MARCADOS','ok','RESERVAR','Separados para você ativar');
+  else{bt('ATIVEI — CONFIRMAR','ok','CONFIRMAR','Confirmado — as repositoras foram avisadas');bt('DEVOLVER PARA A FILA','sec','DEVOLVER','Voltaram para a fila do Claude');bt('ALGUM NÃO ATIVOU','cancel','NAO_ATIVOU','Voltaram para a fila');}
+}
+
 // ---------- 8. Tela inicial: módulos novos, selos e GESTÃO ----------
 HOME_DEF.CONTAGEM_ESTOQUE=['LOJA E RECEBIMENTO','Contagem de estoque','contar o que o Celio pediu','#0f766e','cont'];
 HOME_DEF.ETIQUETAS=['LOJA E RECEBIMENTO','Pedir etiqueta','etiqueta de preço pequena ou grande','#7c3aed','tag'];
 HOME_DEF.ETIQUETAS_FILA=['LOJA E RECEBIMENTO','Fila de etiquetas','imprimir as etiquetas pedidas','#9333ea','tag'];
+HOME_DEF.POFF_FILA=['LOJA E RECEBIMENTO','Fila de preços on-line','ativar no Plenus os preços com etiqueta colocada','#0369a1','tag'];NOMES_TIPO.POFF_FILA='FILA DE PREÇOS ON-LINE';
 NOMES_TIPO.CONTAGEM_ESTOQUE='CONTAGEM DE ESTOQUE';NOMES_TIPO.ETIQUETAS='PEDIR ETIQUETA';NOMES_TIPO.ETIQUETAS_FILA='FILA DE ETIQUETAS';
-var HOME_ORDEM={lista:['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA','CONTAGEM_ESTOQUE','ETIQUETAS','ETIQUETAS_FILA'],forEach:function(fn){var cel=semAc(quem||'').toLowerCase().trim()==='celio';this.lista.forEach(function(a){if(cel&&a==='ETIQUETAS_FILA')return;fn(a);});}}; // a fila do Celio fica em GESTÃO
+var HOME_ORDEM={lista:['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA','CONTAGEM_ESTOQUE','ETIQUETAS','ETIQUETAS_FILA','POFF_FILA'],forEach:function(fn){var cel=semAc(quem||'').toLowerCase().trim()==='celio';this.lista.forEach(function(a){if(cel&&(a==='ETIQUETAS_FILA'||a==='POFF_FILA'))return;fn(a);});}}; // a fila do Celio fica em GESTÃO
 function v9SubHtml(a,sub){
   var r=resumoCache||{},sel=function(n,t){return '<span class="v9Selo">'+n+'</span> '+esc(t);};
   if(a==='CONTAGEM_ESTOQUE'&&r.cta)return sel(r.cta,r.cta===1?'produto para contar':'produtos para contar');
+  if(a==='POFF_FILA'&&r.pfFila!=null)return r.pfFila?sel(r.pfFila,r.pfFila===1?'preço para ativar':'preços para ativar'):(r.pfEm?r.pfEm+' em ativação':'nenhum preço esperando');
   if(a==='ETIQUETAS_FILA'&&r.etqFila!=null)return r.etqFila?sel(r.etqFila,'na fila para imprimir'):'nenhuma etiqueta na fila';
   if(a==='ETIQUETAS'&&r.etqProntas)return '✅ '+r.etqProntas+(r.etqProntas===1?' etiqueta pronta hoje':' etiquetas prontas hoje');
   return esc(sub);
 }
 function v9Gestao(box){
   var gl=[];if(appsCache.indexOf('ETIQUETAS_FILA')>=0)gl.push(['🏷️','Fila de etiquetas',function(){var r=resumoCache||{};return r.etqFila?'<span class="v9Selo">'+r.etqFila+'</span> na fila para imprimir':'nenhuma etiqueta na fila';},irEF,'#9333ea','tag']);
+  if(appsCache.indexOf('POFF_FILA')>=0||semAc(quem||'').toLowerCase().trim()==='celio')gl.push(['💲','Fila de preços on-line',function(){var r=resumoCache||{};return r.pfFila?'<span class="v9Selo">'+r.pfFila+'</span> para ativar'+(r.pfEm?' · '+r.pfEm+' em ativação':''):(r.pfEm?r.pfEm+' em ativação':'nenhum preço esperando');},irPF,'#0369a1','tag']);
   gl.concat([['📦','Contagem de estoque',function(){var r=resumoCache||{};return r.ctaDec?'<span class="v9Selo">'+r.ctaDec+'</span> a decidir'+(r.ctaAg?' · '+r.ctaAg+' aguardando':''):(r.ctaAg?r.ctaAg+' aguardando contagem':'pedir, decidir e histórico');},irGC,'#0f766e','cont'],
    ['👀','Validade na frente',function(){var r=resumoCache||{};return r.vfSum?'<span class="v9Selo">'+r.vfSum+'</span> lote(s) sumido(s) para decidir':'acerto das repositoras e lotes sumidos';},irGV,'#a16207','conf']]).forEach(function(x){
     var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:'+x[4]+'"><svg class="nhIc"><use href="#ic-'+x[5]+'"/></svg></span><span><b>'+x[1]+'</b><i>'+x[2]()+'</i></span><span class="ar">›</span>';
@@ -3218,10 +3260,12 @@ function v9Escolher(t){
   if(t==='CONTAGEM_ESTOQUE'){tipoAtual=t;irCE();return true;}
   if(t==='ETIQUETAS'){tipoAtual=t;irET();return true;}
   if(t==='ETIQUETAS_FILA'){tipoAtual=t;irEF();return true;}
+  if(t==='POFF_FILA'){tipoAtual=t;irPF();return true;}
   return false;
 }
 function v9Abrir(ab){
-  var m={contagem:'CONTAGEM_ESTOQUE',etiquetas:'ETIQUETAS',etqfila:'ETIQUETAS_FILA'};
+  var m={contagem:'CONTAGEM_ESTOQUE',etiquetas:'ETIQUETAS',etqfila:'ETIQUETAS_FILA',pffila:'POFF_FILA'};
+  if(ab==='pffila'&&semAc(quem||'').toLowerCase().trim()==='celio'){irPF();return true;}
   if(m[ab]&&appsCache.indexOf(m[ab])>=0){escolherTipo(m[ab]);return true;}
   var cel=semAc(quem||'').toLowerCase().trim()==='celio';
   if(ab==='gcontagem'&&cel){irGC();return true;}
