@@ -1536,7 +1536,7 @@ function renderCV(box){
   if(curta.length)blocos.push(['⏰ CHEGOU COM VALIDADE CURTA','curta',curta]);
   pend.filter(function(i){return !i.atrasado&&!i.semSecao;}).forEach(function(i){var g=tudo?(String(i.para).toUpperCase()+' · '+i.janela+' DIAS'):'MINHA LISTA';if(!grupos[g]){grupos[g]=[];ordem.push(g);}grupos[g].push(i);});
   ordem.sort();
-  if(atr.length)blocos.push(['⚠ ATRASADOS — semana passada','atr',atr]);
+  if(atr.length){if(tudo){var ga={},oa=[];atr.forEach(function(i){var g=String(i.para||'?').toUpperCase();if(!ga[g]){ga[g]=[];oa.push(g);}ga[g].push(i);});oa.sort().forEach(function(g){blocos.push(['⚠ ATRASADOS — '+g,'atr',ga[g]]);});}else blocos.push(['⚠ ATRASADOS — semana passada','atr',atr]);} // v110.2: na visão geral, atrasados separados por pessoa
   ordem.forEach(function(g){blocos.push([g,'',grupos[g].sort(ord)]);});
   if(sem.length)blocos.push(['SEM SEÇÃO','sem',sem]);
   if(!pend.length&&!curta.length)box.insertAdjacentHTML('beforeend','<p class="dica" style="font-size:16px;margin-top:16px">Tudo conferido nesta semana. 👍</p>');
