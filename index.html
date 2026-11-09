@@ -1321,7 +1321,27 @@ api({acao:'pessoas'}).then(function(r){
   if(quem&&PESSOAS.indexOf(quem)<0){pararCamera();quem=null;token=null;try{localStorage.removeItem('ci_quem');localStorage.removeItem('ci_token');}catch(e){}$('hdr').textContent='';$('btTrocarQuem').style.display='none';mostrar('tQuem');}
   else if(quem&&$('tQuem').classList.contains('on')){if(token)irTipo();else irPin();}
 }).catch(function(){});
-document.addEventListener('visibilitychange',function(){if(document.hidden){pararCamera();}else if(tipoAtual&&!produtoAtual&&$('tScan').classList.contains('on')){iniciarCamera();}});
+// v110: câmera volta sozinha depois de trocar de aplicativo (Android congelava o vídeo e o leitor parava)
+var camVolta=0,scanVoltaId=null;
+function camReligar(){ // religa a câmera da tela que estiver aberta
+  clearTimeout(camVolta);camVolta=setTimeout(function(){
+    if(document.hidden)return;
+    if(tipoAtual&&!produtoAtual&&$('tScan').classList.contains('on')){pararCamera();$('cam').style.display='';iniciarCamera();}
+    if(scanVoltaId){var id=scanVoltaId;scanVoltaId=null;fecharScan();escanear(id);}
+  },450);
+}
+function camSaiu(){pararCamera();if(scanOn&&scanIdAtual){scanVoltaId=scanIdAtual;fecharStream();}}
+document.addEventListener('visibilitychange',function(){if(document.hidden)camSaiu();else camReligar();});
+window.addEventListener('pageshow',function(){camReligar();});
+window.addEventListener('pagehide',function(){camSaiu();});
+// vigia: se o vídeo travar ou a câmera for encerrada pelo sistema, religa
+setInterval(function(){
+  if(document.hidden)return;
+  function morto(s,v){if(!s)return false;var t=s.getVideoTracks()[0];return !t||t.readyState==='ended'||t.muted||(v&&v.paused);}
+  if(lendo&&$('tScan').classList.contains('on')&&!produtoAtual&&morto(stream,$('video')))camReligar();
+  if(scanOn&&scanSt&&scanIdAtual&&morto(scanSt,$('scanV'))){scanVoltaId=scanIdAtual;camReligar();}
+},2500);
+try{$('video').addEventListener('click',function(){if(tipoAtual&&!produtoAtual){toast('Religando a câmera…');camReligar();}});}catch(e){}
 
 
 // ===== CONFIRMAÇÃO (Tati) — v65 =====
@@ -2146,8 +2166,9 @@ $('confBusca').addEventListener('input',function(){if(confNF&&confNF.nf)renderCo
 $('confBusca').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();var vis=$('confItens').querySelectorAll('li');if(vis.length===1)vis[0].click();}});
 // v61: câmera ao vivo nos botões 📷 (conferência, código da embalagem, troca). Onde o navegador não deixa (link antigo do Google), usa a foto.
 var SCAN_CB={},scanSt=null,scanZx=null,scanOn=false;
+var scanIdAtual=null;
 function escanear(id){
-  var ov=$('scanOv');
+  scanIdAtual=id;var ov=$('scanOv');
   if(!ov){
     ov=document.createElement('div');ov.id='scanOv';
     ov.innerHTML='<video id="scanV" playsinline muted></video><div class="mira" id="scanMira"></div><div class="txt" id="scanTxt"></div><div class="bts"><button id="scanFoto">TIRAR FOTO</button><button id="scanFechar">CANCELAR</button></div>';
@@ -2175,7 +2196,7 @@ function escanear(id){
   .catch(function(){if(scanOn)semAoVivo();});
 }
 function fecharStream(){if(scanZx){try{scanZx.reset();}catch(e){}scanZx=null;}if(scanSt){scanSt.getTracks().forEach(function(t){t.stop();});scanSt=null;}}
-function fecharScan(){scanOn=false;fecharStream();var ov=$('scanOv');if(ov)ov.style.display='none';}
+function fecharScan(){scanOn=false;scanIdAtual=null;fecharStream();var ov=$('scanOv');if(ov)ov.style.display='none';}
 function lerFotoPara(inp,cb){
   var f=inp.files[0];if(!f)return;toast('Lendo a foto…');
   var img=new Image();img.onload=function(){lerFotoCodigo(img,function(c){URL.revokeObjectURL(img.src);if(!c){toast('Não achei código na foto','err');return;}cb(String(c).replace(/\D/g,''));});};
