@@ -2431,7 +2431,7 @@ function abrirConfItem(i){
     if(i.status==='PENDENTE'){confFaltaSt='RECUSADO';confFaltaTipo=tdA?'TUDO':'PARTE';$('ccFaltaQtd').value=tdA?'':i.avDev.qtd;$('ccMotivo').value=i.avDev.motivo||'devolução prevista pelo Celio';$('ccMotivoLin').style.display='';mostrarFalta();}}
   else{$('ccDev').style.background='#ede9fe';$('ccDev').style.color='#5b21b6';}
   var pbC=$('ccPar');if(!pbC){pbC=document.createElement('div');pbC.id='ccPar';pbC.className='parBox';$('ccDev').parentNode.insertBefore(pbC,$('ccDev').nextSibling);} // v94: bonificado / mesmo produto em 2 itens
-  var prC=i.pares||[];if(i.grupo){pbC.style.display='';pbC.textContent='🎁 este produto vem parte comprado e parte bonificado nesta nota. conte tudo junto e lance o total — o app separa sozinho.';}
+  var prC=i.pares||[];if(i.grupo){pbC.style.display='';pbC.textContent=prC.some(function(x){return x.bonif;})?'🎁 este produto vem parte comprado e parte bonificado nesta nota. conte tudo junto e lance o total — o app separa sozinho.':'🔗 este produto vem em mais de uma linha na nota (preços diferentes). conte tudo junto e lance o total — o app separa sozinho.';}
   else if(prC.length){var nbC=prC.filter(function(o){return o.bonif;}).length+(i.bonifItem?1:0),ncC=prC.length+1-nbC;pbC.style.display='';pbC.textContent=(i.bonifItem?'🎁 este item é o BONIFICADO. ':'')+'este produto vem em '+(prC.length+1)+' itens nesta nota'+(nbC?' ('+ncC+' de compra e '+nbC+' bonificado'+(nbC>1?'s':'')+')':'')+'. conte e lance cada item separado — não some os dois no mesmo item.';}
   else if(i.bonifItem&&!(confNF.nf&&confNF.nf.bonif)){pbC.style.display='';pbC.textContent='🎁 item BONIFICADO (brinde do fornecedor). lance aqui só o que veio bonificado.';}
   else pbC.style.display='none';
