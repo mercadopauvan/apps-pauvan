@@ -1707,7 +1707,8 @@ function psvBloco(box,tit,lista,tudo){
   if(fech)ul.style.display='none';else encher();
   hd.onclick=function(){var f=ul.style.display!=='none';if(!f)encher();ul.style.display=f?'none':'';hd.querySelector('.sx').textContent=f?'▸':'▾';cvGuardaFech(k,f);};
 }
-function psvVal(v){if(!v)return '';var p=String(v).split('|');if(!p[0])return '';return '<div class="pv">⏳ vence <b>'+esc(p[0].slice(0,5))+'</b> · deve sobrar '+esc(p[1]||'?')+' · '+(/^REB/.test(p[2]||'')?'já está na rebaixa'+esc(String(p[2]).replace(/^REB/,'')):'sugestão de rebaixa enviada ao Celio')+'</div>';} // v99
+function psvVal(v){if(!v)return '';if(/:\d/.test(v)&&!/\|(SUG|REB)/.test(v))return '<div class="pv">⏳ lotes: '+String(v).split(' | ').map(function(x){var q=x.split(':');return '<b>'+esc(q[0].replace(/\/\d{2}$/,''))+'</b> '+esc(q[1]||'')+' un';}).join(' · ')+'</div>'; // v110.4: crítica de lote
+  var p=String(v).split('|');if(!p[0])return '';return '<div class="pv">⏳ vence <b>'+esc(p[0].slice(0,5))+'</b> · deve sobrar '+esc(p[1]||'?')+' · '+(/^REB/.test(p[2]||'')?'já está na rebaixa'+esc(String(p[2]).replace(/^REB/,'')):'sugestão de rebaixa enviada ao Celio')+'</div>';} // v99
 function psvNum(v){return String(v==null?'':v).replace('.',',');}
 function psvItem(it){
   var li=document.createElement('li');
