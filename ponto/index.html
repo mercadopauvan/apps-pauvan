@@ -169,6 +169,8 @@ function api(p){
 }
 function erro(e){toast(String(e&&e.message||e),true);}
 function hojeBR(){var d=new Date();return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();}
+var FN_NOME={CAIXA:'Caixa',REPOSITOR:'Repositor',ACOUGUEIRO:'Açougueiro','AUXILIAR ACOUGUE':'Auxiliar de açougue',PADARIA:'Padaria','SERVICOS GERAIS':'Serviços gerais'};
+function fn(f){f=String(f||'');return FN_NOME[f]||f.charAt(0)+f.slice(1).toLowerCase();}
 function pad(n){return('0'+n).slice(-2);}
 function mesAtual(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1);}
 function mesAnt(m){var y=+m.slice(0,4),mo=+m.slice(5,7)-1;if(mo<1){mo=12;y--;}return y+'-'+pad(mo);}
@@ -511,13 +513,13 @@ function gEscala(){
   api({acao:'pontoEscala'}).then(function(r){
     if(!r.ok)throw r.erro;
     var h=topoCel('Escala de domingos','')+'<div class="topo"><div><h1>Escala de domingos e feriados</h1><div class="sub">Abra o dia com as vagas por função. Os interessados aparecem aqui; escale quem vai trabalhar e a pessoa recebe o OK no app.</div></div><button class="btn pri" id="esNovo">+ Abrir domingo/feriado</button></div>';
-    h+='<div class="sub">Diárias: '+r.diarias.map(function(d){return d.funcao.toLowerCase()+' '+(d.valor?'R$ '+esc(d.valor):'<b>sem valor</b>');}).join(' · ')+' (valores em Configurações)</div>';
+    h+='<div class="sub">Diárias: '+r.diarias.map(function(d){return fn(d.funcao)+' '+(d.valor?'R$ '+esc(d.valor):'<b>sem valor</b>');}).join(' · ')+' (valores em Configurações)</div>';
     if(!r.dias.length)h+='<div class="card sub">Nenhum domingo aberto ainda.</div>';
     r.dias.slice().reverse().forEach(function(d){
       h+='<div class="card"><div class="topo"><h2>'+esc(d.data)+'</h2><div class="linha" style="gap:6px"><button class="btn peq" data-ed="'+esc(d.data)+'">Vagas</button><button class="btn peq" data-fe="'+esc(d.data)+'">Encerrar inscrições</button></div></div>';
       d.funcoes.forEach(function(f){
         var esc_=f.pessoas.filter(function(p){return p.status==='ESCALADO';}).length;
-        h+='<div class="grupoT" style="margin-top:10px">'+esc(f.funcao)+' · '+esc_+' de '+f.vagas+' vaga(s) '+(f.status==='FECHADO'?'<span class="pill mute">encerrado</span>':'<span class="pill ok">aberto</span>')+'</div><div class="lista" style="margin-top:6px">'+(f.pessoas.length?f.pessoas.map(function(p){return '<div class="row"><div class="t"><b>'+esc(p.nome)+'</b><span>'+(p.status==='ESCALADO'?'escalado por '+esc(p.por)+(p.diaria?' · diária R$ '+esc(p.diaria):''):'interessado')+'</span></div>'+(p.status==='ESCALADO'?'<button class="btn peq" data-li="'+p.linha+'" data-x="0">Desfazer</button>':'<button class="btn peq pri" data-li="'+p.linha+'" data-x="1">Escalar</button>')+'</div>';}).join(''):'<div class="sub">Ninguém se candidatou ainda.</div>')+'</div>';
+        h+='<div class="grupoT" style="margin-top:10px">'+esc(fn(f.funcao))+' · '+esc_+' de '+f.vagas+' vaga(s) '+(f.status==='FECHADO'?'<span class="pill mute">encerrado</span>':'<span class="pill ok">aberto</span>')+'</div><div class="lista" style="margin-top:6px">'+(f.pessoas.length?f.pessoas.map(function(p){return '<div class="row"><div class="t"><b>'+esc(p.nome)+'</b><span>'+(p.status==='ESCALADO'?'escalado por '+esc(p.por)+(p.diaria?' · diária R$ '+esc(p.diaria):''):'interessado')+'</span></div>'+(p.status==='ESCALADO'?'<button class="btn peq" data-li="'+p.linha+'" data-x="0">Desfazer</button>':'<button class="btn peq pri" data-li="'+p.linha+'" data-x="1">Escalar</button>')+'</div>';}).join(''):'<div class="sub">Ninguém se candidatou ainda.</div>')+'</div>';
       });
       h+='</div>';
     });
@@ -531,7 +533,7 @@ function gEscala(){
 function escalaModal(data,r){
   var d=(r.dias.filter(function(x){return x.data===data;})[0])||{funcoes:[]};
   var prox=new Date();prox.setDate(prox.getDate()+((7-prox.getDay())%7||7));
-  var h='<h2>'+(data?'Vagas de '+esc(data):'Abrir domingo/feriado')+'</h2><label>Dia<input type="date" id="emData" value="'+(data?brISO(data):prox.getFullYear()+'-'+pad(prox.getMonth()+1)+'-'+pad(prox.getDate()))+'" '+(data?'readonly':'')+'></label><div class="grade">'+r.funcoes.map(function(f){var x=(d.funcoes.filter(function(y){return y.funcao===f;})[0])||{};return '<label>'+f.toLowerCase()+' (vagas)<input type="number" min="0" data-f="'+f+'" value="'+(x.vagas||0)+'"></label>';}).join('')+'</div><label>Observação<input id="emObs" placeholder="ex.: entrada 7h, saída 12h"></label><button class="btn pri" id="emSalvar">Salvar</button>';
+  var h='<h2>'+(data?'Vagas de '+esc(data):'Abrir domingo/feriado')+'</h2><label>Dia<input type="date" id="emData" value="'+(data?brISO(data):prox.getFullYear()+'-'+pad(prox.getMonth()+1)+'-'+pad(prox.getDate()))+'" '+(data?'readonly':'')+'></label><div class="grade">'+r.funcoes.map(function(f){var x=(d.funcoes.filter(function(y){return y.funcao===f;})[0])||{};return '<label>'+fn(f)+' (vagas)<input type="number" min="0" data-f="'+f+'" value="'+(x.vagas||0)+'"></label>';}).join('')+'</div><label>Observação<input id="emObs" placeholder="ex.: entrada 7h, saída 12h"></label><button class="btn pri" id="emSalvar">Salvar</button>';
   modal(h,function(box){$('emSalvar').onclick=function(){var fs=[];box.querySelectorAll('[data-f]').forEach(function(i){fs.push({funcao:i.dataset.f,vagas:+i.value||0});});api({acao:'pontoEscalaAbrir',data:isoBR($('emData').value),funcoes:fs,obs:$('emObs').value}).then(function(x){if(!x.ok)throw x.erro;toast('Salvo ✓');fecharModal();gEscala();}).catch(erro);};});
 }
 
@@ -565,7 +567,7 @@ function fAbrir(t){
     if(r.bonus){var b=r.bonus;h+='<div class="card"><b style="font-family:Manrope;font-size:16px">'+(b.emDia?'⭐ Você está pontual este mês!':'Bônus pontualidade')+'</b><div class="sub" style="margin-top:4px">'+(b.emDia?'Continue assim'+(b.valor?' e ganhe R$ '+esc(b.valor)+' de bônus no fim do mês.':' para ganhar o bônus no fim do mês.'):'Este mês teve '+(b.atrasos?b.atrasos+' atraso(s)':'')+(b.atrasos&&b.faltas?' e ':'')+(b.faltas?b.faltas+' falta(s)':'')+'. O bônus volta no mês que vem.')+'</div></div>';}
     if(r.banco)h+='<div class="card clic" onclick="fAbrir(\'banco\')" style="cursor:pointer"><div class="sub">Banco de horas</div><div class="grande '+sinal(r.banco.total)+'">'+esc(r.banco.total)+'</div><div class="sub">'+(r.banco.totalMin>=0?'horas a seu favor':'horas que você deve')+' · este mês '+esc(r.banco.mes)+'</div></div>';
     var esc1=r.escalaMeus.filter(function(x){return x.status==='ESCALADO';})[0];
-    if(esc1)h+='<div class="card"><b>📅 Você está escalado</b><div class="sub">'+esc(esc1.data)+' · '+esc(esc1.funcao.toLowerCase())+'</div></div>';
+    if(esc1)h+='<div class="card"><b>📅 Você está escalado</b><div class="sub">'+esc(esc1.data)+' · '+esc(fn(esc1.funcao))+'</div></div>';
     else if(r.escalaAbertos.length)h+='<div class="card clic" onclick="fAbrir(\'escala\')" style="cursor:pointer"><b>Domingos com vaga</b><div class="sub">'+r.escalaAbertos.length+' dia(s) aberto(s) para trabalho extra. Toque para ver.</div></div>';
     h+='</div>';
   }
@@ -581,11 +583,11 @@ function fAbrir(t){
   }
   else if(t==='escala'){
     h=topo+'</div><div class="fCorpo"><div><h2>Domingos e feriados</h2><div class="sub">Quer trabalhar num domingo ou feriado e ganhar a diária? Escolha o dia e a função. A gestão escolhe e você recebe o OK aqui.</div></div>';
-    if(r.escalaMeus.length)h+='<div class="grupoT">Minhas inscrições</div><div class="lista">'+r.escalaMeus.map(function(x){return '<div class="row"><div class="t"><b>'+esc(x.data)+'</b><span>'+esc(x.funcao.toLowerCase())+'</span></div>'+(x.status==='ESCALADO'?'<span class="pill ok">Escalado ✓</span>':'<span class="pill wait">Aguardando</span> <button class="btn peq" data-des="'+esc(x.data)+'">Desistir</button>')+'</div>';}).join('')+'</div>';
-    h+='<div class="grupoT">Dias abertos</div><div class="lista">'+(r.escalaAbertos.length?r.escalaAbertos.map(function(d){return '<div class="card"><b>'+esc(d.dia)+', '+esc(d.data)+'</b><div class="chips" style="margin-top:8px">'+d.funcoes.map(function(f){return '<button class="chip" data-d="'+esc(d.data)+'" data-f="'+esc(f.funcao)+'">'+esc(f.funcao.toLowerCase())+(f.diaria?' · R$ '+esc(f.diaria):'')+'</button>';}).join('')+'</div></div>';}).join(''):'<div class="card sub">Nenhum dia aberto agora. Quando abrir, aparece aqui.</div>')+'</div></div>';
+    if(r.escalaMeus.length)h+='<div class="grupoT">Minhas inscrições</div><div class="lista">'+r.escalaMeus.map(function(x){return '<div class="row"><div class="t"><b>'+esc(x.data)+'</b><span>'+esc(fn(x.funcao))+'</span></div>'+(x.status==='ESCALADO'?'<span class="pill ok">Escalado ✓</span>':'<span class="pill wait">Aguardando</span> <button class="btn peq" data-des="'+esc(x.data)+'">Desistir</button>')+'</div>';}).join('')+'</div>';
+    h+='<div class="grupoT">Dias abertos</div><div class="lista">'+(r.escalaAbertos.length?r.escalaAbertos.map(function(d){return '<div class="card"><b>'+esc(d.dia)+', '+esc(d.data)+'</b><div class="chips" style="margin-top:8px">'+d.funcoes.map(function(f){return '<button class="chip" data-d="'+esc(d.data)+'" data-f="'+esc(f.funcao)+'">'+esc(fn(f.funcao))+(f.diaria?' · R$ '+esc(f.diaria):'')+'</button>';}).join('')+'</div></div>';}).join(''):'<div class="card sub">Nenhum dia aberto agora. Quando abrir, aparece aqui.</div>')+'</div></div>';
   }
   else if(t==='extras'){
-    h=topo+'</div><div class="fCorpo"><div class="card"><div class="sub">Total que você já recebeu de extras no Pauvan</div><div class="grande pos">R$ '+esc(r.extrasTotal)+'</div></div><div class="lista">'+(r.extras.length?r.extras.map(function(x){return '<div class="row"><div class="t"><b>'+esc(x.data)+'</b><span>'+esc(x.funcao.toLowerCase())+'</span></div><b>'+(x.valor?'R$ '+esc(x.valor):'')+'</b></div>';}).join(''):'<div class="sub">Nenhum domingo trabalhado ainda.</div>')+'</div></div>';
+    h=topo+'</div><div class="fCorpo"><div class="card"><div class="sub">Total que você já recebeu de extras no Pauvan</div><div class="grande pos">R$ '+esc(r.extrasTotal)+'</div></div><div class="lista">'+(r.extras.length?r.extras.map(function(x){return '<div class="row"><div class="t"><b>'+esc(x.data)+'</b><span>'+esc(fn(x.funcao))+'</span></div><b>'+(x.valor?'R$ '+esc(x.valor):'')+'</b></div>';}).join(''):'<div class="sub">Nenhum domingo trabalhado ainda.</div>')+'</div></div>';
   }
   else if(t==='conta'){
     var tm=ls('ponto_tema')||'auto';
@@ -593,7 +595,7 @@ function fAbrir(t){
   }
   $('fMain').innerHTML=h;
   var fm=$('fMes');if(fm)fm.onchange=function(){api({acao:'pontoMeu',mes:this.value}).then(function(x){if(x.ok){S.meu=x;fAbrir('batidas');}}).catch(erro);};
-  $('fMain').querySelectorAll('[data-d][data-f]').forEach(function(b){b.onclick=function(){if(!confirm('Quero trabalhar em '+b.dataset.d+' como '+b.dataset.f.toLowerCase()+'?'))return;api({acao:'pontoQuero',data:b.dataset.d,funcao:b.dataset.f}).then(function(x){if(!x.ok)throw x.erro;toast('Inscrição enviada ✓');irMeuAtualiza('escala');}).catch(erro);};});
+  $('fMain').querySelectorAll('[data-d][data-f]').forEach(function(b){b.onclick=function(){if(!confirm('Quero trabalhar em '+b.dataset.d+' como '+fn(b.dataset.f)+'?'))return;api({acao:'pontoQuero',data:b.dataset.d,funcao:b.dataset.f}).then(function(x){if(!x.ok)throw x.erro;toast('Inscrição enviada ✓');irMeuAtualiza('escala');}).catch(erro);};});
   $('fMain').querySelectorAll('[data-des]').forEach(function(b){b.onclick=function(){api({acao:'pontoDesistir',data:b.dataset.des}).then(function(x){if(!x.ok)throw x.erro;toast('Inscrição cancelada');irMeuAtualiza('escala');}).catch(erro);};});
   var ft=$('fTema');if(ft)ft.querySelectorAll('.chip').forEach(function(c){c.onclick=function(){ls('ponto_tema',c.dataset.v);aplicarTema();fAbrir('conta');};});
 }
