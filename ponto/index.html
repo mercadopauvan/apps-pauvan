@@ -292,13 +292,13 @@ function gHoje(data){
 // ----- ESPELHO -----
 function gEspelho(){
   var mes=S.espMes||mesAtual(),cod=S.espCod||'';
-  var h=topoCel('Espelho de ponto','')+'<div class="topo"><div><h1>Espelho de ponto</h1><div class="sub">Toque num dia para ver as batidas, corrigir ou lançar.</div></div><div class="linha" style="gap:8px"><button class="btn" id="eImp1">PDF deste</button><button class="btn pri" id="eImpT">PDF de todos</button></div></div>';
+  var h=topoCel('Espelho de ponto','')+'<div class="topo"><div><h1>Espelho de ponto</h1><div class="sub">Toque num dia para ver as batidas, corrigir ou lançar.</div></div><div class="linha" style="gap:8px"><button class="btn" id="eImp1">PDF deste</button><label class="sub" style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="eGest" style="width:18px;min-height:18px">incluir gestores (só para ver)</label><button class="btn pri" id="eImpT">PDF de todos</button></div></div>';
   h+='<div class="linha"><label>Mês<select id="eMes">'+opMeses(mes)+'</select></label><label style="flex:2 1 260px">Funcionário<select id="eCod"><option value="">Escolha…</option>'+funcOpts(cod)+'</select></label></div><div id="eBox"></div>';
   $('gMain').innerHTML=h;
   $('eMes').onchange=function(){S.espMes=this.value;carregar();};
   $('eCod').onchange=function(){S.espCod=this.value;carregar();};
   $('eImp1').onclick=function(){if(!S.espCod){toast('Escolha o funcionário',true);return;}imprimir(S.espMes||mesAtual(),S.espCod);};
-  $('eImpT').onclick=function(){imprimir(S.espMes||mesAtual(),'TODOS');};
+  $('eImpT').onclick=function(){imprimir(S.espMes||mesAtual(),'TODOS',$('eGest').checked);};
   function carregar(){
     var m=$('eMes').value,c=$('eCod').value;S.espMes=m;S.espCod=c;
     if(!c){$('eBox').innerHTML='<div class="card sub">Escolha um funcionário para ver o espelho.</div>';return;}
@@ -337,9 +337,9 @@ function diaModal(f,d,fechado){
 }
 
 // ----- impressão no formato do Logic Ponto -----
-function imprimir(mes,cod){
+function imprimir(mes,cod,incl){
   toast('Montando o PDF…');
-  api({acao:'pontoEspelho',mes:mes,codigo:cod}).then(function(r){
+  api({acao:'pontoEspelho',mes:mes,codigo:cod,incluirGestores:!!incl}).then(function(r){
     if(!r.ok)throw r.erro;
     var y=+mes.slice(0,4),mo=+mes.slice(5,7),ult=new Date(y,mo,0).getDate(),per='01/'+pad(mo)+'/'+y+' até '+ult+'/'+pad(mo)+'/'+y;
     var agora=new Date(),ger=pad(agora.getDate())+'/'+pad(agora.getMonth()+1)+'/'+agora.getFullYear()+' '+pad(agora.getHours())+':'+pad(agora.getMinutes())+':'+pad(agora.getSeconds());
@@ -431,7 +431,7 @@ function gFech(){
   api({acao:'pontoFechamento',mes:mes}).then(function(r){
     if(!r.ok)throw r.erro;
     var p=r.pend;
-    var h=topoCel('Fechamento do mês','')+'<div class="topo"><div><h1>Fechamento do mês</h1><div class="sub">'+(r.fechado?'Fechado em '+esc(r.fechado.em)+' por '+esc(r.fechado.por):'Confira as pendências, feche o mês e mande os espelhos para o escritório.')+'</div></div><label style="width:200px">Mês<select id="fMes">'+opMeses(mes)+'</select></label></div>';
+    var h=topoCel('Fechamento do mês','')+'<div class="topo"><div><h1>Fechamento do mês</h1><div class="sub">'+(r.fechado?'Fechado em '+esc(r.fechado.em)+' por '+esc(r.fechado.por):'Confira as pendências, feche o mês e mande os espelhos para o escritório. Gestores (Celio, Ana Paula e Amanda) não entram no fechamento nem nos arquivos do escritório.')+'</div></div><label style="width:200px">Mês<select id="fMes">'+opMeses(mes)+'</select></label></div>';
     h+='<div class="card"><h2 style="margin-bottom:8px">Antes de fechar</h2><div class="lista">';
     h+='<div class="row"><div class="t"><b>Batidas faltando (dia com número ímpar de batidas)</b><span>abra o espelho e inclua a batida esquecida</span></div><span class="pill '+(p.semBatidaImpar?'warn':'ok')+'">'+p.semBatidaImpar+'</span></div>';
     h+='<div class="row"><div class="t"><b>Faltas do dia inteiro sem lançamento</b><span>se foi folga, atestado ou dia liberado, lance antes de fechar</span></div><span class="pill '+(p.faltasSemLanc?'warn':'ok')+'">'+p.faltasSemLanc+'</span></div>';
