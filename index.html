@@ -765,6 +765,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div class="formas" id="cobBt"><button data-c="BOLETO">📄 BOLETO</button><button data-c="CHEQUE">🏦 CHEQUE</button><button data-c="NENHUM">∅ NENHUM</button></div>
   <div class="lin" id="cobQtdBox" style="display:none"><label>Quantos boletos?</label><input id="cobQtd" type="text" inputmode="numeric" placeholder="ex.: 1"></div>
   <div class="lin" style="margin-top:10px"><label>Mercadoria chegou em</label><input id="cobData" type="date" style="flex:1;font-size:17px;padding:10px;border:2px solid var(--borda);border-radius:12px"></div>
+  <div id="cobConv"></div>
   <p class="dica" style="text-align:left">NENHUM = não veio boleto e também não é nota de cheque.</p>
   <button class="btn concluir" onclick="confirmarConcluir()">CONCLUIR CONFERÊNCIA</button>
   <button class="btn cancel" onclick="$('cardCob').classList.remove('on')">CANCELAR</button>
@@ -2170,7 +2171,7 @@ function renderConfNF(){
     var tr=(i.trocas||[]).map(function(t){return '🔁 '+t.qtdSubst+' trocado(s) por '+t.qtdNovo+' '+esc(t.produtoNovo);}).join('<br>');
     if(i.status==='NAO VEIO'||i.status==='RECUSADO')tr+=(tr?'<br>':'')+'📦 '+(i.motivo?esc(i.motivo)+' · ':'')+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
     if(i.faltaQtd)tr+=(tr?'<br>':'')+'📦 '+(i.faltaTipo==='RECUSADO'?'recusou ':'faltou ')+esc(i.faltaQtd)+(i.motivo?' · '+esc(i.motivo):'')+' · '+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
-    li.innerHTML='<div class="d">'+esc(i.produto)+(i.novo?' <span class="b semcad">SEM CADASTRO</span>':(i.novoCad?' <span class="b novo">NOVO</span>':''))+(i.devolver?' <span class="b dev">↩ DEVOLVER '+(String(i.devolver).toUpperCase()==='TOTAL'?'TUDO':esc(i.devolver))+'</span>':'')+(i.avDev?' <span class="b avi">⛔ DEVOLVER '+(i.avDev.qtd==='TUDO'?'TUDO':esc(i.avDev.qtd))+'</span>':'')+(i.bonifItem&&!nf.bonif?' <span class="b bonif">🎁 BONIFICADO</span>':'')+(i.grupo?' <span class="b bonif">compra + 🎁 bonificado</span>':'')+'<small>'+(i.sku?'SKU '+esc(i.sku)+' · ':'')+'cód. '+esc(i.codigo)+(i.un==='KG'?' · por kg':(i.un!=='UN'?' · em '+esc(i.un):''))+'</small>'+(res?'<div class="q">'+esc(res)+'</div>':'')+(tr?'<div class="q" style="color:#7c2d12">'+tr+'</div>':'')+'</div>'
+    li.innerHTML='<div class="d">'+esc(i.produto)+(i.novo?' <span class="b semcad">SEM CADASTRO</span>':(i.novoCad?' <span class="b novo">NOVO</span>':''))+(i.devolver?' <span class="b dev">↩ DEVOLVER '+(String(i.devolver).toUpperCase()==='TOTAL'?'TUDO':esc(i.devolver))+'</span>':'')+(i.avDev?' <span class="b avi">⛔ DEVOLVER '+(i.avDev.qtd==='TUDO'?'TUDO':esc(i.avDev.qtd))+'</span>':'')+(i.bonifItem&&!nf.bonif?' <span class="b bonif">🎁 BONIFICADO</span>':'')+(i.grupo?' <span class="b bonif">compra + 🎁 bonificado</span>':'')+'<small>'+(i.sku?'SKU '+esc(i.sku)+' · ':'')+'cód. '+esc(i.codigo)+(i.un==='KG'?' · por kg':(i.un!=='UN'?' · em '+esc(i.un):''))+'</small>'+(i.vConv?'<div class="q" style="color:'+(/^⚠/.test(i.vConv)?'#b45309':'#0e7490')+'">📦 validade em unidade: '+esc(i.vConv)+'</div>':'')+(res?'<div class="q">'+esc(res)+'</div>':'')+(tr?'<div class="q" style="color:#7c2d12">'+tr+'</div>':'')+'</div>'
       +'<span class="st">'+(i.diverg&&i.status==='CONFERIDO'?(nf.status==='CONCLUIDA'?'RECONTAR':'NÃO CONFERE'):i.status==='CONFERIDO'?'✓':(i.status==='NAO VEIO'||i.status==='RECUSADO'?i.status.replace('NAO','NÃO'):(i.diverg&&nf.status==='CONCLUIDA'?'RECONTAR':'conferir')))+'</span>';
     li.onclick=function(){abrirConfItem(i);};
     ul.appendChild(li);
@@ -2725,6 +2726,7 @@ function concluirConf(){
   cobAtual='';$('cobQtd').value='';$('cobQtdBox').style.display='none';
   var d=new Date();$('cobData').value=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
   $('cobBt').querySelectorAll('button').forEach(function(b){b.classList.remove('on');b.onclick=function(){cobAtual=b.dataset.c;$('cobBt').querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});$('cobQtdBox').style.display=cobAtual==='BOLETO'?'flex':'none';if(cobAtual==='BOLETO')setTimeout(function(){$('cobQtd').focus();},80);vibra();};});
+  try{var cv=(confNF&&confNF.itens||[]).filter(function(i){return i.vConv&&i.status==='CONFERIDO';});$('cobConv').innerHTML=cv.length?'<div class="dica" style="text-align:left;background:#ecfeff;border-radius:10px;padding:8px 10px;margin:8px 0"><b>Validade vai em UNIDADES:</b><br>'+cv.map(function(i){return (/^⚠/.test(i.vConv)?'⚠ ':'📦 ')+esc(i.produto)+': '+esc(i.vConv.replace(/^⚠\s*/,''));}).join('<br>')+'</div>':'';}catch(e){} // v112.1: mostra a conversão antes de concluir
   $('cardCob').classList.add('on');
 }
 function confirmarConcluir(){
