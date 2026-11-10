@@ -1,15 +1,15 @@
 {
-  "name": "Ponto Pauvan",
-  "short_name": "Ponto Pauvan",
-  "description": "Ponto eletrônico do Mercado Pauvan: batidas, banco de horas, escala de domingos e gestão.",
+  "name": "Meu Pauvan",
+  "short_name": "Meu Pauvan",
+  "description": "Meu Pauvan — Minha jornada. Minhas informações. Meu trabalho. Ponto eletrônico do Mercado Pauvan.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0E4D32",
+  "background_color": "#0B2E1F",
   "theme_color": "#0E4D32",
   "icons": [
-    {"src": "../icone-192.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "../icone-512.png", "sizes": "512x512", "type": "image/png"},
-    {"src": "../icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+    {"src": "meu-icone-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "meu-icone-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "meu-icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
   ]
 }

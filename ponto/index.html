@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ponto Pauvan</title>
+<title>Meu Pauvan</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="../icone-192.png">
-<link rel="apple-touch-icon" href="../icone-180.png">
+<link rel="icon" href="meu-icone-192.png">
+<link rel="apple-touch-icon" href="meu-icone-180.png">
 <meta name="theme-color" content="#0E4D32">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Ponto Pauvan">
+<meta name="apple-mobile-web-app-title" content="Meu Pauvan">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
 <style>
@@ -47,14 +47,24 @@ tr.clic{cursor:pointer}tr.clic:hover td{background:rgba(30,122,70,.06)}
 .oculto{display:none!important}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#16231B;color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.2s;z-index:99;pointer-events:none;max-width:90vw}
 #toast.on{opacity:1}#toast.err{background:#A3221B}
-/* login */
-#tLogin{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--verde)}
-#tLogin .card{width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px}
-#tLogin .logo{text-align:center;color:#fff;margin-bottom:6px}
+/* login (Meu Pauvan: escuro = modelo A, claro = modelo D) */
+#tLogin{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(170deg,#FFFFFF,#E7F3EA)}
+body.escuro #tLogin{background:radial-gradient(circle at 50% 22%,#14583A,#062016 70%)}
+#tLogin .card{width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px;box-shadow:0 4px 14px rgba(14,77,50,.08)}
+body.escuro #tLogin .card{background:transparent;border:0;box-shadow:none;padding:0}
+body.escuro #tLogin input{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:#fff}
+body.escuro #tLogin label{color:#A9CDB6}
+body.escuro #tLogin .btn.pri{background:#9BE36D;border-color:#9BE36D;color:#062016;font-weight:800}
+#tLogin .logo{text-align:center;margin-bottom:10px}
+.mpNome{font-family:Manrope,sans-serif;font-weight:800;color:#0E4D32}.mpNome span{color:#4CAF2A}
+body.escuro .mpNome,.mpBr .mpNome{color:#fff}body.escuro .mpNome span,.mpBr .mpNome span{color:#9BE36D}
+.mpSlo{font-size:12.5px;color:#5B6B60;white-space:nowrap;margin-top:6px}.mpSlo b{color:#0B3D27;font-weight:800}
+body.escuro .mpSlo{color:#CFE5D7}body.escuro .mpSlo b{color:#9BE36D}
+.mpBr{display:flex;align-items:center;gap:10px}.mpBr small{display:block;font-family:Inter,sans-serif;font-weight:500;font-size:11.5px;color:#A9CDB6;margin-top:2px;letter-spacing:.2px}
 /* gestão */
 .app{display:flex;min-height:100vh}
 .side{width:230px;flex:none;background:var(--verde);color:#E7F1EA;padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow:auto}
-.brand{font-family:Manrope,sans-serif;font-weight:800;font-size:18px;padding:4px 10px 16px;color:#fff}
+.brand{font-family:Manrope,sans-serif;font-weight:800;font-size:19px;padding:4px 6px 16px;color:#fff}
 .brand small{display:block;font-family:Inter,sans-serif;font-weight:500;font-size:12px;color:#A9CDB6;margin-top:2px}
 .nav{display:block;padding:10px 12px;border-radius:8px;color:#D3E6DA;text-decoration:none;font-weight:500;border:0;background:none;text-align:left;cursor:pointer;width:100%}
 .nav:hover{background:var(--verde2);color:#fff}.nav.on{background:#fff;color:var(--verde);font-weight:600}
@@ -70,6 +80,13 @@ tr.clic{cursor:pointer}tr.clic:hover td{background:rgba(30,122,70,.06)}
 .row .t{flex:1;min-width:0}.row .t b{display:block;font-weight:600}.row .t span{font-size:12px;color:var(--mut)}
 .grupoT{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin-top:6px}
 .tabbar{display:none}
+.tabbar button{flex:1;border:0;background:none;padding:7px 0 8px;min-height:56px;font-size:10.5px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.tabbar button .ic{border-radius:12px;padding:3px 12px;display:flex}
+.tabbar button.on .ic{background:var(--okb)}
+body.escuro .tabbar button.on .ic{background:rgba(155,227,109,.15)}
+.tabbar button.on{color:var(--verde);font-weight:700}body.escuro .tabbar button.on{color:#9BE36D}
+.ic svg{display:block}
+.maisL{display:flex;align-items:center;gap:12px;justify-content:flex-start}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;z-index:50;padding:30px 12px;overflow:auto}
 .modal .card{width:100%;max-width:560px;display:flex;flex-direction:column;gap:12px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
@@ -78,9 +95,6 @@ tr.clic{cursor:pointer}tr.clic:hover td{background:rgba(30,122,70,.06)}
 @media (max-width:860px){
  .side{display:none}.main{padding:16px 14px 90px}
  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--borda);z-index:20;padding-bottom:env(safe-area-inset-bottom)}
- .tabbar button{flex:1;border:0;background:none;padding:9px 0;min-height:52px;font-size:11px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px}
- .tabbar button.on{color:var(--verde);font-weight:700}
- body.escuro .tabbar button.on{color:#fff}
  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
  .gTopoCel{display:block!important}
 }
@@ -127,7 +141,7 @@ tr.clic{cursor:pointer}tr.clic:hover td{background:rgba(30,122,70,.06)}
 <!-- LOGIN -->
 <section id="tLogin" class="oculto">
  <div style="width:100%;max-width:360px">
-  <div class="logo"><img src="../logo-branca.png" alt="Mercado Pauvan" style="height:56px"><h1 style="margin-top:10px;color:#fff">Ponto Pauvan</h1><div style="color:#A9CDB6;font-size:13px">Use o mesmo PIN do APPS PAUVAN</div></div>
+  <div class="logo"><span id="lLogo"></span><div class="mpNome" style="font-size:34px;margin-top:10px">Meu <span>Pauvan</span></div><div class="mpSlo"><b>Minha jornada.</b> Minhas informações. Meu trabalho.</div></div>
   <div class="card">
    <label>Usuário<input id="lUser" autocomplete="username" placeholder="seu primeiro nome" autocapitalize="words"></label>
    <label id="lPinBox">PIN (4 números)<input id="lPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password"></label>
@@ -141,7 +155,7 @@ tr.clic{cursor:pointer}tr.clic:hover td{background:rgba(30,122,70,.06)}
 <!-- GESTÃO -->
 <div id="tGestao" class="app oculto">
  <nav class="side" id="gSide" aria-label="Menu da gestão do ponto">
-  <div class="brand">APPS PAUVAN<small>Gestão do ponto</small></div>
+  <div class="brand mpBr"><span id="gLogo"></span><div><div class="mpNome" style="font-size:19px;line-height:1">Meu <span>Pauvan</span></div><small>Gestão do ponto</small></div></div>
   <div id="gNav"></div>
   <div class="rod"><div id="gQuem"></div><button class="nav" style="padding:6px 0;color:#A9CDB6" onclick="irMeu()">Ver meu ponto</button><button class="nav" style="padding:6px 0;color:#A9CDB6" onclick="sair()">Sair</button></div>
  </nav>
@@ -169,7 +183,12 @@ function api(p){
 }
 function erro(e){toast(String(e&&e.message||e),true);}
 function hojeBR(){var d=new Date();return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();}
-var FN_NOME={CAIXA:'Caixa',REPOSITOR:'Repositor',ACOUGUEIRO:'Açougueiro','AUXILIAR ACOUGUE':'Auxiliar de açougue',PADARIA:'Padaria','SERVICOS GERAIS':'Serviços gerais'};
+var FN_NOME={CAIXA:'OP. CAIXA',REPOSITOR:'Repositor',ACOUGUEIRO:'Açougueiro','AUXILIAR ACOUGUE':'Auxiliar de açougue',PADARIA:'Padaria','SERVICOS GERAIS':'Serviços gerais',GERENTE:'Gerente',ENTREGADOR:'Entregador'};
+var ICS={hoje:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4"/>',espelho:'<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h7"/>',lanc:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',banco:'<path d="M5 3h14M5 21h14"/><path d="M7 3v3.2c0 1.6 1.2 2.8 3 4.3l2 1.5-2 1.5c-1.8 1.5-3 2.7-3 4.3V21M17 3v3.2c0 1.6-1.2 2.8-3 4.3L12 12l2 1.5c1.8 1.5 3 2.7 3 4.3V21"/><path d="M9.5 19h5l-2.5-2.2z" fill="currentColor" stroke="none"/>',mais:'<circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/>',inicio:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',batidas:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="9.5" cy="10" r=".6"/><circle cx="14.5" cy="10" r=".6"/><path d="M9 14.5c1.6 1.4 4.4 1.4 6 0"/>',escala:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/>',conta:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',fech:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',func:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.6-5 6.5-5s5.5 1.5 6.5 5M16 4.5a3.5 3.5 0 0 1 0 7M18 15c2 .6 3.2 2.3 3.5 5"/>',config:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',fgts:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/>',extras:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.4-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2.1-.5-2.6-1.5M12 6.5V8M12 16v1.5"/>',meu:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',sair:'<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/>'};
+function ic(n,s){return '<svg width="'+(s||22)+'" height="'+(s||22)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+(ICS[n]||'')+'</svg>';}
+function logoMP(s,claro){var bg=claro?'#0E4D32':'rgba(155,227,109,.14)';return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="'+bg+'"/><circle cx="50" cy="50" r="34" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3"/><g stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"><line x1="50" y1="12" x2="50" y2="18"/><line x1="88" y1="50" x2="82" y2="50"/><line x1="50" y1="88" x2="50" y2="82"/><line x1="12" y1="50" x2="18" y2="50"/></g><path d="M32 52 L45 64 L70 34" fill="none" stroke="#9BE36D" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function tabHTML(lista){return lista.map(function(t){return '<button data-t="'+t[0]+'"><span class="ic">'+ic(t[0])+'</span>'+t[1]+'</button>';}).join('');}
+var TIPO_NOME={FOLGA:'Folga (banco de horas)',FALTA:'Falta',ATESTADO:'Atestado','DIA LIBERADO':'Dia liberado',FERIAS:'Férias','FOLGA ACOUGUE':'Folga açougue',OUTRO:'Outro','CORRECAO DE BATIDA':'Correção de batida'};
 function fn(f){f=String(f||'');return FN_NOME[f]||f.charAt(0)+f.slice(1).toLowerCase();}
 function pad(n){return('0'+n).slice(-2);}
 function mesAtual(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1);}
@@ -184,7 +203,7 @@ function primeiroNome(n){n=String(n||'').toLowerCase().split(' ');return n.slice
 function cpfFmt(c){c=String(c||'').replace(/\D/g,'');return c.length===11?c.slice(0,3)+'.'+c.slice(3,6)+'.'+c.slice(6,9)+'-'+c.slice(9):c;}
 
 // ===== tema =====
-function aplicarTema(){var t=ls('ponto_tema')||'auto';var esc_=t==='escuro'||(t==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);document.body.classList.toggle('escuro',!!esc_&&S.modo==='fun');}
+function aplicarTema(){var t=ls('ponto_tema')||'auto';var esc_=t==='escuro'||(t==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);document.body.classList.toggle('escuro',!!esc_&&S.modo!=='gestao');var l=$('lLogo');if(l)l.innerHTML=logoMP(96,!esc_);var g=$('gLogo');if(g)g.innerHTML=logoMP(38,false);}
 
 // ===== entrada =====
 function iniciar(){
@@ -234,16 +253,16 @@ function entrar(){
 }
 
 // =================== GESTÃO ===================
-var TELAS=[['hoje','Hoje'],['espelho','Espelho de ponto'],['lanc','Lançamentos'],['banco','Banco de horas'],['fech','Fechamento do mês'],['func','Funcionários e jornadas'],['config','Configurações'],['fgts','FGTS'],['escala','Escala de domingos']];
+var TELAS=[['hoje','Hoje'],['espelho','Espelho de ponto'],['lanc','Lançamentos'],['banco','Banco de horas'],['fech','Fechamento do mês'],['func','Funcionários e jornadas'],['config','Configurações'],['fgts','FGTS'],['escala','Escala de domingos e feriados']];
 var TAB_CEL=[['hoje','Hoje'],['espelho','Espelho'],['lanc','Lançar'],['banco','Banco'],['mais','Mais']];
 function irGestao(){
   S.modo='gestao';aplicarTema();
   $('tFun').classList.add('oculto');$('tGestao').classList.remove('oculto');
   $('gQuem').textContent=S.ini.nome;
-  var telas=S.ini.gestao?TELAS:[['escala','Escala de domingos']];
+  var telas=S.ini.gestao?TELAS:[['escala','Escala de domingos e feriados']];
   $('gNav').innerHTML=telas.map(function(t){return '<button class="nav" data-t="'+t[0]+'">'+t[1]+'</button>';}).join('');
   $('gNav').querySelectorAll('button').forEach(function(b){b.onclick=function(){abrir(b.dataset.t);};});
-  $('gTab').innerHTML=(S.ini.gestao?TAB_CEL:[['escala','Escala'],['mais','Mais']]).map(function(t){return '<button data-t="'+t[0]+'">'+t[1]+'</button>';}).join('');
+  $('gTab').innerHTML=tabHTML(S.ini.gestao?TAB_CEL:[['escala','Escala'],['mais','Mais']]);
   $('gTab').querySelectorAll('button').forEach(function(b){b.onclick=function(){abrir(b.dataset.t);};});
   abrir(S.ini.gestao?(location.hash.slice(1)||'hoje'):'escala');
 }
@@ -256,15 +275,15 @@ function abrir(t){
   ({hoje:gHoje,espelho:gEspelho,lanc:gLanc,banco:gBanco,fech:gFech,func:gFunc,config:gConfig,fgts:gFgts,escala:gEscala})[t]();
 }
 function menuMais(){
-  var telas=S.ini.gestao?TELAS.slice(4):[['escala','Escala de domingos']];
-  modal('<h2>Mais</h2><div class="lista">'+telas.map(function(t){return '<button class="btn" style="justify-content:flex-start" data-t="'+t[0]+'">'+t[1]+'</button>';}).join('')+'<button class="btn" style="justify-content:flex-start" data-t="meu">Ver meu ponto</button><button class="btn perigo" style="justify-content:flex-start" data-t="sair">Sair</button></div>',function(box){
+  var telas=S.ini.gestao?TELAS.slice(4):[['escala','Escala de domingos e feriados']];
+  modal('<h2>Mais opções</h2><div class="lista">'+telas.concat([['meu','Ver meu ponto']]).map(function(t){return '<button class="btn maisL" data-t="'+t[0]+'"><span style="color:var(--acento)">'+ic(t[0],20)+'</span>'+t[1]+'</button>';}).join('')+'<button class="btn perigo maisL" data-t="sair">'+ic('sair',20)+'Sair</button></div>',function(box){
     box.querySelectorAll('[data-t]').forEach(function(b){b.onclick=function(){fecharModal();var t=b.dataset.t;if(t==='meu')irMeu();else if(t==='sair')sair();else abrir(t);};});
   });
 }
 function modal(html,cb){fecharModal();var d=document.createElement('div');d.className='modal';d.id='modal';d.innerHTML='<div class="card">'+html+'<button class="btn" id="mFechar">Fechar</button></div>';d.onclick=function(e){if(e.target===d)fecharModal();};document.body.appendChild(d);$('mFechar').onclick=fecharModal;if(cb)cb(d);}
 function fecharModal(){var m=$('modal');if(m)m.remove();}
 function funcOpts(sel,todos){var h=todos?'<option value="TODOS">Todos os funcionários</option>':'';(S.ini.funcionarios||[]).filter(function(f){return /ATIVO/i.test(f.situacao)&&!/DIARISTA/i.test(f.perfil);}).sort(function(a,b){return a.nome.localeCompare(b.nome);}).forEach(function(f){h+='<option value="'+f.codigo+'"'+(String(sel)===f.codigo?' selected':'')+'>'+esc(primeiroNome(f.nome))+' — '+esc(f.nome)+'</option>';});return h;}
-function topoCel(t,s){return '<div class="gTopoCel"><div style="font-family:Manrope;font-weight:800;font-size:18px">'+t+'</div><div style="font-size:12px;color:#A9CDB6">'+(s||'')+'</div></div>';}
+function topoCel(t,s){return '<div class="gTopoCel"><div class="mpBr">'+logoMP(38,false)+'<div><div class="mpNome" style="font-size:19px;line-height:1">Meu <span>Pauvan</span></div><small>Gestão do ponto'+(s?' · '+s:'')+'</small></div></div></div>';}
 
 // ----- HOJE -----
 function gHoje(data){
@@ -372,22 +391,39 @@ function imprimir(mes,cod,incl){
 function gLanc(){
   var pre=S.lancPre||{};S.lancPre=null;
   var mes=S.lancMes||(pre.data?brISO(pre.data).slice(0,7):mesAtual());
-  var h=topoCel('Lançamentos','')+'<div><h1>Lançamentos</h1><div class="sub">Falta, folga, atestado, dia liberado, férias. Feriados ficam em Configurações.</div></div>';
-  h+='<div class="card" style="display:flex;flex-direction:column;gap:12px"><div class="linha"><label style="flex:2 1 260px">Funcionário<select id="lCod"><option value="">Escolha…</option>'+funcOpts(pre.codigo,true)+'</select></label></div>';
-  h+='<div><div class="sub" style="margin-bottom:6px">Tipo</div><div class="chips" id="lTipo">'+['FOLGA','FALTA','ATESTADO','DIA LIBERADO','FERIAS','OUTRO'].map(function(t,i){return '<button class="chip'+(i===0?' on':'')+'" data-v="'+t+'">'+({FOLGA:'Folga (banco de horas)',FALTA:'Falta',ATESTADO:'Atestado',"DIA LIBERADO":'Dia liberado',FERIAS:'Férias',OUTRO:'Outro'})[t]+'</button>';}).join('')+'</div></div>';
-  h+='<div><div class="sub" style="margin-bottom:6px">Período</div><div class="chips" id="lPer"><button class="chip on" data-v="DIA INTEIRO">Dia inteiro</button><button class="chip" data-v="PARCIAL">Só algumas horas</button><button class="chip" data-v="ABONAR O QUE FALTAR">Abonar o que faltar</button></div></div>';
-  h+='<div class="linha"><label>Data<input type="date" id="lData" value="'+brISO(pre.data||hojeBR())+'"></label><label>Até (vários dias)<input type="date" id="lAte"></label><label id="lHorasBox" class="oculto">Horas<input type="time" id="lHoras" value="02:00"></label></div>';
+  var h=topoCel('Lançamentos','')+'<div><h1>Lançamentos</h1><div class="sub">Falta, folga, atestado, dia liberado, férias e folga do açougue. Feriados ficam em Configurações.</div></div>';
+  h+='<div class="card" style="display:flex;flex-direction:column;gap:12px"><div class="linha" id="lCodBox"><label style="flex:2 1 260px">Funcionário<select id="lCod"><option value="">Escolha…</option>'+funcOpts(pre.codigo,true)+'</select></label></div>';
+  h+='<div><div class="sub" style="margin-bottom:6px">Tipo</div><div class="chips" id="lTipo">'+['FOLGA','FALTA','ATESTADO','DIA LIBERADO','FERIAS','FOLGA ACOUGUE','OUTRO'].map(function(t,i){return '<button class="chip'+(i===0?' on':'')+'" data-v="'+t+'">'+TIPO_NOME[t]+'</button>';}).join('')+'</div></div>';
+  var acs=(S.ini.funcionarios||[]).filter(function(f){return /ATIVO/i.test(f.situacao)&&/a[cç]ou?gu/i.test(f.cargo||'');}).sort(function(a,b){return a.nome.localeCompare(b.nome);});
+  var seg=new Date();seg.setHours(12,0,0,0);seg.setDate(seg.getDate()-((seg.getDay()+6)%7)-7);var sems='';
+  for(var w=0;w<9;w++){var a=new Date(seg.getTime()+w*7*864e5),z=new Date(a.getTime()+5*864e5);sems+='<option value="'+a.getTime()+'"'+(w===1?' selected':'')+'>'+pad(a.getDate())+'/'+pad(a.getMonth()+1)+' a '+pad(z.getDate())+'/'+pad(z.getMonth()+1)+'/'+z.getFullYear()+'</option>';}
+  h+='<div id="lAcBox" class="oculto" style="display:flex;flex-direction:column;gap:12px"><div><div class="sub" style="margin-bottom:6px">Funcionário (só do açougue)</div><div class="chips" id="lAcF" style="display:grid;grid-template-columns:1fr 1fr">'+(acs.length?acs.map(function(f){return '<button class="chip" style="text-align:center;border-radius:10px;padding:9px" data-v="'+f.codigo+'">'+esc(primeiroNome(f.nome).split(' ')[0])+'</button>';}).join(''):'<div class="sub">Ninguém com cargo de açougue no cadastro.</div>')+'</div></div>';
+  h+='<label>Semana<select id="lAcSem">'+sems+'</select></label><div><div class="sub" style="margin-bottom:6px">Dia da folga</div><div class="chips" id="lAcD" style="display:grid;grid-template-columns:repeat(6,1fr)">'+['SEG','TER','QUA','QUI','SEX','SAB'].map(function(d,i){return '<button class="chip" style="text-align:center;border-radius:10px;padding:9px 0;font-weight:700" data-v="'+i+'">'+d+'</button>';}).join('')+'</div></div><div class="sub" id="lAcInfo"></div></div>';
+  h+='<div id="lPerBox"><div class="sub" style="margin-bottom:6px">Período</div><div class="chips" id="lPer"><button class="chip on" data-v="DIA INTEIRO">Dia inteiro</button><button class="chip" data-v="PARCIAL">Só algumas horas</button><button class="chip" data-v="ABONAR O QUE FALTAR">Abonar o que faltar</button></div></div>';
+  h+='<div class="linha" id="lDataBox"><label>Data<input type="date" id="lData" value="'+brISO(pre.data||hojeBR())+'"></label><label>Até (vários dias)<input type="date" id="lAte"></label><label id="lHorasBox" class="oculto">Horas<input type="time" id="lHoras" value="02:00"></label></div>';
   h+='<label>Motivo / observação<input id="lMot" placeholder="ex.: consulta médica, combinado com o Ney"></label>';
-  h+='<label>Anexo (foto do atestado, opcional)<input type="file" id="lFoto" accept="image/*,application/pdf" capture="environment"></label>';
+  h+='<label id="lFotoBox">Anexo (foto do atestado, opcional)<input type="file" id="lFoto" accept="image/*,application/pdf" capture="environment"></label>';
   h+='<div class="sub" id="lExpl"></div><button class="btn pri" id="lSalvar">Salvar lançamento</button></div>';
   h+='<div class="topo"><h2>Lançados no mês</h2><label style="width:200px">Mês<select id="lMes">'+opMeses(mes)+'</select></label></div><div id="lLista"></div>';
   $('gMain').innerHTML=h;
   var tipo='FOLGA',per='DIA INTEIRO';
-  function expl(){var e={FOLGA:'Folga de banco: as horas do dia saem do banco de horas (o dia não conta como falta e não tira o DSR).',FALTA:'Falta sem justificativa: desconta as horas e tira o DSR do domingo da semana.',ATESTADO:'Atestado: o dia fica zerado (sem falta e sem extra).',"DIA LIBERADO":'Dia liberado pela empresa: sem batida, o dia fica zerado; com batida, vale só a parte trabalhada.',FERIAS:'Férias: dias zerados.',OUTRO:'Só registro, não muda o cálculo.'};$('lExpl').textContent=e[tipo]+(per==='PARCIAL'?' Só as horas informadas são abonadas.':'');}
+  function expl(){var e={FOLGA:'Folga de banco: as horas do dia saem do banco de horas (o dia não conta como falta e não tira o DSR).',FALTA:'Falta sem justificativa: desconta as horas e tira o DSR do domingo da semana.',ATESTADO:'Atestado: o dia fica zerado (sem falta e sem extra).',"DIA LIBERADO":'Dia liberado pela empresa: sem batida, o dia fica zerado; com batida, vale só a parte trabalhada.',FERIAS:'Férias: dias zerados.',OUTRO:'Só registro, não muda o cálculo.',"FOLGA ACOUGUE":'Folga semanal do açougue: o dia não conta como falta e não sai do banco de horas.'};$('lExpl').textContent=e[tipo]+(per==='PARCIAL'?' Só as horas informadas são abonadas.':'');}
   function chips(id,cb){$(id).querySelectorAll('.chip').forEach(function(c){c.onclick=function(){$(id).querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});c.classList.add('on');cb(c.dataset.v);expl();};});}
-  chips('lTipo',function(v){tipo=v;});chips('lPer',function(v){per=v;$('lHorasBox').classList.toggle('oculto',v!=='PARCIAL');});expl();
+  var acCod='',acDia=-1;
+  function acData(){if(acDia<0)return '';var d=new Date(+$('lAcSem').value+acDia*864e5);return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();}
+  function acInfo(){var d=acData();$('lAcInfo').innerHTML=d?'Folga na <b>'+['segunda','terça','quarta','quinta','sexta','sábado'][acDia]+', '+d.slice(0,5)+'</b> · o dia não conta como falta':'Escolha o funcionário e o dia da folga.';}
+  function modoAc(on){['lCodBox','lPerBox','lDataBox','lFotoBox'].forEach(function(i){$(i).classList.toggle('oculto',on);});$('lAcBox').classList.toggle('oculto',!on);$('lSalvar').textContent=on?'Lançar folga':'Salvar lançamento';acInfo();}
+  ['lAcF','lAcD'].forEach(function(id){$(id).querySelectorAll('.chip').forEach(function(c){c.onclick=function(){$(id).querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});c.classList.add('on');if(id==='lAcF')acCod=c.dataset.v;else acDia=+c.dataset.v;acInfo();};});});
+  $('lAcSem').onchange=acInfo;
+  chips('lTipo',function(v){tipo=v;modoAc(v==='FOLGA ACOUGUE');});chips('lPer',function(v){per=v;$('lHorasBox').classList.toggle('oculto',v!=='PARCIAL');});expl();
   $('lMes').onchange=function(){S.lancMes=this.value;lista();};
   $('lSalvar').onclick=function(){
+    if(tipo==='FOLGA ACOUGUE'){
+      if(!acCod){toast('Escolha o funcionário do açougue',true);return;}if(acDia<0){toast('Escolha o dia da folga',true);return;}
+      var b0=this;b0.disabled=true;
+      api({acao:'pontoLancar',lanc:{codigo:acCod,tipo:tipo,periodo:'DIA INTEIRO',data:acData(),ate:'',motivo:$('lMot').value||'Folga semanal do açougue'}}).then(function(r){b0.disabled=false;if(!r.ok)throw r.erro;toast('Folga lançada ✓');$('lMot').value='';lista();}).catch(function(e){b0.disabled=false;erro(e);});
+      return;
+    }
     var cod=$('lCod').value;if(!cod){toast('Escolha o funcionário',true);return;}
     var b=this;b.disabled=true;
     lerArquivo($('lFoto').files[0]).then(function(foto){
@@ -399,7 +435,7 @@ function gLanc(){
     api({acao:'pontoLancamentos',mes:$('lMes').value}).then(function(r){
       if(!r.ok)throw r.erro;
       var it=r.itens.filter(function(x){return !(x.tipo==='FOLGA'&&/Importado/.test(x.motivo)&&x.periodo==='DIA INTEIRO');});
-      $('lLista').innerHTML=it.length?'<div class="tw"><table><thead><tr><th>Data</th><th>Funcionário</th><th>Tipo</th><th>Período</th><th>Motivo</th><th>Por</th><th></th></tr></thead><tbody>'+it.map(function(x){return '<tr><td>'+x.data.slice(0,5)+(x.ate&&x.ate!==x.data?' a '+x.ate.slice(0,5):'')+'</td><td>'+esc(primeiroNome(x.nome))+'</td><td>'+esc(x.tipo)+'</td><td>'+esc(x.periodo)+(x.horas?' '+x.horas:'')+'</td><td style="white-space:normal;min-width:180px">'+esc(x.motivo)+(x.anexo?' · <a href="'+esc(x.anexo)+'" target="_blank">anexo</a>':'')+'</td><td class="sub">'+esc(x.por)+'</td><td>'+(r.fechado?'':'<button class="btn peq perigo" data-id="'+x.id+'">Excluir</button>')+'</td></tr>';}).join('')+'</tbody></table></div>':'<div class="card sub">Nada lançado neste mês.</div>';
+      $('lLista').innerHTML=it.length?'<div class="tw"><table><thead><tr><th>Data</th><th>Funcionário</th><th>Tipo</th><th>Período</th><th>Motivo</th><th>Por</th><th></th></tr></thead><tbody>'+it.map(function(x){return '<tr><td>'+x.data.slice(0,5)+(x.ate&&x.ate!==x.data?' a '+x.ate.slice(0,5):'')+'</td><td>'+esc(primeiroNome(x.nome))+'</td><td>'+esc(TIPO_NOME[x.tipo]||x.tipo)+'</td><td>'+esc(x.periodo)+(x.horas?' '+x.horas:'')+'</td><td style="white-space:normal;min-width:180px">'+esc(x.motivo)+(x.anexo?' · <a href="'+esc(x.anexo)+'" target="_blank">anexo</a>':'')+'</td><td class="sub">'+esc(x.por)+'</td><td>'+(r.fechado?'':'<button class="btn peq perigo" data-id="'+x.id+'">Excluir</button>')+'</td></tr>';}).join('')+'</tbody></table></div>':'<div class="card sub">Nada lançado neste mês.</div>';
       $('lLista').querySelectorAll('[data-id]').forEach(function(b){b.onclick=function(){if(!confirm('Excluir este lançamento?'))return;api({acao:'pontoExcluirLanc',id:b.dataset.id}).then(function(r){if(!r.ok)throw r.erro;toast('Excluído');lista();}).catch(erro);};});
     }).catch(erro);
   }
@@ -467,7 +503,7 @@ function funcModal(f,novo){
   var js=S.cad.jornadas.map(function(j){return j.nome;});
   function inp(k,lab,tipo,extra){return '<label>'+lab+'<input data-k="'+k+'" '+(tipo||'')+' value="'+esc(f[k]||'')+'" '+(extra||'')+'></label>';}
   function sel(k,lab,ops){return '<label>'+lab+'<select data-k="'+k+'">'+ops.map(function(o){return '<option'+(String(f[k]||'')===o?' selected':'')+'>'+esc(o)+'</option>';}).join('')+'</select></label>';}
-  var h='<h2>'+(novo?'Novo funcionário':esc(f.NOME))+'</h2><div class="grade">'+inp('CODIGO','Código no relógio','',novo?'':'readonly')+inp('USUARIO APP','Usuário no app')+'</div>'+inp('NOME','Nome completo')+'<div class="grade">'+inp('CPF','CPF','inputmode="numeric"')+inp('CARGO','Cargo')+inp('ADMISSAO','Admissão (dd/mm/aaaa)')+sel('JORNADA (MODELO)','Jornada',[''].concat(js))+sel('PERFIL','Perfil',['FUNCIONARIO','GESTOR','DIARISTA'])+sel('SITUACAO','Situação',['ATIVO','DESLIGADO'])+inp('DESLIGAMENTO','Desligamento (dd/mm/aaaa)')+sel('CALCULO','Cálculo do dia',['POR BATIDA','SALDO DO DIA'])+'</div>'+inp('OBS','Observação')+'<div class="sub">Diarista = só vê a escala de domingos/feriados no app. Lembre de cadastrar a pessoa também no relógio, com o mesmo código.</div><button class="btn pri" id="fmSalvar">Salvar</button>';
+  var h='<h2>'+(novo?'Novo funcionário':esc(f.NOME))+'</h2><div class="grade">'+inp('CODIGO','Código no relógio','',novo?'':'readonly')+inp('USUARIO APP','Usuário no app')+'</div>'+inp('NOME','Nome completo')+'<div class="grade">'+inp('CPF','CPF','inputmode="numeric"')+inp('CARGO','Cargo')+inp('ADMISSAO','Admissão (dd/mm/aaaa)')+inp('NASCIMENTO','Nascimento (dd/mm/aaaa)')+sel('JORNADA (MODELO)','Jornada',[''].concat(js))+sel('PERFIL','Perfil',['FUNCIONARIO','GESTOR','DIARISTA'])+sel('SITUACAO','Situação',['ATIVO','DESLIGADO'])+inp('DESLIGAMENTO','Desligamento (dd/mm/aaaa)')+sel('CALCULO','Cálculo do dia',['POR BATIDA','SALDO DO DIA'])+'</div>'+inp('OBS','Observação')+'<div class="sub">Diarista = só vê a escala de domingos/feriados no app. Lembre de cadastrar a pessoa também no relógio, com o mesmo código.</div><button class="btn pri" id="fmSalvar">Salvar</button>';
   modal(h,function(box){$('fmSalvar').onclick=function(){var o={};box.querySelectorAll('[data-k]').forEach(function(x){o[x.dataset.k]=x.value.trim();});Object.keys(f).forEach(function(k){if(!(k in o)&&!/^(linha|codigo)$/.test(k))o[k]=f[k];});api({acao:'pontoSalvarFunc',func:o,novo:!!novo}).then(function(r){if(!r.ok)throw r.erro;toast('Salvo ✓');fecharModal();recarregarIni();abrir('func');}).catch(erro);};});
 }
 function jornModal(j,nova){
@@ -501,7 +537,7 @@ function gFgts(){
     var h=topoCel('FGTS','')+'<div><h1>FGTS do mês</h1><div class="sub">Lance o valor depositado de cada um. O funcionário recebe o aviso no app, que fica visível por 3 dias.</div></div>';
     h+='<div class="linha"><label>Competência<select id="gComp">'+ops+'</select></label><label>Data do depósito<input type="date" id="gData" value="'+brISO(dt)+'"></label></div>';
     h+='<div class="tw"><table><thead><tr><th>Funcionário</th><th>Valor depositado (R$)</th><th>Aviso</th></tr></thead><tbody>'+r.itens.map(function(i){return '<tr><td>'+esc(i.nome)+'</td><td><input data-c="'+i.codigo+'" inputmode="decimal" value="'+esc(i.valor)+'" placeholder="0,00" style="width:140px;text-align:right"></td><td>'+(i.aviso?'<span class="pill ok">Enviado '+esc(i.aviso.slice(0,5))+'</span>':'<span class="pill mute">Não enviado</span>')+'</td></tr>';}).join('')+'</tbody></table></div>';
-    h+='<div class="linha" style="align-items:center"><button class="btn pri" id="gSalvar">Salvar e avisar os funcionários</button><div class="card" style="background:var(--verde);color:#fff;max-width:360px;padding:12px 14px"><b style="font-family:Manrope">FGTS depositado</b><br>Foi depositado R$ [valor] de FGTS referente a '+esc(MESES[+comp.slice(0,2)-1])+', no dia '+esc(dt.slice(0,5))+'. Esse dinheiro é seu.</div></div>';
+    h+='<div class="linha" style="align-items:center"><button class="btn pri" id="gSalvar">Salvar e avisar os funcionários</button><div class="card" style="background:var(--verde);color:#fff;max-width:360px;padding:12px 14px"><b style="font-family:Manrope">FGTS depositado</b><br>Foi depositado na sua conta Caixa R$ [valor] de FGTS referente a '+esc(MESES[+comp.slice(0,2)-1])+', no dia '+esc(dt.slice(0,5))+'. Esse dinheiro é seu.</div></div>';
     $('gMain').innerHTML=h;
     $('gComp').onchange=function(){S.fgtsComp=this.value;gFgts();};
     $('gSalvar').onclick=function(){var it=[];$('gMain').querySelectorAll('input[data-c]').forEach(function(i){if(i.value.trim())it.push({codigo:i.dataset.c,valor:i.value.trim()});});if(!it.length){toast('Preencha algum valor',true);return;}var b=this;b.disabled=true;api({acao:'pontoSalvarFgts',competencia:$('gComp').value,data:isoBR($('gData').value),itens:it}).then(function(x){b.disabled=false;if(!x.ok)throw x.erro;toast(x.salvos+' salvos · avisos enviados');gFgts();}).catch(function(e){b.disabled=false;erro(e);});};
@@ -546,7 +582,7 @@ function irMeu(){
     if(!r.ok)throw r.erro;S.meu=r;
     var tabs=r.perfil==='DIARISTA'?[['escala','Escala'],['extras','Meus extras'],['conta','Conta']]:[['inicio','Início'],['batidas','Batidas'],['banco','Banco'],['escala','Escala'],['conta','Conta']];
     if(r.semCadastro)tabs=[['conta','Conta']];
-    $('fTab').innerHTML=tabs.map(function(t){return '<button data-t="'+t[0]+'">'+t[1]+'</button>';}).join('');
+    $('fTab').innerHTML=tabHTML(tabs);
     $('fTab').querySelectorAll('button').forEach(function(b){b.onclick=function(){fAbrir(b.dataset.t);};});
     fAbrir(r.semCadastro?'conta':(r.perfil==='DIARISTA'?'escala':'inicio'));
   }).catch(erro);
@@ -557,12 +593,13 @@ function fAbrir(t){
   $('fTab').querySelectorAll('button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t);});
   var r=S.meu,h='';
   var dia=new Date(),dn=['domingo','segunda','terça','quarta','quinta','sexta','sábado'][dia.getDay()];
-  var topo='<div class="fTopo"><div style="display:flex;justify-content:space-between;align-items:center"><img src="../logo-branca.png" alt="" style="height:26px"><span style="font-size:12px;color:#A9CDB6">'+dn+', '+hojeBR().slice(0,5)+'</span></div><div class="ola">Olá, '+esc(r.nome||S.nome)+'!</div>';
+  var topo='<div class="fTopo"><div style="display:flex;justify-content:space-between;align-items:center"><div class="mpBr">'+logoMP(32,false)+'<div><div class="mpNome" style="font-size:17px;line-height:1">Meu <span>Pauvan</span></div><small>Minha jornada</small></div></div><span style="font-size:12px;color:#A9CDB6">'+dn+', '+hojeBR().slice(0,5)+'</span></div><div class="ola">Olá, '+esc(r.nome||S.nome)+'!</div>';
   if(t==='inicio'){
     var hj=r.hoje,mar=hj?hj.marcs:[],jor=r.jornadaHoje||[];
     topo+='<div style="font-size:13px;color:#CFE5D7">'+(mar.length?'✓ Você já bateu o ponto hoje às '+mar[0].replace('*',''):(jor.length?'Você ainda não bateu o ponto hoje':'Hoje é sua folga'))+'</div></div>';
     h=topo+'<div class="fCorpo">';
-    if(r.fgts)h+='<div class="card" style="border-color:var(--acento)"><b style="font-family:Manrope;font-size:16px">💰 FGTS depositado</b><div style="margin-top:4px">Foi depositado <b>R$ '+esc(r.fgts.valor)+'</b> de FGTS referente a '+esc(MESES[+r.fgts.competencia.slice(0,2)-1])+', no dia '+esc(r.fgts.data.slice(0,5))+'. Esse dinheiro é seu.</div></div>';
+    if(r.aniversario)h+='<div style="background:linear-gradient(135deg,#9BE36D,#3FB36A);color:#062016;border-radius:16px;padding:16px;position:relative;overflow:hidden"><div style="position:absolute;right:6px;top:2px;font-size:54px">🎂</div><div style="font-size:11px;font-weight:800;letter-spacing:.6px;opacity:.75">HOJE É O SEU DIA!</div><div style="font-family:Manrope;font-weight:800;font-size:19px;margin:3px 0 5px;padding-right:60px">Feliz aniversário, '+esc(r.nome)+'!</div><div style="font-size:13px;line-height:1.4;padding-right:40px">Toda a equipe do Mercado Pauvan deseja muita saúde, alegria e conquistas. Obrigado por fazer parte da nossa história!</div></div>';
+    if(r.fgts)h+='<div class="card" style="border-color:var(--acento)"><b style="font-family:Manrope;font-size:16px">💰 FGTS depositado</b><div style="margin-top:4px">Foi depositado na sua conta Caixa <b>R$ '+esc(r.fgts.valor)+'</b> de FGTS referente a '+esc(MESES[+r.fgts.competencia.slice(0,2)-1])+', no dia '+esc(r.fgts.data.slice(0,5))+'. Esse dinheiro é seu.</div></div>';
     h+='<div class="card"><div class="sub" style="margin-bottom:8px">Batidas de hoje'+(jor.length?' · jornada '+jor.join(' '):'')+'</div><div class="bat">'+['Entrada','Saída almoço','Volta','Saída'].map(function(l,i){return '<div><b>'+(mar[i]||'--:--')+'</b><span>'+l+'</span></div>';}).join('')+'</div>'+(mar.length>4?'<div class="sub" style="margin-top:6px">Mais batidas: '+mar.slice(4).join(' ')+'</div>':'')+'</div>';
     if(r.bonus){var b=r.bonus;h+='<div class="card"><b style="font-family:Manrope;font-size:16px">'+(b.emDia?'⭐ Você está pontual este mês!':'Bônus pontualidade')+'</b><div class="sub" style="margin-top:4px">'+(b.emDia?'Continue assim'+(b.valor?' e ganhe R$ '+esc(b.valor)+' de bônus no fim do mês.':' para ganhar o bônus no fim do mês.'):'Este mês teve '+(b.atrasos?b.atrasos+' atraso(s)':'')+(b.atrasos&&b.faltas?' e ':'')+(b.faltas?b.faltas+' falta(s)':'')+'. O bônus volta no mês que vem.')+'</div></div>';}
     if(r.banco)h+='<div class="card clic" onclick="fAbrir(\'banco\')" style="cursor:pointer"><div class="sub">Banco de horas</div><div class="grande '+sinal(r.banco.total)+'">'+esc(r.banco.total)+'</div><div class="sub">'+(r.banco.totalMin>=0?'horas a seu favor':'horas que você deve')+' · este mês '+esc(r.banco.mes)+'</div></div>';
@@ -584,7 +621,7 @@ function fAbrir(t){
   else if(t==='escala'){
     h=topo+'</div><div class="fCorpo"><div><h2>Domingos e feriados</h2><div class="sub">Quer trabalhar num domingo ou feriado e ganhar a diária? Escolha o dia e a função. A gestão escolhe e você recebe o OK aqui.</div></div>';
     if(r.escalaMeus.length)h+='<div class="grupoT">Minhas inscrições</div><div class="lista">'+r.escalaMeus.map(function(x){return '<div class="row"><div class="t"><b>'+esc(x.data)+'</b><span>'+esc(fn(x.funcao))+'</span></div>'+(x.status==='ESCALADO'?'<span class="pill ok">Escalado ✓</span>':'<span class="pill wait">Aguardando</span> <button class="btn peq" data-des="'+esc(x.data)+'">Desistir</button>')+'</div>';}).join('')+'</div>';
-    h+='<div class="grupoT">Dias abertos</div><div class="lista">'+(r.escalaAbertos.length?r.escalaAbertos.map(function(d){return '<div class="card"><b>'+esc(d.dia)+', '+esc(d.data)+'</b><div class="chips" style="margin-top:8px">'+d.funcoes.map(function(f){return '<button class="chip" data-d="'+esc(d.data)+'" data-f="'+esc(f.funcao)+'">'+esc(fn(f.funcao))+(f.diaria?' · R$ '+esc(f.diaria):'')+'</button>';}).join('')+'</div></div>';}).join(''):'<div class="card sub">Nenhum dia aberto agora. Quando abrir, aparece aqui.</div>')+'</div></div>';
+    h+='<div class="grupoT">Dias abertos</div><div class="lista">'+(r.escalaAbertos.length?r.escalaAbertos.map(function(d){return '<div class="card"><b>'+esc(d.dia)+', '+esc(d.data)+'</b><div class="chips" style="margin-top:8px">'+d.funcoes.map(function(f){return '<button class="chip" data-d="'+esc(d.data)+'" data-f="'+esc(f.funcao)+'">'+esc(fn(f.funcao))+'</button>';}).join('')+'</div></div>';}).join(''):'<div class="card sub">Nenhum dia aberto agora. Quando abrir, aparece aqui.</div>')+'</div></div>';
   }
   else if(t==='extras'){
     h=topo+'</div><div class="fCorpo"><div class="card"><div class="sub">Total que você já recebeu de extras no Pauvan</div><div class="grande pos">R$ '+esc(r.extrasTotal)+'</div></div><div class="lista">'+(r.extras.length?r.extras.map(function(x){return '<div class="row"><div class="t"><b>'+esc(x.data)+'</b><span>'+esc(fn(x.funcao))+'</span></div><b>'+(x.valor?'R$ '+esc(x.valor):'')+'</b></div>';}).join(''):'<div class="sub">Nenhum domingo trabalhado ainda.</div>')+'</div></div>';
