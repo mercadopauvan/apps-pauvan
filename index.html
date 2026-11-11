@@ -405,7 +405,17 @@ ul.vs li .bts button{flex:1;border-radius:12px;font-size:15px;font-weight:800;pa
 ul.vs li .bts button.nao{background:#fff;color:#475569;border-color:#94a3b8}
 ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b45309;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:700}
 /* ===== v109 ===== */
-.faixa.etq{background:#7c3aed} .faixa.cta{background:#0f766e}
+.faixa.etq{background:#7c3aed}
+.faixa.grm{background:#5b21b6}
+.grmTx{font-size:14px;margin:6px 0}.grmGr{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 8px}.grmGr div{background:#f8faf9;border:1px solid #e2e8e4;border-radius:10px;padding:6px 8px;font-size:11px;color:#64748b}.grmGr b{display:block;color:#111;font-size:16px}.grmGr b.cz{color:#6d28d9;font-size:13px}
+.grmBp{background:#0E4D32!important;color:#fff!important}
+.grmOp{border:1.5px solid #e2e8e4;border-radius:12px;padding:12px;font-size:15px;font-weight:700;margin-top:7px}.grmOp.on{border:2px solid #7c3aed;background:#f5f3ff}
+.grmPs{display:flex;gap:6px;margin-top:8px}.grmPs input{flex:1;border:2px solid #7c3aed;border-radius:10px;padding:10px;font-size:22px;font-weight:800;min-width:0}.grmPs select{border:2px solid #7c3aed;border-radius:10px;font-size:18px;padding:0 8px}
+.grmFt{display:block;width:100%;margin-top:10px;border:1.5px dashed #94a3b8;background:#fff;border-radius:12px;padding:12px;font-size:14px;font-weight:700;color:#334155}
+.grmPrev{display:block;max-width:100%;max-height:220px;margin:8px auto 0;border-radius:10px}
+.grmEnv{background:#5b21b6!important;color:#fff!important;margin-top:12px}
+.grmRes{display:flex;gap:10px;align-items:center;background:#faf5ff;border-radius:12px;padding:8px;margin-top:8px;font-size:13px;line-height:1.4}.grmRes img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex-shrink:0;cursor:pointer}
+ .faixa.cta{background:#0f766e}
 .vp{margin-top:8px}
 .vpBts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .vpBts button{border:2px solid var(--borda);background:#fff;border-radius:12px;padding:10px 4px;font-size:13px;font-weight:800;color:#475569;font-family:inherit}
@@ -894,6 +904,13 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <p class="dica" style="text-align:left;margin:0 0 10px">Conte em <b>unidades</b>. Caixa ou fardo fechado: informe quantas caixas e quantas vêm em cada uma.</p>
   <input type="file" id="fotoCE" accept="image/*" capture="environment" style="display:none">
   <div id="ceLista"></div>
+</section>
+<!-- v118: 📏 CONFERIR NA LOJA (gramatura pedida pelo Celio) -->
+<section class="tela" id="tGRM">
+  <div class="faixa grm"><span id="faixaGRM"></span><button onclick="irTipo()">VOLTAR</button></div>
+  <input type="file" id="fotoGRMcod" accept="image/*" capture="environment" style="display:none">
+  <input type="file" id="fotoGRM" accept="image/*" capture="environment" style="display:none">
+  <div id="grmLista"></div>
 </section>
 <!-- v109: CONTAGEM DE ESTOQUE — GESTÃO (Celio) -->
 <section class="tela" id="tGC">
@@ -2355,6 +2372,7 @@ function irHome(){
 }
 function renderHome(){
   var box=$('nhLista');box.innerHTML='';var grupo='';
+  if(resumoCache.grm&&typeof irGRM==='function'){var gm=document.createElement('button');gm.className='nhR';gm.innerHTML='<span class="ib" style="background:#5b21b6;font-size:24px">📏</span><span><b>Conferir na loja</b><i><span class="v9Selo">'+resumoCache.grm+'</span> '+(resumoCache.grm===1?'pedido':'pedidos')+' do Celio</i></span><span class="ar">›</span>';gm.onclick=function(){vibra();irGRM();};box.appendChild(gm);} // v118
   (typeof HOME_ORDEM!=='undefined'?HOME_ORDEM:['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA']).forEach(function(a){ // v109
     if(appsCache.indexOf(a)<0)return;var d=HOME_DEF[a];
     if(d[0]!==grupo){grupo=d[0];var t=document.createElement('h3');t.textContent=grupo;box.appendChild(t);}
@@ -3367,7 +3385,7 @@ function agdDetalhe(o){
   Array.prototype.forEach.call(box.querySelectorAll('[data-u]'),function(el){el.onclick=function(){vibra();agdAbrir(el.getAttribute('data-u'));};});
 }
 // v113: 🗂️ DECISÕES (Gestão, só o Celio) — Rebaixas, Produto novo (NF), Contagem, Código de barras
-var decC=null,decAba='A',decFil='TODOS',decAb=null,decSel={},decBusca={};
+var decC=null,decAba='A',decFil='TODOS',decAb=null,decSel={},decBusca={},decGrmPara={}; // v118
 var DEC_TIPOS={REBAIXA:['🏷️','Rebaixas'],PRODUTO_NOVO:['🧾','Produto novo'],CONTAGEM:['📦','Contagem'],CODIGO:['🔢','Código']};
 function irDEC(){pararCamera();$('faixaDEC').textContent='🗂️ DECISÕES · '+quem;mostrar('tDEC');decAb=null;decRender();decCarregar();}
 function decCarregar(){v9Api({acao:'decLista'},function(r){decC=r;decRender();});}
@@ -3423,13 +3441,17 @@ function decCard(o){
   }else if(o.tipo==='CODIGO'){
     h+='<div class="decTop" style="color:#0e7490">bipado por '+esc(o.quem)+(o.nf?' · NF '+esc(o.nf):'')+' · '+esc(o.data)+'</div><div class="decNm">'+esc(o.prod)+'</div>'
      +'<div class="decGr" style="grid-template-columns:1fr 1fr"><div>CÓDIGO NO PLENUS<b style="font-size:13px">'+esc(o.atual)+'</b></div><div>BIPADO NA CONFERÊNCIA<b style="font-size:13px;color:#0e7490">'+esc(o.bipado)+'</b></div></div>'
-     +'<div>'+decPill('🛒 vendeu '+o.venda30+' un em 30 dias')+(o.saldo!=null?decPill('saldo '+String(o.saldo).replace('.',',')+' un'):'')+'</div><div class="decAl" style="background:#ecfeff;color:#155e75">'+esc(o.motivo)+'</div>';
-    var oc=[['PROMO','➕ Cadastrar como PROMO','novo cadastro filial do mesmo mestre, com o código bipado'],['TROCAR','🔁 Trocar o código no cadastro','o código bipado substitui o antigo'],['REBIPAR','📷 Pedir para bipar de novo','volta para '+esc(o.quem)+' bipar o produto outra vez'],['IGNORAR','✖️ Ignorar','bipado errado / não é este produto']];
+     +'<div>'+decPill('🛒 vendeu '+o.venda30+' un em 30 dias')+(o.saldo!=null?decPill('saldo '+String(o.saldo).replace('.',',')+' un'):'')+(o.pesoCad?decPill('⚖️ cadastro '+esc(o.pesoCad)):'')+'</div><div class="decAl" style="background:#ecfeff;color:#155e75">'+esc(o.motivo)+'</div>';
+    if(o.grm){var gg=o.grm;h+=gg.status==='PENDENTE'?'<div class="decAl" style="background:#f5f3ff;color:#5b21b6">📏 aguardando '+esc(gg.para)+' conferir o peso na loja</div>':'<div class="grmRes">'+(gg.foto?'<img src="'+esc(gg.foto)+'" onclick="window.open(this.src.replace(\'sz=w600\',\'sz=w1600\'),\'_blank\')">':'')+'<div><b style="color:'+(gg.resp==='DIFERENTE'?'#b91c1c':'#15803d')+'">'+(gg.resp==='DIFERENTE'?'⚖️ Peso diferente: '+esc(gg.peso):(gg.resp==='MESMO'?'✅ Mesmo peso':'❓ Não achou na loja'))+'</b><br>cadastro '+esc(gg.cad||'—')+' · 📏 '+esc(gg.por)+' '+esc(String(gg.em).slice(0,16))+'</div></div>';} // v118
+    var oc=o.grm&&o.grm.resp==='DIFERENTE'?[['NOVO_PESO','🆕 Cadastrar produto novo','mesma marca e seção, com o código bipado'],['CORRIGIR_PESO','✏️ Corrigir o cadastro '+esc(o.sku)+' para '+esc(o.grm.peso),'se o peso antigo não vai mais chegar'],['IGNORAR','✖️ Não fazer nada','']]:[['PROMO','➕ Cadastrar como PROMO','novo cadastro filial do mesmo mestre, com o código bipado'],['GRAMATURA','📏 Pedir para conferir a gramatura','alguém da loja olha o peso na embalagem e responde'],['TROCAR','🔁 Trocar o código no cadastro','o código bipado substitui o antigo'],['REBIPAR','📷 Pedir para bipar de novo','volta para '+esc(o.quem)+' bipar o produto outra vez'],['IGNORAR','✖️ Ignorar','bipado errado / não é este produto']];
     if(o.sugestao==='UVA'&&o.irmao)oc.unshift(['UVA','🍇 Trocar no cadastro '+esc(o.irmao.sku),esc(o.irmao.desc)+' (sem venda)']);
+    if(decSel[k]&&!oc.some(function(x){return x[0]===decSel[k];}))decSel[k]=null; // v118
     if(!decSel[k])decSel[k]=o.sugestao==='UVA'?'UVA':o.sugestao;
     h+='<div class="decLb">O que fazer?</div>';oc.forEach(function(x){h+='<div class="decOp'+(decSel[k]===x[0]?' on':'')+'" data-op="'+x[0]+'">'+(decSel[k]===x[0]?'◉':'○')+' <b>'+x[1]+'</b><br><small>'+x[2]+'</small></div>';});
+    if(decSel[k]==='GRAMATURA'){var pp=o.pessoas||['Regiane','Ney'];if(!decGrmPara[k])decGrmPara[k]=pp[0];h+='<div class="decLb">Pedir para</div><div class="decDias">'+pp.map(function(n){return '<button type="button" data-pp="'+esc(n)+'"'+(decGrmPara[k]===n?' class="on"':'')+'>'+esc(n)+'</button>';}).join('')+'</div>';} // v118
+    if(decSel[k]==='NOVO_PESO'||decSel[k]==='CORRIGIR_PESO')h+='<div class="decLb">'+(decSel[k]==='NOVO_PESO'?'Nome do produto novo':'Nome corrigido do '+esc(o.sku))+'</div><input class="decIn grmDesc" type="text" value="'+esc(decSel[k]==='NOVO_PESO'||/\*\*$/.test(o.prod)?o.descNova:String(o.descNova).replace(/\*+$/,''))+'">';
     h+='<div class="decLb">Observação (opcional)</div><input class="decIn decObs" type="text" placeholder="">';
-    h+='<button type="button" class="btn ok decGo" style="background:#0e7490">✅ AUTORIZAR</button><div class="decRod">o Claude faz no Plenus na próxima rotina de NF</div>';
+    h+=decSel[k]==='GRAMATURA'?'<button type="button" class="btn ok decGo" style="background:#7c3aed">📏 ENVIAR PARA CONFERIR</button><div class="decRod">o cartão vai para ⏸️ ESPERANDO até a resposta</div>':'<button type="button" class="btn ok decGo" style="background:#0e7490">✅ AUTORIZAR</button><div class="decRod">o Claude faz no Plenus na próxima rotina de NF</div>';
   }
   if(o.tipo==='REBAIXA'||o.tipo==='PRODUTO_NOVO'){
     var b1=o.tipo==='REBAIXA'?['FAZER','🏷️ FAZER REBAIXA']:['VINCULAR','🔗 VINCULAR'];
@@ -3438,9 +3460,10 @@ function decCard(o){
   }
   d.innerHTML=h;decUndoLiga(d);
   d.querySelectorAll('.decOp').forEach(function(el){el.onclick=function(){vibra();decSel[k]=el.dataset.sku||el.dataset.op;decRender();};});
+  d.querySelectorAll('[data-pp]').forEach(function(el){el.onclick=function(){vibra();decGrmPara[k]=el.dataset.pp;decRender();};}); // v118
   d.querySelectorAll('[data-ab]').forEach(function(el){el.onclick=function(){vibra();var op=el.dataset.ab;if(op==='VINCULAR'){if(!decSel[k])return toast('Escolha ou busque o cadastro','err');return decEnviar(o,{op:'VINCULAR',sku:decSel[k],fator:o.fator||'',prod:o.prod},el);}decAb=decAb&&decAb.k===k&&decAb.op===op?null:{k:k,op:op};decRender();};});
   var bs=d.querySelector('.decBus');if(bs){bs.querySelector('button').onclick=function(){var tx=bs.querySelector('input').value.trim();if(!tx)return;api({acao:'buscarNome',texto:tx,kg:'todos'}).then(function(r){var its=((r&&r.itens)||[]).slice(0,5).map(function(x){return {sku:String(x.sku),desc:x.desc||x.descricao||''};});if(!its.length)return toast('Nada encontrado','err');decBusca[k]=its;decSel[k]=its[0].sku;decRender();}).catch(function(){toast('Sem conexão','err');});};}
-  var go=d.querySelector('.decGo');if(go)go.onclick=function(){var obs=(d.querySelector('.decObs')||{}).value||'';var x={op:decSel[k],obs:obs};if(o.tipo==='CODIGO'){x.sku=o.sku;x.prod=o.prod;x.nf=o.nf;x.quemBipou=o.quem;if(decSel[k]==='UVA')x.skuDestino=o.irmao.sku;}if(o.tipo==='CONTAGEM')x.para=o.para;decEnviar(o,x,go);};
+  var go=d.querySelector('.decGo');if(go)go.onclick=function(){var obs=(d.querySelector('.decObs')||{}).value||'';var x={op:decSel[k],obs:obs};if(o.tipo==='CODIGO'){x.sku=o.sku;x.prod=o.prod;x.nf=o.nf;x.quemBipou=o.quem;if(decSel[k]==='UVA')x.skuDestino=o.irmao.sku;if(decSel[k]==='GRAMATURA')x.para=decGrmPara[k];if(decSel[k]==='NOVO_PESO'||decSel[k]==='CORRIGIR_PESO'){x.desc=(d.querySelector('.grmDesc')||{}).value||'';x.pesoNovo=o.grm&&o.grm.peso;x.foto=o.grm&&o.grm.foto;if(!x.desc.trim())return toast('Informe o nome','err');}}if(o.tipo==='CONTAGEM')x.para=o.para;decEnviar(o,x,go);};
   var pn=d.querySelector('.decPn');if(pn)decLigarPainel(o,pn);
   return d;
 }
@@ -3495,10 +3518,56 @@ function v9Abrir(ab){
   if(ab==='gcontagem'&&cel){irGC();return true;}
   if(ab==='decisoes'&&cel){irDEC();return true;} // v113
   if(ab==='agendados'&&cel){irAGD();return true;} // v114
+  if(ab==='conferirloja'){irGRM();return true;} // v118
   if(ab==='gvalfrente'&&cel){irGV();return true;}
   return false;
 }
 ['fotoET','fotoCE','fotoGC'].forEach(function(id){try{$(id).addEventListener('change',function(){lerFotoPara(this,SCAN_CB[id]);});}catch(e){}});
+// v118: 📏 CONFERIR NA LOJA — o Celio pede (cartão Código das Decisões) para conferir o peso na embalagem
+var grmC=null,grmEst={},grmBip=null,grmFotoIt=null;
+function irGRM(){pararCamera();tipoAtual='GRM';$('faixaGRM').textContent='📏 CONFERIR NA LOJA · '+quem;mostrar('tGRM');grmRender();grmCarregar();}
+function grmCarregar(){v9Api({acao:'grmMinhas'},function(r){grmC=r;grmRender();});}
+function grmRender(){
+  var box=$('grmLista');box.innerHTML='';
+  if(!grmC){box.innerHTML='<p class="dica">Carregando…</p>';return;}
+  if(!grmC.pend.length)box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">Nada para conferir agora. 👍</p>';
+  grmC.pend.forEach(function(it){
+    var s=grmEst[it.id]=grmEst[it.id]||{resp:'',peso:'',un:it.un||'g',foto:'',bip:''};
+    var d=document.createElement('div');d.className='v9Box grmBox';
+    d.innerHTML='<div class="v9M" style="color:#6d28d9;font-weight:800">pedido do Celio · '+esc(it.pedEm)+'</div><div class="v9D">'+esc(it.prod)+'</div>'
+      +'<div class="grmTx">No cadastro está <b>'+esc(it.peso||'(sem peso no nome)')+'</b>. Pegue o produto que chegou'+(it.nf?' na NF '+esc(it.nf):'')+' e veja o peso escrito na embalagem.</div>'
+      +'<div class="grmGr"><div>CADASTRO<b>'+esc(it.peso||'—')+'</b></div><div>CÓDIGO BIPADO<b class="cz">'+esc(it.bipado)+'</b></div></div>'
+      +'<button type="button" class="btn grmBp">📷 BIPAR O PRODUTO</button>'
+      +(s.bip?'<div class="v9Tag '+(s.bip===it.bipado?'ok">✅ É esse produto':'er">⚠️ Bipou outro código: '+esc(s.bip))+'</div>':'<div class="v9M" style="text-align:center">confere se é o mesmo código antes de responder</div>')
+      +'<div class="v9Lbl">QUAL O PESO NA EMBALAGEM?</div>'
+      +'<div class="grmOp'+(s.resp==='MESMO'?' on':'')+'" data-r="MESMO">✅ Mesmo peso'+(it.peso?' ('+esc(it.peso)+')':'')+'</div>'
+      +'<div class="grmOp'+(s.resp==='DIFERENTE'?' on':'')+'" data-r="DIFERENTE">⚖️ Peso diferente'+(s.resp==='DIFERENTE'?'<div class="grmPs"><input type="text" inputmode="decimal" placeholder="ex.: 40" value="'+esc(s.peso)+'"><select>'+['g','kg','ml','L'].map(function(u){return '<option'+(u===s.un?' selected':'')+'>'+u+'</option>';}).join('')+'</select></div>':'')+'</div>'
+      +'<div class="grmOp'+(s.resp==='NAO ACHEI'?' on':'')+'" data-r="NAO ACHEI">❓ Não achei na loja</div>'
+      +'<button type="button" class="grmFt">'+(s.foto?'✅ Foto da embalagem tirada (toque para trocar)':'📸 Foto da embalagem (frente)'+(s.resp==='DIFERENTE'?' — obrigatória':''))+'</button>'+(s.foto?'<img class="grmPrev" src="'+s.foto+'">':'')
+      +'<button type="button" class="btn grmEnv">ENVIAR PARA O CELIO</button>';
+    d.querySelectorAll('.grmOp').forEach(function(el){el.onclick=function(ev){if(ev.target.tagName==='INPUT'||ev.target.tagName==='SELECT')return;vibra();s.resp=el.dataset.r;grmRender();if(s.resp==='DIFERENTE')setTimeout(function(){var i=box.querySelector('.grmBox .grmPs input');if(i)i.focus();},60);};});
+    var ip=d.querySelector('.grmPs input');if(ip)ip.oninput=function(){s.peso=ip.value;};
+    var sl=d.querySelector('.grmPs select');if(sl)sl.onchange=function(){s.un=sl.value;};
+    d.querySelector('.grmBp').onclick=function(){grmBip=it;escanear('fotoGRMcod');};
+    d.querySelector('.grmFt').onclick=function(){grmFotoIt=it;$('fotoGRM').click();};
+    d.querySelector('.grmEnv').onclick=function(){
+      var b=this;if(!s.resp)return toast('Escolha a resposta','err');
+      if(s.resp==='DIFERENTE'){var n=Number(String(s.peso).replace(',','.'));if(!(n>0))return toast('Informe o peso da embalagem','err');if(!s.foto)return toast('Tire a foto da embalagem','err');}
+      b.disabled=true;b.textContent='Enviando…';
+      v9Api({acao:'grmResponder',id:it.id,resp:s.resp,peso:s.peso,un:s.un,foto:s.foto,bip:s.bip},function(){toast('Enviado para o Celio ✅','ok');delete grmEst[it.id];grmCarregar();},function(){b.disabled=false;b.textContent='ENVIAR PARA O CELIO';});
+    };
+    box.appendChild(d);
+  });
+  if(grmC.enviados&&grmC.enviados.length){var h=document.createElement('div');h.className='v9Lbl';h.textContent='ENVIADOS HOJE';box.appendChild(h);grmC.enviados.forEach(function(o){var p=document.createElement('div');p.className='v9M';p.textContent='✓ '+o.prod+' — '+(o.resp==='DIFERENTE'?'peso '+o.pesoNovo:(o.resp==='MESMO'?'mesmo peso':'não achou'));box.appendChild(p);});}
+}
+SCAN_CB.fotoGRMcod=function(cod){vibra();if(!grmBip)return;var s=grmEst[grmBip.id]=grmEst[grmBip.id]||{resp:'',peso:'',un:'g',foto:'',bip:''};s.bip=String(cod||'').replace(/\D/g,'');grmRender();};
+try{$('fotoGRMcod').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fotoGRMcod);});}catch(e){}
+try{$('fotoGRM').addEventListener('change',function(){
+  var inp=this,f=inp.files[0];if(!f||!grmFotoIt)return;inp.value='';var it=grmFotoIt;toast('Preparando foto…');
+  var img=new Image();img.onload=function(){var MAX=1280,w=img.width,h=img.height,k=Math.min(1,MAX/Math.max(w,h));var c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);(grmEst[it.id]=grmEst[it.id]||{resp:'',peso:'',un:'g',bip:''}).foto=c.toDataURL('image/jpeg',0.72);URL.revokeObjectURL(img.src);grmRender();};
+  img.onerror=function(){toast('Não deu para ler a foto','err');};img.src=URL.createObjectURL(f);
+});}catch(e){}
+
 try{$('etIn').onkeydown=function(e){if(e.key==='Enter')v9Busca('etIn','etRes',etAbrir);};$('hfOutroIn').onkeydown=function(e){if(e.key==='Enter')hfOutro();};}catch(e){}
 try{if($('tScan').classList.contains('on'))v9Layout(tipoAtual);if($('tHome').classList.contains('on'))renderHome();navDepois(navTela());}catch(e){}
 
