@@ -485,6 +485,20 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .v9Link{border:0;background:none;color:#2563eb;font-weight:700;font-size:14px;padding:6px 0;font-family:inherit}
 .v9Chips{display:flex;flex-wrap:wrap;gap:6px}.v9Chips button{border:2px solid var(--borda);background:#fff;border-radius:20px;padding:8px 12px;font-weight:700;font-size:14px;font-family:inherit}.v9Chips button.on{border-color:#0f766e;background:#f0fdfa;color:#0f766e}
 .v9Bts{display:flex;gap:6px;margin-top:8px}.v9Bts button{flex:1;border:2px solid var(--borda);background:#fff;border-radius:10px;padding:9px;font-weight:800;font-size:13px;font-family:inherit}.v9Bts button.ok{background:#0f766e;color:#fff;border-color:#0f766e}
+.decChip{border:1.5px solid #cbd5d0;background:#fff;border-radius:20px;padding:6px 11px;font-size:13px;font-weight:700;font-family:inherit;margin:0 6px 6px 0}.decChip.on{background:#0E4D32;color:#fff;border-color:#0E4D32}
+.decCard{background:#fff;border-radius:16px;padding:12px 13px;margin:0 0 10px;box-shadow:0 1px 3px rgba(0,0,0,.1);border-left:5px solid #f59e0b}.decCard.urg{border-left-color:#dc2626}.decCard.tPRODUTO_NOVO{border-left-color:#2563eb}.decCard.tCONTAGEM{border-left-color:#7c3aed}.decCard.tCODIGO{border-left-color:#0891b2}
+.decTop{font-size:12px;font-weight:800;margin-bottom:2px}.decNm{font-weight:800;font-size:15px;line-height:1.25}.decVc{font-size:13px;font-weight:700;color:#b45309;margin:3px 0 4px}.urg .decVc{color:#dc2626}
+.decPill{display:inline-block;font-size:12px;background:#f1f5f2;border-radius:8px;padding:4px 7px;margin:4px 4px 0 0}
+.decGr{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.decGr>div{background:#f8faf9;border:1px solid #e2e8e4;border-radius:10px;padding:5px 7px;font-size:11px;color:#64748b}.decGr b{display:block;color:#111;font-size:14px}.decGr input,.decGr select{width:100%;font-size:15px;font-weight:700;border:0;background:transparent;font-family:inherit;padding:2px 0}
+.decAl{margin-top:7px;font-size:12px;background:#fff7ed;color:#9a3412;border-radius:8px;padding:6px 8px;font-weight:600}
+.decLb{font-size:13px;font-weight:700;color:#475569;margin-top:10px}
+.decOp{border:1.5px solid #e2e8e4;border-radius:10px;padding:8px 9px;font-size:13px;margin-top:6px}.decOp.on{border:2px solid #0E4D32;background:#f0fdf4;font-weight:700}.decOp small{color:#64748b;font-weight:400}
+.decBus{display:flex;gap:6px;margin-top:6px}.decBus input{flex:1;border:1.5px dashed #cbd5d0;border-radius:10px;padding:8px;font-size:14px;font-family:inherit}.decBus button{border:0;background:#e2e8f0;border-radius:10px;font-weight:800;padding:0 10px;font-family:inherit}
+.decBts{display:flex;gap:6px;margin-top:10px}.decBts button{flex:1;border:0;border-radius:11px;padding:11px 4px;font-weight:800;font-size:13px;font-family:inherit}.decBts .b1{background:#0E4D32;color:#fff}.decBts .bN{background:#dbeafe;color:#1e40af}.decBts .b2{background:#fef3c7;color:#92400e}.decBts .b3{background:#f1f5f9;color:#475569}
+.decPn{border-top:1px dashed #cbd5d0;margin-top:10px;padding-top:4px}.decIn{width:100%;box-sizing:border-box;border:2px solid #cbd5d0;border-radius:12px;padding:10px;font-size:15px;margin-top:5px;font-family:inherit}.decPr{border-color:#0E4D32}
+.decCalc{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.decCalc div{border-radius:10px;padding:7px;font-size:12px;background:#f0fdf4;color:#166534}.decCalc b{display:block;font-size:14px}.decCalc .neg{background:#fef2f2;color:#991b1b}
+.decDias{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.decDias button,.decDias input{flex:1;min-width:64px;border:2px solid #e2e8e4;border-radius:12px;padding:10px 4px;font-weight:800;background:#fff;font-family:inherit;font-size:14px;text-align:center}.decDias .on{border-color:#d97706;background:#fef3c7}
+.decRod{font-size:12px;color:#64748b;text-align:center;margin-top:7px}.decCard .btn{margin-top:10px}
 .v9Selo{display:inline-block;background:#dc2626;color:#fff;font-weight:800;border-radius:10px;padding:0 7px;font-size:12px;line-height:18px}
 .ceF{margin-top:4px}.ceL input,.ceCx input{font-size:18px;padding:10px 12px}.ceCx{display:flex;gap:6px;align-items:center;margin-top:6px}.ceCx input{flex:1;min-width:0;font-size:15px;padding:8px 10px}.ceCx span{color:#64748b;font-weight:800}
 .ceSub{font-size:12px;color:#0f766e;font-weight:700;margin-top:3px}.ceTot{margin:12px 0 4px;font-size:17px}.ceTot b{font-size:20px}
@@ -839,6 +853,14 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div class="v9Info" id="pfAviso"></div>
   <div id="pfLista"></div>
   <div class="v9Acoes" id="pfAcoes"></div>
+</section>
+<!-- v113: DECISÕES (Gestão) -->
+<section class="tela" id="tDEC">
+  <div class="faixa" style="background:#0E4D32"><span id="faixaDEC"></span><button onclick="irTipo()">VOLTAR</button></div>
+  <div class="v9Tabs" id="decTabs"></div>
+  <div id="decChips"></div>
+  <div class="v9Info" id="decAviso"></div>
+  <div id="decLista"></div>
 </section>
 <!-- v109: CONTAGEM DE ESTOQUE (quem conta) -->
 <section class="tela" id="tCE">
@@ -3274,8 +3296,104 @@ function v9SubHtml(a,sub){
   if(a==='ETIQUETAS'&&r.etqProntas)return '✅ '+r.etqProntas+(r.etqProntas===1?' etiqueta pronta hoje':' etiquetas prontas hoje');
   return esc(sub);
 }
+// v113: 🗂️ DECISÕES (Gestão, só o Celio) — Rebaixas, Produto novo (NF), Contagem, Código de barras
+var decC=null,decAba='A',decFil='TODOS',decAb=null,decSel={},decBusca={};
+var DEC_TIPOS={REBAIXA:['🏷️','Rebaixas'],PRODUTO_NOVO:['🧾','Produto novo'],CONTAGEM:['📦','Contagem'],CODIGO:['🔢','Código']};
+function irDEC(){pararCamera();$('faixaDEC').textContent='🗂️ DECISÕES · '+quem;mostrar('tDEC');decAb=null;decRender();decCarregar();}
+function decCarregar(){v9Api({acao:'decLista'},function(r){decC=r;decRender();});}
+function decN(v){return v==null||v===''?null:Number(String(v).replace(',','.'));}
+function decVence(d,v){return d<=0?'⚠️ vence hoje · '+v:(d===1?'⚠️ vence amanhã · '+v:'vence em '+d+' dias · '+v);}
+function decRender(){
+  var tb=$('decTabs'),ch=$('decChips'),box=$('decLista'),av=$('decAviso');box.innerHTML='';av.innerHTML='';ch.innerHTML='';
+  var c=decC||{aDecidir:[],esperando:[],decididas:[]};
+  tb.innerHTML='';[['A','A DECIDIR',c.aDecidir.length],['E','⏸️ ESPERANDO',c.esperando.length],['D','✅ DECIDIDAS',0]].forEach(function(t){var b=document.createElement('button');b.type='button';b.className=decAba===t[0]?'on':'';b.textContent=t[1]+(t[2]?' ('+t[2]+')':'');b.onclick=function(){decAba=t[0];decAb=null;decRender();};tb.appendChild(b);});
+  if(!decC){box.innerHTML='<p class="dica">Carregando…</p>';return;}
+  if(c.erros&&c.erros.length)av.innerHTML='⚠ '+esc(c.erros.join(' · '));
+  var its=decAba==='A'?c.aDecidir:(decAba==='E'?c.esperando:c.decididas);
+  var cont={};its.forEach(function(o){cont[o.tipo]=(cont[o.tipo]||0)+1;});
+  [['TODOS','Todos',its.length]].concat(Object.keys(DEC_TIPOS).map(function(k){return [k,DEC_TIPOS[k][0]+' '+DEC_TIPOS[k][1],cont[k]||0];})).forEach(function(t){if(t[0]!=='TODOS'&&!t[2])return;var b=document.createElement('button');b.type='button';b.className='decChip'+(decFil===t[0]?' on':'');b.textContent=t[1]+' '+t[2];b.onclick=function(){decFil=t[0];decAb=null;decRender();};ch.appendChild(b);});
+  if(decFil!=='TODOS'&&!cont[decFil])decFil='TODOS';
+  its=its.filter(function(o){return decFil==='TODOS'||o.tipo===decFil;});
+  if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">'+(decAba==='A'?'Nada para decidir agora. 👍':(decAba==='E'?'Nada esperando.':'Nenhuma decisão nos últimos 15 dias.'))+'</p>';return;}
+  if(decAba==='D'){var ul=document.createElement('ul');ul.className='v9L';its.forEach(function(o){var d=o.det||{},li=document.createElement('li');var st=o.status==='A EXECUTAR'?'<span class="v9Tag" style="background:#fef3c7;color:#92400e">⏳ o Claude vai fazer no Plenus</span>':(o.status==='EXECUTADA'?'<span class="v9Tag ok">✓ feito'+(o.exec?' '+esc(String(o.exec).slice(0,5)):'')+'</span>':'<span class="v9Tag ok">✓ decidido</span>');
+    li.innerHTML='<div class="v9D">'+(DEC_TIPOS[o.tipo]||['•'])[0]+' '+esc(d.prod||d.desc||o.chave.split('|').slice(-2,-1)[0]||'')+'</div><div class="v9M">'+esc(o.decisao)+(d.preco?' · R$ '+Number(d.preco).toFixed(2).replace('.',','):'')+(d.sku&&o.tipo==='PRODUTO_NOVO'?' · '+esc(d.sku+' '+(d.desc||'')):'')+(o.tipo==='PRODUTO_NOVO'&&d.desc&&!d.sku?' · '+esc(d.desc):'')+' · '+esc(o.em)+(o.obs?' · '+esc(o.obs):'')+'</div>'+st;ul.appendChild(li);});box.appendChild(ul);return;}
+  its.forEach(function(o){box.appendChild(decCard(o));});
+}
+function decPill(t){return '<span class="decPill">'+t+'</span>';}
+function decCard(o){
+  var d=document.createElement('div');d.className='decCard t'+o.tipo+(o.tipo==='REBAIXA'&&o.dias<=3?' urg':'');var h='',k=o.chave;
+  if(o.volta)h+='<div class="decTop" style="color:#92400e">⏸️ esperando · volta em '+esc(o.volta)+'</div>';
+  if(o.tipo==='REBAIXA'){
+    h+='<div class="decNm">'+esc(o.prod)+'</div><div class="decVc">'+decVence(o.dias,o.validade)+'</div><div>'+(o.qtd?decPill('📦 '+o.qtd+' UN'+(/DESTA VALIDADE/i.test(o.obs)?' desta validade':'')):'')+(o.sobra!==''?decPill('deve sobrar '+o.sobra):'')+(o.semVenda?decPill('sem venda '+o.semVenda+' dias'):'')+(o.conferido?decPill('✔ lote conferido'):'')+'</div>'
+     +'<div class="decGr"><div>PAUVAN<b>'+(o.pauvan!=null?brl(o.pauvan):'—')+'</b></div><div>OSSO<b>'+(o.osso!=null?brl(o.osso):'—')+'</b></div><div>PAGOU<b>'+(o.pagou!=null?brl(o.pagou):'—')+'</b></div></div>'+(o.alerta?'<div class="decAl">'+esc(o.alerta)+'</div>':'');
+  }else if(o.tipo==='PRODUTO_NOVO'){
+    h+='<div class="decTop" style="color:#1d4ed8">NF '+esc(o.nf)+' · '+esc(o.forn)+(o.entrada?' · chegou '+esc(o.entrada.slice(0,5)):' · aguardando entrada')+'</div><div class="decNm">'+esc(o.prod)+'</div><div>'+decPill(esc(o.qtd+' '+o.un))+(o.fator?decPill('1 '+(o.un==='UN'?'CX':esc(o.un))+' = '+o.fator+(o.un==='KG'?' KG':'')):'')+(o.codNota?decPill('cód. nota '+esc(o.codNota)):'')+(o.ean?decPill('EAN …'+esc(o.ean.slice(-6))):'')+'</div>';
+    var ps=(o.parecidos||[]).concat(decBusca[k]||[]);if(decSel[k]==null&&o.parecidos&&o.parecidos.length)decSel[k]=o.parecidos[0].sku;
+    h+='<div class="decLb">'+(o.parecidos&&o.parecidos.length?'Cadastros parecidos':'Nenhum cadastro parecido — sugestão: cadastrar novo')+'</div>';
+    ps.forEach(function(p){h+='<div class="decOp'+(decSel[k]===p.sku?' on':'')+'" data-sku="'+esc(p.sku)+'">'+(decSel[k]===p.sku?'◉':'○')+' <b>'+esc(p.sku)+'</b> · '+esc(p.desc)+(p.nv?' <small>(não vender)</small>':'')+'</div>';});
+    h+='<div class="decBus"><input type="text" placeholder="🔎 buscar outro cadastro (nome ou SKU)"><button type="button">BUSCAR</button></div>';
+  }else if(o.tipo==='CONTAGEM'){
+    var dif=decN(o.dif),rs=decN(o.difRs);
+    h+='<div class="decTop" style="color:#6d28d9">contado por '+esc(o.contPor)+' · '+esc(o.contEm)+'</div><div class="decNm">'+esc(o.desc)+'</div>'
+     +'<div class="decGr"><div>ÁREA<b>'+esc(o.area)+'</b></div><div>ESTOQUE<b>'+esc(o.est)+'</b></div><div>TOTAL<b>'+esc(o.total)+'</b></div></div>'
+     +'<div class="decGr"><div>SISTEMA na hora<b>'+esc(String(o.saldoSis).replace('.',','))+'</b></div><div>DIFERENÇA<b style="color:'+(dif>0?'#16a34a':'#dc2626')+'">'+(dif>0?'+':'')+esc(String(o.dif).replace('.',','))+' UN</b></div><div>EM R$ (custo)<b style="color:'+(dif>0?'#16a34a':'#dc2626')+'">'+(rs!=null?(rs>0?'+':'')+brl(rs).replace('R$ -','−R$ '):'—')+'</b></div></div>'
+     +'<div class="decAl" style="background:#f5f3ff;color:#5b21b6">'+(dif>0?'sobrou mercadoria: o sistema tem menos do que a loja':'faltou mercadoria: o sistema tem mais do que a loja')+'</div>'+(o.motivo?'<div class="decLb">motivo: '+esc(o.motivo)+'</div>':'');
+    var ops=dif>0?[['ENTRADA MA','⬆️ Entrada por MA (+'+String(dif).replace('.',',')+' UN)']]:[['SAIDA MA','⬇️ Saída por MA ('+String(dif).replace('.',',')+' UN)'],['BAIXA NF','🧾 Baixa por NF (ROUBO/AVARIA da quinzena)']];
+    ops=ops.concat([['RECONTAGEM','🔁 Pedir recontagem ('+esc(o.para)+')'],['NAO AJUSTAR','✖️ Não ajustar']]);if(!decSel[k])decSel[k]=ops[0][0];
+    h+='<div class="decLb">O que fazer?</div>';ops.forEach(function(x){h+='<div class="decOp'+(decSel[k]===x[0]?' on':'')+'" data-op="'+x[0]+'">'+(decSel[k]===x[0]?'◉':'○')+' '+x[1]+'</div>';});
+    h+='<div class="decLb">Observação (opcional)</div><input class="decIn decObs" type="text" placeholder="ex.: lançar junto com a NF">';
+    h+='<button type="button" class="btn ok decGo" style="background:#6d28d9">✅ AUTORIZAR AJUSTE</button><div class="decRod">o Claude lança no Plenus na rotina da noite e marca AJUSTADO</div>';
+  }else if(o.tipo==='CODIGO'){
+    h+='<div class="decTop" style="color:#0e7490">bipado por '+esc(o.quem)+(o.nf?' · NF '+esc(o.nf):'')+' · '+esc(o.data)+'</div><div class="decNm">'+esc(o.prod)+'</div>'
+     +'<div class="decGr" style="grid-template-columns:1fr 1fr"><div>CÓDIGO NO PLENUS<b style="font-size:13px">'+esc(o.atual)+'</b></div><div>BIPADO NA CONFERÊNCIA<b style="font-size:13px;color:#0e7490">'+esc(o.bipado)+'</b></div></div>'
+     +'<div>'+decPill('🛒 vendeu '+o.venda30+' un em 30 dias')+(o.saldo!=null?decPill('saldo '+String(o.saldo).replace('.',',')+' un'):'')+'</div><div class="decAl" style="background:#ecfeff;color:#155e75">'+esc(o.motivo)+'</div>';
+    var oc=[['PROMO','➕ Cadastrar como PROMO','novo cadastro filial do mesmo mestre, com o código bipado'],['TROCAR','🔁 Trocar o código no cadastro','o código bipado substitui o antigo'],['REBIPAR','📷 Pedir para bipar de novo','volta para '+esc(o.quem)+' bipar o produto outra vez'],['IGNORAR','✖️ Ignorar','bipado errado / não é este produto']];
+    if(o.sugestao==='UVA'&&o.irmao)oc.unshift(['UVA','🍇 Trocar no cadastro '+esc(o.irmao.sku),esc(o.irmao.desc)+' (sem venda)']);
+    if(!decSel[k])decSel[k]=o.sugestao==='UVA'?'UVA':o.sugestao;
+    h+='<div class="decLb">O que fazer?</div>';oc.forEach(function(x){h+='<div class="decOp'+(decSel[k]===x[0]?' on':'')+'" data-op="'+x[0]+'">'+(decSel[k]===x[0]?'◉':'○')+' <b>'+x[1]+'</b><br><small>'+x[2]+'</small></div>';});
+    h+='<div class="decLb">Observação (opcional)</div><input class="decIn decObs" type="text" placeholder="">';
+    h+='<button type="button" class="btn ok decGo" style="background:#0e7490">✅ AUTORIZAR</button><div class="decRod">o Claude faz no Plenus na próxima rotina de NF</div>';
+  }
+  if(o.tipo==='REBAIXA'||o.tipo==='PRODUTO_NOVO'){
+    var b1=o.tipo==='REBAIXA'?['FAZER','🏷️ FAZER REBAIXA']:['VINCULAR','🔗 VINCULAR'];
+    h+='<div class="decBts"><button type="button" class="b1" data-ab="'+b1[0]+'">'+b1[1]+'</button>'+(o.tipo==='PRODUTO_NOVO'?'<button type="button" class="bN" data-ab="CADASTRAR">➕ CADASTRAR NOVO</button>':'')+'<button type="button" class="b2" data-ab="ESPERAR">⏸️ ESPERAR</button>'+(o.tipo==='REBAIXA'?'<button type="button" class="b3" data-ab="NAO FAZER">✖️ NÃO FAZER</button>':'')+'</div>';
+    if(decAb&&decAb.k===k)h+='<div class="decPn">'+decPainel(o,decAb.op)+'</div>';
+  }
+  d.innerHTML=h;
+  d.querySelectorAll('.decOp').forEach(function(el){el.onclick=function(){vibra();decSel[k]=el.dataset.sku||el.dataset.op;decRender();};});
+  d.querySelectorAll('[data-ab]').forEach(function(el){el.onclick=function(){vibra();var op=el.dataset.ab;if(op==='VINCULAR'){if(!decSel[k])return toast('Escolha ou busque o cadastro','err');return decEnviar(o,{op:'VINCULAR',sku:decSel[k],fator:o.fator||'',prod:o.prod},el);}decAb=decAb&&decAb.k===k&&decAb.op===op?null:{k:k,op:op};decRender();};});
+  var bs=d.querySelector('.decBus');if(bs){bs.querySelector('button').onclick=function(){var tx=bs.querySelector('input').value.trim();if(!tx)return;api({acao:'buscarNome',texto:tx,kg:'todos'}).then(function(r){var its=((r&&r.itens)||[]).slice(0,5).map(function(x){return {sku:String(x.sku),desc:x.desc||x.descricao||''};});if(!its.length)return toast('Nada encontrado','err');decBusca[k]=its;decSel[k]=its[0].sku;decRender();}).catch(function(){toast('Sem conexão','err');});};}
+  var go=d.querySelector('.decGo');if(go)go.onclick=function(){var obs=(d.querySelector('.decObs')||{}).value||'';var x={op:decSel[k],obs:obs};if(o.tipo==='CODIGO'){x.sku=o.sku;x.prod=o.prod;x.nf=o.nf;x.quemBipou=o.quem;if(decSel[k]==='UVA')x.skuDestino=o.irmao.sku;}if(o.tipo==='CONTAGEM')x.para=o.para;decEnviar(o,x,go);};
+  var pn=d.querySelector('.decPn');if(pn)decLigarPainel(o,pn);
+  return d;
+}
+function decPainel(o,op){
+  if(op==='FAZER')return '<div class="decLb">Preço da rebaixa</div><input class="decIn decPr" type="text" inputmode="decimal" placeholder="R$ 0,00" style="font-size:24px;font-weight:800"><div class="decCalc"></div><div class="decLb">Observação (opcional)</div><input class="decIn decOb" type="text" placeholder="ex.: só depois de 15/11, se ainda tiver saldo"><button type="button" class="btn ok decCf">✅ CONFIRMAR REBAIXA</button><div class="decRod">vai para a REBAIXAS com PROMO preenchida e OK marcado — pronta para lançar</div>';
+  if(op==='ESPERAR')return '<div class="decLb">Voltar para mim em</div><div class="decDias"><button type="button" data-d="3">3 dias</button><button type="button" data-d="7" class="on">7 dias</button><button type="button" data-d="15">15 dias</button><input type="text" inputmode="numeric" placeholder="outro"></div><div class="decRod decVolta"></div><button type="button" class="btn decCf" style="background:#d97706;color:#fff">⏸️ ESPERAR</button>';
+  if(op==='NAO FAZER')return '<div class="decLb">Por quê? (opcional)</div><div class="decDias"><button type="button" data-m="não compensa">não compensa</button><button type="button" data-m="vende no preço normal">vende no preço normal</button></div><button type="button" class="btn decCf" style="background:#475569;color:#fff">✖️ CONFIRMAR: NÃO FAZER</button><div class="decRod">grava NAO FAZER na REBAIXAS e não sugere de novo esse lote</div>';
+  if(op==='CADASTRAR'){var s=o.sugestao||{};return '<div class="decLb">Descrição (padrão Pauvan, sem acento)</div><input class="decIn cdDesc" type="text" value="'+esc(s.desc||'')+'"><div class="decGr" style="grid-template-columns:1fr 1fr"><div>Unidade<select class="cdUn"><option'+(s.un==='UNIDADE'?' selected':'')+'>UNIDADE</option><option'+(s.un==='QUILO'?' selected':'')+'>QUILO</option></select></div><div>Entrada<input class="cdEnt" type="text" value="'+esc(s.entrada||'')+'" placeholder="ex.: 1 FD = 12"></div></div><div class="decLb">Código de barras</div><input class="decIn cdEan" type="text" inputmode="numeric" value="'+esc(o.ean||'')+'"><div class="decLb">Observação (opcional)</div><input class="decIn decOb" type="text" placeholder="ex.: mesmo mestre do feijão carioca"><div class="decRod">Preço de venda fica zerado e o produto entra pausado no delivery. Seção, categoria e marca o Claude escolhe pelos cadastros parecidos. Depois da entrada da nota: foto no site.</div><button type="button" class="btn decCf" style="background:#1e40af;color:#fff">✅ AUTORIZAR CADASTRO</button>';}
+  return '';
+}
+function decLigarPainel(o,pn){
+  var op=decAb.op,cf=pn.querySelector('.decCf'),dias=7,mot='';
+  if(op==='FAZER'){var pr=pn.querySelector('.decPr'),cl=pn.querySelector('.decCalc');pr.oninput=function(){var p=decN(pr.value.replace(/[^\d,\.]/g,''));if(!(p>0)){cl.innerHTML='';return;}var q=Number(o.qtd)||0,h='';
+    h+=o.osso!=null?(p>=o.osso?'<div>acima do OSSO<b>✓ '+brl(o.osso)+'</b></div>':'<div class="neg">abaixo do OSSO<b>⚠ '+brl(p)+' &lt; '+brl(o.osso)+'</b></div>'):'';
+    if(o.pagou)h+='<div'+(p<o.pagou?' class="neg"':'')+'>margem s/ o pago<b>'+(p>=o.pagou?'+':'')+Math.round((p-o.pagou)/o.pagou*100)+'% ('+brl(p-o.pagou).replace('R$ -','−R$ ')+'/un)</b></div>';
+    if(o.pauvan)h+='<div>desconto p/ o cliente<b>−'+Math.round((o.pauvan-p)/o.pauvan*100)+'% (de '+brl(o.pauvan)+')</b></div>';
+    if(q)h+='<div>se vender os '+q+'<b>'+brl(p*q)+'</b></div>';cl.innerHTML=h;};setTimeout(function(){pr.focus();},60);
+    cf.onclick=function(){var p=decN(pr.value.replace(/[^\d,\.]/g,''));if(!(p>0)){pr.focus();return toast('Informe o preço','err');}if(o.osso!=null&&p<o.osso&&!confirm('Preço abaixo do OSSO. Confirmar mesmo assim?'))return;decEnviar(o,{op:'FAZER',preco:p,obs:pn.querySelector('.decOb').value,prod:o.prod,validade:o.validade},cf);};}
+  if(op==='ESPERAR'){var vt=pn.querySelector('.decVolta'),inp=pn.querySelector('input');function upd(){var dt=new Date(Date.now()+dias*86400000);vt.textContent='↩ volta para "A DECIDIR" em '+('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+'/'+dt.getFullYear();cf.textContent='⏸️ ESPERAR '+dias+' DIAS';}
+    pn.querySelectorAll('[data-d]').forEach(function(b){b.onclick=function(){dias=+b.dataset.d;inp.value='';pn.querySelectorAll('[data-d]').forEach(function(x){x.classList.toggle('on',x===b);});upd();};});
+    inp.oninput=function(){var v=parseInt(inp.value,10);if(v>0){dias=v;pn.querySelectorAll('[data-d]').forEach(function(x){x.classList.remove('on');});upd();}};upd();
+    cf.onclick=function(){decEnviar(o,{op:'ESPERAR',dias:dias},cf);};}
+  if(op==='NAO FAZER'){pn.querySelectorAll('[data-m]').forEach(function(b){b.onclick=function(){mot=mot===b.dataset.m?'':b.dataset.m;pn.querySelectorAll('[data-m]').forEach(function(x){x.classList.toggle('on',x.dataset.m===mot);});};});
+    cf.onclick=function(){decEnviar(o,{op:'NAO FAZER',obs:mot,prod:o.prod,validade:o.validade},cf);};}
+  if(op==='CADASTRAR'){cf.onclick=function(){var ds=pn.querySelector('.cdDesc').value.trim();if(!ds)return toast('Informe a descrição','err');decEnviar(o,{op:'CADASTRAR',desc:ds,un:pn.querySelector('.cdUn').value,entrada:pn.querySelector('.cdEnt').value,ean:pn.querySelector('.cdEan').value,obs:pn.querySelector('.decOb').value,prod:o.prod,nf:o.nf,forn:o.forn,idNf:o.idNf},cf);};}
+}
+function decEnviar(o,x,bt){if(bt)bt.disabled=true;x.acao='decDecidir';x.tipo=o.tipo;x.chave=o.chave;v9Api(x,function(r){toast(r.msg||'Feito','ok');decAb=null;delete decSel[o.chave];try{resumoCache.dec=Math.max(0,(resumoCache.dec||1)-1);}catch(e){}decCarregar();},function(){if(bt)bt.disabled=false;});}
+
 function v9Gestao(box){
-  var gl=[];if(appsCache.indexOf('ETIQUETAS_FILA')>=0)gl.push(['🏷️','Fila de etiquetas',function(){var r=resumoCache||{};return r.etqFila?'<span class="v9Selo">'+r.etqFila+'</span> na fila para imprimir':'nenhuma etiqueta na fila';},irEF,'#9333ea','tag']);
+  var gl=[['🗂️','Decisões',function(){var r=resumoCache||{};return r.dec?'<span class="v9Selo">'+r.dec+'</span> a decidir'+(r.decUrg?' · '+r.decUrg+' vence'+(r.decUrg>1?'m':'')+' em até 3 dias':''):'rebaixas, produto novo, contagem e código';},irDEC,'#0E4D32','conf']];if(appsCache.indexOf('ETIQUETAS_FILA')>=0)gl.push(['🏷️','Fila de etiquetas',function(){var r=resumoCache||{};return r.etqFila?'<span class="v9Selo">'+r.etqFila+'</span> na fila para imprimir':'nenhuma etiqueta na fila';},irEF,'#9333ea','tag']);
   if(appsCache.indexOf('POFF_FILA')>=0||semAc(quem||'').toLowerCase().trim()==='celio')gl.push(['💲','Fila de preços on-line',function(){var r=resumoCache||{};return r.pfFila?'<span class="v9Selo">'+r.pfFila+'</span> para ativar'+(r.pfEm?' · '+r.pfEm+' em ativação':''):(r.pfEm?r.pfEm+' em ativação':'nenhum preço esperando');},irPF,'#0369a1','tag']);
   gl.concat([['📦','Contagem de estoque',function(){var r=resumoCache||{};return r.ctaDec?'<span class="v9Selo">'+r.ctaDec+'</span> a decidir'+(r.ctaAg?' · '+r.ctaAg+' aguardando':''):(r.ctaAg?r.ctaAg+' aguardando contagem':'pedir, decidir e histórico');},irGC,'#0f766e','cont'],
    ['👀','Validade na frente',function(){var r=resumoCache||{};return r.vfSum?'<span class="v9Selo">'+r.vfSum+'</span> lote(s) sumido(s) para decidir':'acerto das repositoras e lotes sumidos';},irGV,'#a16207','conf']]).forEach(function(x){
@@ -3296,6 +3414,7 @@ function v9Abrir(ab){
   if(m[ab]&&appsCache.indexOf(m[ab])>=0){escolherTipo(m[ab]);return true;}
   var cel=semAc(quem||'').toLowerCase().trim()==='celio';
   if(ab==='gcontagem'&&cel){irGC();return true;}
+  if(ab==='decisoes'&&cel){irDEC();return true;} // v113
   if(ab==='gvalfrente'&&cel){irGV();return true;}
   return false;
 }
