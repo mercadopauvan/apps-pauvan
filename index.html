@@ -514,6 +514,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .agdHi{list-style:none;padding:0;margin:0;font-size:13px;line-height:1.5}.agdHi li{padding:5px 0;border-bottom:1px solid #f1f5f9}.agdHi li[data-u]{cursor:pointer}.agdCh{font-size:12px}
 .agdB1,.agdB2{font-size:16px!important;padding:14px 12px!important}
 .agdB1{background:#f1f5f9!important;color:#0E4D32!important;margin-top:10px}.agdB2{background:#0E4D32!important;color:#fff!important;margin-top:12px}
+.decUndo{display:block;margin-top:8px;border:1.5px solid #cbd5d0;background:#fff;color:#0E4D32;border-radius:10px;padding:8px 12px;font-weight:800;font-size:13px;font-family:inherit}.decUndo.mini{display:inline-block;margin:0 0 0 6px;padding:3px 8px;font-size:12px}
 .v9Selo{display:inline-block;background:#dc2626;color:#fff;font-weight:800;border-radius:10px;padding:0 7px;font-size:12px;line-height:18px}
 .ceF{margin-top:4px}.ceL input,.ceCx input{font-size:18px;padding:10px 12px}.ceCx{display:flex;gap:6px;align-items:center;margin-top:6px}.ceCx input{flex:1;min-width:0;font-size:15px;padding:8px 10px}.ceCx span{color:#64748b;font-weight:800}
 .ceSub{font-size:12px;color:#0f766e;font-weight:700;margin-top:3px}.ceTot{margin:12px 0 4px;font-size:17px}.ceTot b{font-size:20px}
@@ -3384,13 +3385,13 @@ function decRender(){
   its=its.filter(function(o){return decFil==='TODOS'||o.tipo===decFil;});
   if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">'+(decAba==='A'?'Nada para decidir agora. 👍':(decAba==='E'?'Nada esperando.':'Nenhuma decisão nos últimos 15 dias.'))+'</p>';return;}
   if(decAba==='D'){var ul=document.createElement('ul');ul.className='v9L';its.forEach(function(o){var d=o.det||{},li=document.createElement('li');var st=o.status==='A EXECUTAR'?'<span class="v9Tag" style="background:#fef3c7;color:#92400e">⏳ o Claude vai fazer no Plenus</span>':(o.status==='EXECUTADA'?'<span class="v9Tag ok">✓ feito'+(o.exec?' '+esc(String(o.exec).slice(0,5)):'')+'</span>':'<span class="v9Tag ok">✓ decidido</span>');
-    li.innerHTML='<div class="v9D">'+(DEC_TIPOS[o.tipo]||['•'])[0]+' '+esc(d.prod||d.desc||o.chave.split('|').slice(-2,-1)[0]||'')+'</div><div class="v9M">'+esc(o.decisao)+(d.preco?' · R$ '+Number(d.preco).toFixed(2).replace('.',','):'')+(d.sku&&o.tipo==='PRODUTO_NOVO'?' · '+esc(d.sku+' '+(d.desc||'')):'')+(o.tipo==='PRODUTO_NOVO'&&d.desc&&!d.sku?' · '+esc(d.desc):'')+' · '+esc(o.em)+(o.obs?' · '+esc(o.obs):'')+'</div>'+st;ul.appendChild(li);});box.appendChild(ul);return;}
+    li.innerHTML='<div class="v9D">'+(DEC_TIPOS[o.tipo]||['•'])[0]+' '+esc(d.prod||d.desc||o.chave.split('|').slice(-2,-1)[0]||'')+'</div><div class="v9M">'+esc(o.decisao)+(d.preco?' · R$ '+Number(d.preco).toFixed(2).replace('.',','):'')+(d.sku&&o.tipo==='PRODUTO_NOVO'?' · '+esc(d.sku+' '+(d.desc||'')):'')+(o.tipo==='PRODUTO_NOVO'&&d.desc&&!d.sku?' · '+esc(d.desc):'')+' · '+esc(o.em)+(o.obs?' · '+esc(o.obs):'')+'</div>'+st+(o.pode?'<button type="button" class="decUndo" data-k="'+esc(o.chave)+'">↩️ Mudar decisão</button>':(o.motivo&&o.status!=='EXECUTADA'?'<div class="v9M">'+esc(o.motivo)+'</div>':''));ul.appendChild(li);});box.appendChild(ul);decUndoLiga(ul);return;}
   its.forEach(function(o){box.appendChild(decCard(o));});
 }
 function decPill(t){return '<span class="decPill">'+t+'</span>';}
 function decCard(o){
   var d=document.createElement('div');d.className='decCard t'+o.tipo+(o.tipo==='REBAIXA'&&o.dias<=3?' urg':'');var h='',k=o.chave;
-  if(o.volta)h+='<div class="decTop" style="color:#92400e">⏸️ esperando · volta em '+esc(o.volta)+'</div>';
+  if(o.volta)h+='<div class="decTop" style="color:#92400e">⏸️ esperando · volta em '+esc(o.volta)+' <button type="button" class="decUndo mini" data-k="'+esc(k)+'">↩️ voltar agora</button></div>';
   if(o.tipo==='REBAIXA'){
     h+='<div class="decNm">'+esc(o.prod)+'</div><div class="decVc">'+decVence(o.dias,o.validade)+'</div><div>'+(o.qtd?decPill('📦 '+o.qtd+' UN'+(/DESTA VALIDADE/i.test(o.obs)?' desta validade':'')):'')+(o.sobra!==''?decPill('deve sobrar '+o.sobra):'')+(o.semVenda?decPill('sem venda '+o.semVenda+' dias'):'')+(o.conferido?decPill('✔ lote conferido'):'')+'</div>'
      +'<div class="decGr"><div>PAUVAN<b>'+(o.pauvan!=null?brl(o.pauvan):'—')+'</b></div><div>OSSO<b>'+(o.osso!=null?brl(o.osso):'—')+'</b></div><div>PAGOU<b>'+(o.pagou!=null?brl(o.pagou):'—')+'</b></div></div>'+(o.alerta?'<div class="decAl">'+esc(o.alerta)+'</div>':'');
@@ -3427,7 +3428,7 @@ function decCard(o){
     h+='<div class="decBts"><button type="button" class="b1" data-ab="'+b1[0]+'">'+b1[1]+'</button>'+(o.tipo==='PRODUTO_NOVO'?'<button type="button" class="bN" data-ab="CADASTRAR">➕ CADASTRAR NOVO</button>':'')+'<button type="button" class="b2" data-ab="ESPERAR">⏸️ ESPERAR</button>'+(o.tipo==='REBAIXA'?'<button type="button" class="b3" data-ab="NAO FAZER">✖️ NÃO FAZER</button>':'')+'</div>';
     if(decAb&&decAb.k===k)h+='<div class="decPn">'+decPainel(o,decAb.op)+'</div>';
   }
-  d.innerHTML=h;
+  d.innerHTML=h;decUndoLiga(d);
   d.querySelectorAll('.decOp').forEach(function(el){el.onclick=function(){vibra();decSel[k]=el.dataset.sku||el.dataset.op;decRender();};});
   d.querySelectorAll('[data-ab]').forEach(function(el){el.onclick=function(){vibra();var op=el.dataset.ab;if(op==='VINCULAR'){if(!decSel[k])return toast('Escolha ou busque o cadastro','err');return decEnviar(o,{op:'VINCULAR',sku:decSel[k],fator:o.fator||'',prod:o.prod},el);}decAb=decAb&&decAb.k===k&&decAb.op===op?null:{k:k,op:op};decRender();};});
   var bs=d.querySelector('.decBus');if(bs){bs.querySelector('button').onclick=function(){var tx=bs.querySelector('input').value.trim();if(!tx)return;api({acao:'buscarNome',texto:tx,kg:'todos'}).then(function(r){var its=((r&&r.itens)||[]).slice(0,5).map(function(x){return {sku:String(x.sku),desc:x.desc||x.descricao||''};});if(!its.length)return toast('Nada encontrado','err');decBusca[k]=its;decSel[k]=its[0].sku;decRender();}).catch(function(){toast('Sem conexão','err');});};}
@@ -3458,6 +3459,7 @@ function decLigarPainel(o,pn){
     cf.onclick=function(){decEnviar(o,{op:'NAO FAZER',obs:mot,prod:o.prod,validade:o.validade},cf);};}
   if(op==='CADASTRAR'){cf.onclick=function(){var ds=pn.querySelector('.cdDesc').value.trim();if(!ds)return toast('Informe a descrição','err');decEnviar(o,{op:'CADASTRAR',desc:ds,un:pn.querySelector('.cdUn').value,entrada:pn.querySelector('.cdEnt').value,ean:pn.querySelector('.cdEan').value,obs:pn.querySelector('.decOb').value,prod:o.prod,nf:o.nf,forn:o.forn,idNf:o.idNf},cf);};}
 }
+function decUndoLiga(root){root.querySelectorAll('.decUndo').forEach(function(b){b.onclick=function(ev){ev.stopPropagation();vibra();if(!confirm('Desfazer esta decisão? O cartão volta para A DECIDIR.'))return;b.disabled=true;v9Api({acao:'decDesfazer',chave:b.dataset.k},function(r){toast(r.msg||'Desfeito','ok');decAba='A';decAb=null;decCarregar();},function(){b.disabled=false;});};});} // v115
 function decEnviar(o,x,bt){if(bt)bt.disabled=true;x.acao='decDecidir';x.tipo=o.tipo;x.chave=o.chave;v9Api(x,function(r){toast(r.msg||'Feito','ok');decAb=null;delete decSel[o.chave];try{resumoCache.dec=Math.max(0,(resumoCache.dec||1)-1);}catch(e){}decCarregar();},function(){if(bt)bt.disabled=false;});}
 
 function v9Gestao(box){
