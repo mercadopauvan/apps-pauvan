@@ -2611,6 +2611,7 @@ function addLote(){confLotes.push({qtdDig:'',fator:confLotes.length?confLotes[0]
 function fecharConf(){confItemAtual=null;$('cardConf').classList.remove('on');}
 function salvarConfItem(){
   if(!confItemAtual)return;
+  if(confFaltaSt&&confFaltaTipo==='TUDO')return naoVeio(confFaltaSt); // v118.3: NÃO VEIO/RECUSADO + TUDO: SALVAR finaliza igual ao 2º toque (sem quantidade nem validade)
   var lotes=[];
   for(var k=0;k<confLotes.length;k++){
     var l=confLotes[k];var q=parseFloat(String(l.qtdDig).replace(',','.'));
@@ -2642,7 +2643,7 @@ function naoVeio(st){
   var mot=$('ccMotivo').value.trim();
   enviarConf({acao:'salvarConfItem',idNf:confNF.idNf,idItem:confItemAtual.idItem,naoVeio:st||'NAO VEIO',motivo:mot,token:token,quem:quem},function(){confItemAtual.status=st||'NAO VEIO';confItemAtual.motivo=mot;confItemAtual.lotes=[];confItemAtual.faltaQtd=0;});
 }
-function setFalta(t){confFaltaTipo=t;mostrarFalta();vibra();if(t==='TUDO'){$('ccMotivo').focus();toast('Escreva o motivo e toque em '+(confFaltaSt==='RECUSADO'?'RECUSADO':'NÃO VEIO')+' de novo');}else setTimeout(function(){$('ccFaltaQtd').focus();},80);}
+function setFalta(t){confFaltaTipo=t;mostrarFalta();vibra();if(t==='TUDO'){$('ccMotivo').focus();toast('Escreva o motivo e toque em SALVAR (ou '+(confFaltaSt==='RECUSADO'?'RECUSADO':'NÃO VEIO')+' de novo)');}else setTimeout(function(){$('ccFaltaQtd').focus();},80);}
 function mostrarFalta(){
   var b=$('ccFalta');if(!confFaltaSt){b.style.display='none';return;}b.style.display='';
   var rc=confFaltaSt==='RECUSADO',p=confFaltaTipo==='PARTE';
