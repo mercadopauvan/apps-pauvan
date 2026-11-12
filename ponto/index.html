@@ -272,6 +272,7 @@ function abrir(t){
   document.querySelectorAll('#gNav .nav').forEach(function(b){b.classList.toggle('on',b.dataset.t===t);});
   document.querySelectorAll('#gTab button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t||(['fech','func','config','fgts','escala'].indexOf(t)>=0&&b.dataset.t==='mais'));});
   var m=$('gMain');m.innerHTML='<div class="sub">Carregando…</div>';window.scrollTo(0,0);
+  if(t==='escala')S.escDia=null;
   ({hoje:gHoje,espelho:gEspelho,lanc:gLanc,banco:gBanco,fech:gFech,func:gFunc,config:gConfig,fgts:gFgts,escala:gEscala})[t]();
 }
 function menuMais(){
@@ -544,33 +545,98 @@ function gFgts(){
   }).catch(erro);
 }
 
-// ----- ESCALA -----
+// ----- ESCALA (v119: o Ney monta a escala do dia; modelo aprovado em 12/11/2026) -----
+function rs(v){var n=parseFloat(String(v==null?'':v).replace(/[R$\s]/g,'').replace(/\./g,'').replace(',','.'))||0;return 'R$ '+n.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function rsN(v){return parseFloat(String(v==null?'':v).replace(/[R$\s]/g,'').replace(/\./g,'').replace(',','.'))||0;}
+var ESC_EST={VAZIO:['abrir','mute'],MONTAGEM:['em montagem','warn'],FINALIZADA:['finalizada','ok'],PRESENCA:['presença aprovada','ok']};
 function gEscala(){
-  api({acao:'pontoEscala'}).then(function(r){
+  if(S.escDia)return gEscalaDia(S.escDia);
+  api({acao:'pontoEscalaDias'}).then(function(r){
     if(!r.ok)throw r.erro;
-    var h=topoCel('Escala de domingos','')+'<div class="topo"><div><h1>Escala de domingos e feriados</h1><div class="sub">Abra o dia com as vagas por função. Os interessados aparecem aqui; escale quem vai trabalhar e a pessoa recebe o OK no app.</div></div><button class="btn pri" id="esNovo">+ Abrir domingo/feriado</button></div>';
-    h+='<div class="sub">Diárias: '+r.diarias.map(function(d){return fn(d.funcao)+' '+(d.valor?'R$ '+esc(d.valor):'<b>sem valor</b>');}).join(' · ')+' (valores em Configurações)</div>';
-    if(!r.dias.length)h+='<div class="card sub">Nenhum domingo aberto ainda.</div>';
-    r.dias.slice().reverse().forEach(function(d){
-      h+='<div class="card"><div class="topo"><h2>'+esc(d.data)+'</h2><div class="linha" style="gap:6px"><button class="btn peq" data-ed="'+esc(d.data)+'">Vagas</button><button class="btn peq" data-fe="'+esc(d.data)+'">Encerrar inscrições</button></div></div>';
-      d.funcoes.forEach(function(f){
-        var esc_=f.pessoas.filter(function(p){return p.status==='ESCALADO';}).length;
-        h+='<div class="grupoT" style="margin-top:10px">'+esc(fn(f.funcao))+' · '+esc_+' de '+f.vagas+' vaga(s) '+(f.status==='FECHADO'?'<span class="pill mute">encerrado</span>':'<span class="pill ok">aberto</span>')+'</div><div class="lista" style="margin-top:6px">'+(f.pessoas.length?f.pessoas.map(function(p){return '<div class="row"><div class="t"><b>'+esc(p.nome)+'</b><span>'+(p.status==='ESCALADO'?'escalado por '+esc(p.por)+(p.diaria?' · diária R$ '+esc(p.diaria):''):'interessado')+'</span></div>'+(p.status==='ESCALADO'?'<button class="btn peq" data-li="'+p.linha+'" data-x="0">Desfazer</button>':'<button class="btn peq pri" data-li="'+p.linha+'" data-x="1">Escalar</button>')+'</div>';}).join(''):'<div class="sub">Ninguém se candidatou ainda.</div>')+'</div>';
-      });
-      h+='</div>';
-    });
+    var h=topoCel('Escala de domingos','')+'<div class="topo"><div><h1>Escala de domingos e feriados</h1><div class="sub">Toque no dia para escolher quem vai trabalhar e a função de cada um. Os feriados vêm da aba FERIADOS do ponto.</div></div></div>';
+    var prox=r.dias.filter(function(d){return !d.passado;}),pass=r.dias.filter(function(d){return d.passado;}).reverse();
+    function card(d){var e=ESC_EST[d.estado]||ESC_EST.VAZIO;return '<div class="row" data-dia="'+esc(d.data)+'" style="cursor:pointer"><div class="t"><b>'+esc(d.dia)+' '+esc(d.data.slice(0,5))+(d.feriado?' · '+esc(d.feriado):'')+'</b><span>'+(d.qtd?d.qtd+' escalado(s) · '+rs(d.total):'ninguém escalado ainda')+'</span></div><span class="pill '+e[1]+'">'+e[0]+'</span></div>';}
+    h+='<div class="grupoT">Próximos</div><div class="lista">'+(prox.length?prox.map(card).join(''):'<div class="sub">Nenhum domingo/feriado nas próximas semanas.</div>')+'</div>';
+    if(pass.length)h+='<div class="grupoT" style="margin-top:14px">Já passaram</div><div class="lista">'+pass.map(card).join('')+'</div>';
     $('gMain').innerHTML=h;
-    $('esNovo').onclick=function(){escalaModal('',r);};
-    $('gMain').querySelectorAll('[data-ed]').forEach(function(b){b.onclick=function(){escalaModal(b.dataset.ed,r);};});
-    $('gMain').querySelectorAll('[data-fe]').forEach(function(b){b.onclick=function(){if(!confirm('Encerrar as inscrições de '+b.dataset.fe+'?'))return;api({acao:'pontoEscalaFechar',data:b.dataset.fe}).then(function(x){if(!x.ok)throw x.erro;gEscala();}).catch(erro);};});
-    $('gMain').querySelectorAll('[data-li]').forEach(function(b){b.onclick=function(){b.disabled=true;api({acao:'pontoEscalaEscolher',linha:b.dataset.li,escalar:b.dataset.x==='1'}).then(function(x){if(!x.ok)throw x.erro;toast(b.dataset.x==='1'?'Escalado ✓ (avisado no app)':'Desfeito');gEscala();}).catch(function(e){b.disabled=false;erro(e);});};});
+    $('gMain').querySelectorAll('[data-dia]').forEach(function(b){b.onclick=function(){S.escDia=b.dataset.dia;gEscalaDia(S.escDia);};});
   }).catch(erro);
 }
-function escalaModal(data,r){
-  var d=(r.dias.filter(function(x){return x.data===data;})[0])||{funcoes:[]};
-  var prox=new Date();prox.setDate(prox.getDate()+((7-prox.getDay())%7||7));
-  var h='<h2>'+(data?'Vagas de '+esc(data):'Abrir domingo/feriado')+'</h2><label>Dia<input type="date" id="emData" value="'+(data?brISO(data):prox.getFullYear()+'-'+pad(prox.getMonth()+1)+'-'+pad(prox.getDate()))+'" '+(data?'readonly':'')+'></label><div class="grade">'+r.funcoes.map(function(f){var x=(d.funcoes.filter(function(y){return y.funcao===f;})[0])||{};return '<label>'+fn(f)+' (vagas)<input type="number" min="0" data-f="'+f+'" value="'+(x.vagas||0)+'"></label>';}).join('')+'</div><label>Observação<input id="emObs" placeholder="ex.: entrada 7h, saída 12h"></label><button class="btn pri" id="emSalvar">Salvar</button>';
-  modal(h,function(box){$('emSalvar').onclick=function(){var fs=[];box.querySelectorAll('[data-f]').forEach(function(i){fs.push({funcao:i.dataset.f,vagas:+i.value||0});});api({acao:'pontoEscalaAbrir',data:isoBR($('emData').value),funcoes:fs,obs:$('emObs').value}).then(function(x){if(!x.ok)throw x.erro;toast('Salvo ✓');fecharModal();gEscala();}).catch(erro);};});
+function escVoltar(){S.escDia=null;gEscala();}
+function gEscalaDia(data){
+  api({acao:'pontoEscalaDia',data:data}).then(function(r){
+    if(!r.ok)throw r.erro;
+    S.escR=r;
+    var tit=r.dia+' '+r.data.slice(0,5)+(r.feriado?' · '+r.feriado:''),porCod={},porFn={},tot=0;
+    r.escalados.forEach(function(e){porCod[e.codigo]=e;(porFn[e.funcao]=porFn[e.funcao]||[]).push(e);tot+=rsN(e.diaria);});
+    var h=topoCel('Escala','')+'<div class="topo"><div><button class="btn peq" onclick="escVoltar()">‹ Dias</button><h1 style="margin-top:8px">'+esc(tit)+'</h1>';
+    if(r.estado==='MONTAGEM'||r.estado==='VAZIO'){
+      h+='<div class="sub">Toque no nome e escolha a função.</div></div></div>';
+      h+='<div class="chips">'+r.funcoes.filter(function(f){return porFn[f.funcao];}).map(function(f){return '<span class="chip">'+esc(fn(f.funcao))+' <b>'+porFn[f.funcao].length+'</b></span>';}).join('')+'</div>';
+      h+='<input id="esBusca" placeholder="🔎 buscar nome" style="margin-top:10px">';
+      var linha=function(p){var e=porCod[p.codigo];return '<div class="row" data-cod="'+p.codigo+'" data-nome="'+esc(p.nome.toUpperCase())+'" style="cursor:pointer'+(e?';border-color:var(--acento);border-width:2px':'')+'"><div class="t"><b>'+esc(p.nome)+'</b><span>'+esc(p.cargo||'')+'</span></div>'+(e?'<span class="pill ok">'+esc(fn(e.funcao))+' · '+rs(e.diaria)+'</span>':'<span style="font-size:22px;color:var(--mut)">＋</span>')+'</div>';};
+      var fs=r.pessoas.filter(function(p){return !p.diarista;}),ds=r.pessoas.filter(function(p){return p.diarista;});
+      h+='<div class="grupoT" style="margin-top:10px">Funcionários</div><div class="lista">'+fs.map(linha).join('')+'</div>';
+      h+='<div class="grupoT" style="margin-top:14px">Diaristas</div><div class="lista">'+(ds.length?ds.map(linha).join(''):'<div class="sub">Nenhum diarista cadastrado (Funcionários e jornadas, perfil DIARISTA).</div>')+'</div>';
+      h+='<div style="height:80px"></div><div style="position:sticky;bottom:70px;z-index:5"><button class="btn pri" id="esRev" style="width:100%"'+(r.escalados.length?'':' disabled')+'>Revisar e finalizar ('+r.escalados.length+') · '+rs(tot)+'</button></div>';
+    }else if(r.estado==='FINALIZADA'){
+      h+='<div class="sub">Finalizada por '+esc(r.finalizadaPor)+' em '+esc(r.finalizadaEm)+(r.horario?' · '+esc(r.horario):'')+'</div></div></div>';
+      h+='<div class="card" style="margin-top:8px"><b>No dia: marque quem veio</b><div class="sub">VEIO ou FALTOU para cada um, e 💵 quando pagar a diária.</div></div><div class="lista" style="margin-top:8px">'+r.escalados.map(function(e){return '<div class="row" data-li="'+e.linha+'"><div class="t"><b>'+esc(e.nome)+(e.diarista?' <span class="pill mute">diarista</span>':'')+'</b><span>'+esc(fn(e.funcao))+' · '+rs(e.diaria)+'</span></div><button class="btn peq'+(e.presenca==='VEIO'?' pri':'')+'" data-p="VEIO">Veio</button><button class="btn peq'+(e.presenca==='FALTOU'?' perigo':'')+'" data-p="FALTOU"'+(e.presenca==='FALTOU'?' style="background:#FDECEA"':'')+'>Faltou</button><label style="display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap"><input type="checkbox" style="width:18px;height:18px;min-height:0;margin:0" data-pg'+(e.pago?' checked':'')+'>💵 pago</label></div>';}).join('')+'<button class="btn" id="esExtra">＋ alguém veio sem estar escalado</button></div>';
+      h+='<div class="card" style="margin-top:10px" id="esTot"></div><div class="linha" style="margin-top:10px"><button class="btn" id="esSalvarP">Salvar marcações</button>'+(r.podeAprovar?'<button class="btn pri" id="esAprovar">✅ Aprovar presença</button>':'')+'</div>';
+      h+='<div class="linha" style="margin-top:14px"><button class="btn" id="esReabrir">✏️ Reabrir para editar</button><button class="btn" id="esZap">📤 Mandar no WhatsApp</button></div>';
+    }else{
+      var veio=r.escalados.filter(function(e){return e.presenca==='VEIO';}),pago=0;veio.forEach(function(e){pago+=rsN(e.diaria);});
+      h+='<div class="sub">Presença aprovada por '+esc(r.presencaPor)+' em '+esc(r.presencaEm)+'</div></div></div>';
+      h+='<div class="card" style="margin-top:8px;background:#E7F6EC"><b>✓ '+veio.length+' vieram · '+rs(pago)+' em diárias</b></div><div class="lista" style="margin-top:8px">'+r.escalados.map(function(e){return '<div class="row"><div class="t"><b>'+esc(e.nome)+'</b><span>'+esc(fn(e.funcao))+'</span></div>'+(e.presenca==='VEIO'?'<span class="pill ok">'+rs(e.diaria)+(e.pago?' 💵':'')+'</span>':'<span class="pill mute" style="color:#B3261E">faltou</span>')+'</div>';}).join('')+'</div>';
+      if(S.ini.gestao)h+='<button class="btn" id="esReabrir" style="margin-top:12px">Reabrir a presença (gestão)</button>';
+    }
+    $('gMain').innerHTML=h;
+    if(r.estado==='MONTAGEM'||r.estado==='VAZIO'){
+      $('esBusca').oninput=function(){var q=this.value.trim().toUpperCase();$('gMain').querySelectorAll('[data-cod]').forEach(function(x){x.style.display=!q||x.dataset.nome.indexOf(q)>=0?'':'none';});};
+      $('gMain').querySelectorAll('[data-cod]').forEach(function(b){b.onclick=function(){escPessoaModal(r,b.dataset.cod,false);};});
+      $('esRev').onclick=function(){escRevisar(r,porFn,tot);};
+    }else if(r.estado==='FINALIZADA'){
+      var marc={};r.escalados.forEach(function(e){marc[e.linha]={presenca:e.presenca,pago:e.pago};});
+      var atualTot=function(){var v=0,n=0,sm=0,pg=0;r.escalados.forEach(function(e){var m=marc[e.linha];if(m.presenca==='VEIO'){v++;sm+=rsN(e.diaria);if(m.pago)pg+=rsN(e.diaria);}if(!m.presenca)n++;});$('esTot').innerHTML='<div class="topo"><span>Vieram <b>'+v+'</b> de '+r.escalados.length+(n?' · '+n+' sem marcar':'')+'</span><b>A pagar '+rs(sm)+'</b></div><div class="sub">Já pago: '+rs(pg)+' · previsto na escala: '+rs(tot)+'</div>';};
+      atualTot();
+      $('gMain').querySelectorAll('[data-li]').forEach(function(row){var li=row.dataset.li;row.querySelectorAll('[data-p]').forEach(function(b){b.onclick=function(){marc[li].presenca=marc[li].presenca===b.dataset.p?'':b.dataset.p;row.querySelectorAll('[data-p]').forEach(function(x){var on=marc[li].presenca===x.dataset.p;x.classList.toggle('pri',on&&x.dataset.p==='VEIO');x.classList.toggle('perigo',on&&x.dataset.p==='FALTOU');x.style.background=on&&x.dataset.p==='FALTOU'?'#FDECEA':'';});atualTot();};});row.querySelector('[data-pg]').onchange=function(){marc[li].pago=this.checked;atualTot();};});
+      var salvar=function(aprovar,b){var it=Object.keys(marc).map(function(k){return {linha:k,presenca:marc[k].presenca,pago:marc[k].pago};});b.disabled=true;api({acao:'pontoEscalaPresenca',data:r.data,itens:it,aprovar:aprovar}).then(function(x){b.disabled=false;if(!x.ok)throw x.erro;toast(aprovar?'Presença aprovada ✓':'Marcações salvas ✓');gEscalaDia(r.data);}).catch(function(e){b.disabled=false;erro(e);});};
+      $('esSalvarP').onclick=function(){salvar(false,this);};
+      if($('esAprovar'))$('esAprovar').onclick=function(){if(!confirm('Aprovar a presença de '+r.data.slice(0,5)+'? Depois disso só a gestão reabre.'))return;salvar(true,this);};
+      $('esExtra').onclick=function(){escPessoaModal(r,'',true);};
+      $('esZap').onclick=function(){escZap(r);};
+    }
+    if($('esReabrir'))$('esReabrir').onclick=function(){if(!confirm('Reabrir '+r.data.slice(0,5)+' para editar?'))return;api({acao:'pontoEscalaReabrir',data:r.data}).then(function(x){if(!x.ok)throw x.erro;gEscalaDia(r.data);}).catch(erro);};
+  }).catch(erro);
+}
+function escPessoaModal(r,cod,extra){
+  var e=null;r.escalados.forEach(function(x){if(x.codigo===cod)e=x;});
+  var lista=extra?r.pessoas.filter(function(p){return !r.escalados.some(function(x){return x.codigo===p.codigo;});}):[];
+  var p=cod?r.pessoas.filter(function(x){return x.codigo===cod;})[0]:null,sel=e?e.funcao:(p?p.sug:'');
+  var h='<h2>'+(extra?'Quem veio sem estar escalado?':esc(p.nome))+'</h2>';
+  if(extra)h+='<select id="epPes"><option value="">escolha a pessoa</option>'+lista.map(function(x){return '<option value="'+x.codigo+'">'+esc(x.nome)+(x.diarista?' (diarista)':'')+'</option>';}).join('')+'</select>';
+  else h+='<div class="sub">'+esc(p.completo||'')+' · '+esc(p.cargo||'')+'</div>';
+  h+='<div class="sub">Função neste dia</div><div class="grade" id="epFn">'+r.funcoes.map(function(f){return '<button class="btn'+(f.funcao===sel?' pri':'')+'" data-fn="'+f.funcao+'">'+esc(fn(f.funcao))+'<br><small>'+(f.valor?rs(f.valor):'sem valor')+'</small></button>';}).join('')+'</div>';
+  h+='<button class="btn pri" id="epOk">'+(extra?'✓ Marcar que veio':'✓ Escalar')+'</button>'+(e?'<button class="btn perigo" id="epTirar">Tirar da escala</button>':'');
+  modal(h,function(box){
+    box.querySelectorAll('[data-fn]').forEach(function(b){b.onclick=function(){sel=b.dataset.fn;box.querySelectorAll('[data-fn]').forEach(function(x){x.classList.toggle('pri',x===b);});};});
+    var env=function(fnc,b){var c=extra?$('epPes').value:cod;if(!c){toast('Escolha a pessoa',true);return;}if(fnc===null){}else if(!fnc){toast('Escolha a função',true);return;}b.disabled=true;api({acao:'pontoEscalaPor',data:r.data,codigo:c,funcao:fnc||'',presenca:extra?1:0}).then(function(x){if(!x.ok)throw x.erro;fecharModal();toast(fnc?'Escalado ✓':'Tirado da escala');gEscalaDia(r.data);}).catch(function(err){b.disabled=false;erro(err);});};
+    $('epOk').onclick=function(){env(sel,this);};
+    if($('epTirar'))$('epTirar').onclick=function(){env('',this);};
+  });
+}
+function escRevisar(r,porFn,tot){
+  var h='<h2>Revisar · '+esc(r.dia)+' '+esc(r.data.slice(0,5))+'</h2><div class="sub">'+r.escalados.length+' pessoa(s)</div>';
+  r.funcoes.forEach(function(f){var l=porFn[f.funcao];if(!l)return;var s=0;l.forEach(function(e){s+=rsN(e.diaria);});h+='<div class="grupoT">'+esc(fn(f.funcao))+' · '+l.length+' · '+rs(s)+'</div><div class="lista">'+l.map(function(e){return '<div class="row"><div class="t"><b>'+esc(e.nome)+'</b></div>'+(e.diarista?'<span class="pill mute">diarista</span>':'')+'</div>';}).join('')+'</div>';});
+  var falta=r.funcoes.filter(function(f){return !porFn[f.funcao]&&f.funcao!=='GERENTE'&&f.funcao!=='ENTREGADOR';}).map(function(f){return fn(f.funcao);});
+  if(falta.length)h+='<div class="sub" style="color:#9A3412">⚠️ Sem ninguém em: '+esc(falta.join(', '))+' (só aviso)</div>';
+  h+='<div class="card" style="background:#E7F6EC"><div class="topo"><span>Total de diárias</span><b>'+rs(tot)+'</b></div></div><label>Horário (opcional)<input id="erHor" placeholder="ex.: 07:00 às 12:00" value="'+esc(r.horario||'')+'"></label><button class="btn pri" id="erFin">✅ Finalizar escala</button><div class="sub">Quem tem o Meu Pauvan recebe o aviso "Você está escalado(a)".</div>';
+  modal(h,function(){$('erFin').onclick=function(){var b=this;b.disabled=true;api({acao:'pontoEscalaFinalizar',data:r.data,horario:$('erHor').value}).then(function(x){if(!x.ok)throw x.erro;fecharModal();toast('Escala finalizada ✓ avisos enviados');gEscalaDia(r.data);}).catch(function(e){b.disabled=false;erro(e);});};});
+}
+function escZap(r){
+  var t='*Escala '+r.dia+' '+r.data.slice(0,5)+(r.feriado?' ('+r.feriado+')':'')+'*'+(r.horario?'\n'+r.horario:'')+'\n';
+  r.funcoes.forEach(function(f){var l=r.escalados.filter(function(e){return e.funcao===f.funcao;});if(l.length)t+='\n*'+fn(f.funcao)+':* '+l.map(function(e){return e.nome;}).join(', ');});
+  window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
 }
 
 // =================== APP DO FUNCIONÁRIO ===================
