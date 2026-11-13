@@ -3428,9 +3428,9 @@ function decCard(o){
      +'<div class="decGr"><div>PAUVAN<b>'+(o.pauvan!=null?brl(o.pauvan):'—')+'</b></div><div>OSSO<b>'+(o.osso!=null?brl(o.osso):'—')+'</b></div><div>PAGOU<b>'+(o.pagou!=null?brl(o.pagou):'—')+'</b></div></div>'+(o.alerta?'<div class="decAl">'+esc(o.alerta)+'</div>':'');
   }else if(o.tipo==='PRODUTO_NOVO'){
     h+='<div class="decTop" style="color:#1d4ed8">NF '+esc(o.nf)+' · '+esc(o.forn)+(o.entrada?' · chegou '+esc(o.entrada.slice(0,5)):' · aguardando entrada')+'</div><div class="decNm">'+esc(o.prod)+'</div><div>'+decPill(esc(o.qtd+' '+o.un))+(o.fator?decPill('1 '+(o.un==='UN'?'CX':esc(o.un))+' = '+o.fator+(o.un==='KG'?' KG':'')):'')+(o.codNota?decPill('cód. nota '+esc(o.codNota)):'')+(o.ean?decPill('EAN …'+esc(o.ean.slice(-6))):'')+'</div>';
-    var ps=(o.parecidos||[]).concat(decBusca[k]||[]);if(decSel[k]==null&&o.parecidos&&o.parecidos.length)decSel[k]=o.parecidos[0].sku;
-    h+='<div class="decLb">'+(o.parecidos&&o.parecidos.length?'Cadastros parecidos':'Nenhum cadastro parecido — sugestão: cadastrar novo')+'</div>';
-    ps.forEach(function(p){h+='<div class="decOp'+(decSel[k]===p.sku?' on':'')+'" data-sku="'+esc(p.sku)+'">'+(decSel[k]===p.sku?'◉':'○')+' <b>'+esc(p.sku)+'</b> · '+esc(p.desc)+(p.nv?' <small>(não vender)</small>':'')+'</div>';});
+    var ps=(o.parecidos||[]).concat(decBusca[k]||[]);if(decSel[k]==null&&o.parecidos&&o.parecidos.length&&!o.eanAmb)decSel[k]=o.parecidos[0].sku; // v119.3: código em mais de um cadastro: não pré-escolhe
+    h+='<div class="decLb">'+(o.eanAmb?'⚠️ O código de barras da nota está em mais de um cadastro — escolha o certo':o.parecidos&&o.parecidos.length?'Cadastros parecidos':'Nenhum cadastro parecido — sugestão: cadastrar novo')+'</div>';
+    ps.forEach(function(p){h+='<div class="decOp'+(decSel[k]===p.sku?' on':'')+'" data-sku="'+esc(p.sku)+'">'+(decSel[k]===p.sku?'◉':'○')+' <b>'+esc(p.sku)+'</b> · '+esc(p.desc)+(p.nv?' <small>(não vender)</small>':'')+(p.ean?' <small>(mesmo código de barras)</small>':'')+'</div>';});
     h+='<div class="decBus"><input type="text" placeholder="🔎 buscar outro cadastro (nome ou SKU)"><button type="button">BUSCAR</button></div>';
   }else if(o.tipo==='CONTAGEM'){
     var dif=decN(o.dif),rs=decN(o.difRs);
