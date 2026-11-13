@@ -950,7 +950,7 @@ function api(p){
   return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p),redirect:'follow'}).then(function(r){return r.json();});
 }
 function $(id){return document.getElementById(id);}
-function toast(msg,cls){var t=$('toast');t.textContent=msg;t.className='toast on '+(cls||'');clearTimeout(t._h);t._h=setTimeout(function(){t.className='toast';},1800);}
+function toast(msg,cls){var t=$('toast');t.textContent=msg;t.className='toast on '+(cls||'');clearTimeout(t._h);t._h=setTimeout(function(){t.className='toast';},/^⚠️/.test(String(msg))?7000:1800);}
 function mostrar(id){document.querySelectorAll('.tela').forEach(function(s){s.classList.remove('on');});$(id).classList.add('on');try{document.querySelector('header').style.display=id==='tHome'?'none':'';}catch(e){}try{navDepois(id);}catch(e){}} // v109: navDepois = botão voltar
 function vibra(){try{navigator.vibrate&&navigator.vibrate(60);}catch(e){}}
 function beep(){try{var c=new (window.AudioContext||window.webkitAudioContext)();var o=c.createOscillator();var g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=1200;g.gain.value=.15;o.start();setTimeout(function(){o.stop();c.close();},120);}catch(e){}}
@@ -3119,7 +3119,7 @@ function efRender(){
     box.appendChild(ul);
   });
   var ids=its.filter(function(o){return efSel[o.id];}).map(function(o){return o.id;});
-  function bt(tx,cls,op,msg){var b=document.createElement('button');b.className='btn '+cls;b.textContent=tx+(ids.length?' ('+ids.length+')':'');b.disabled=!ids.length;b.onclick=function(){b.disabled=true;v9Api({acao:'etqAcao',op:op,ids:JSON.stringify(ids)},function(){toast(msg,'ok');efSel={};if(op==='RESERVAR')efAba='EM';efCarregar();},function(){b.disabled=false;});};ac.appendChild(b);}
+  function bt(tx,cls,op,msg){var b=document.createElement('button');b.className='btn '+cls;b.textContent=tx+(ids.length?' ('+ids.length+')':'');b.disabled=!ids.length;b.onclick=function(){var lista=ids.slice(),mapa={};lista.forEach(function(i){mapa[i]=1;});var mov=[];['fila','emImp'].forEach(function(k){efC[k]=(efC[k]||[]).filter(function(o){if(mapa[o.id]){mov.push(o);return false;}return true;});});if(op==='RESERVAR')efC.emImp=(efC.emImp||[]).concat(mov);else if(op==='DEVOLVER'||op==='NAO_SAIU')efC.fila=(efC.fila||[]).concat(mov);efSel={};if(op==='RESERVAR')efAba='EM';efRender();toast('✓ '+msg,'ok'); /* v119.1: grava em segundo plano */ api({acao:'etqAcao',op:op,ids:JSON.stringify(lista),quem:quem,token:token}).then(function(r){if(r&&r.ok)efCarregar();else{if(r&&r.reauth){v9Erro(r);return;}toast('⚠️ '+lista.length+' etiqueta(s) voltaram: '+(r&&r.erro?r.erro:'não gravou por queda de conexão')+' — faça de novo','err');efCarregar();}}).catch(function(){toast('⚠️ '+lista.length+' etiqueta(s) voltaram: não gravou por queda de conexão — faça de novo','err');efCarregar();});};ac.appendChild(b);}
   if(efAba==='FILA')bt('VOU IMPRIMIR AS MARCADAS','ok','RESERVAR','Separadas para você imprimir');
   else{bt('IMPRIMI — CONFIRMAR','ok','CONFIRMAR','Confirmado — as repositoras foram avisadas');bt('DEVOLVER PARA A FILA','sec','DEVOLVER','Voltaram para a fila');bt('ALGUMA NÃO SAIU','cancel','NAO_SAIU','Voltaram para a fila');}
 }
@@ -3389,7 +3389,7 @@ function agdDetalhe(o){
 var decC=null,decAba='A',decFil='TODOS',decAb=null,decSel={},decBusca={},decGrmPara={}; // v118
 var DEC_TIPOS={REBAIXA:['🏷️','Rebaixas'],PRODUTO_NOVO:['🧾','Produto novo'],CONTAGEM:['📦','Contagem'],CODIGO:['🔢','Código']};
 function irDEC(){pararCamera();$('faixaDEC').textContent='🗂️ DECISÕES · '+quem;mostrar('tDEC');decAb=null;decRender();decCarregar();}
-function decCarregar(){v9Api({acao:'decLista'},function(r){decC=r;decRender();});}
+function decCarregar(){v9Api({acao:'decLista'},function(r){['aDecidir','esperando'].forEach(function(k){if(r[k])r[k]=r[k].filter(function(o){return !decPend[o.chave];});});decC=r;decRender();});}
 function decN(v){return v==null||v===''?null:Number(String(v).replace(',','.'));}
 function decVence(d,v){return d<=0?'⚠️ vence hoje · '+v:(d===1?'⚠️ vence amanhã · '+v:'vence em '+d+' dias · '+v);}
 function decRender(){
@@ -3492,7 +3492,22 @@ function decLigarPainel(o,pn){
   if(op==='CADASTRAR'){cf.onclick=function(){var ds=pn.querySelector('.cdDesc').value.trim();if(!ds)return toast('Informe a descrição','err');decEnviar(o,{op:'CADASTRAR',desc:ds,un:pn.querySelector('.cdUn').value,entrada:pn.querySelector('.cdEnt').value,ean:pn.querySelector('.cdEan').value,obs:pn.querySelector('.decOb').value,prod:o.prod,nf:o.nf,forn:o.forn,idNf:o.idNf},cf);};}
 }
 function decUndoLiga(root){root.querySelectorAll('.decUndo').forEach(function(b){b.onclick=function(ev){ev.stopPropagation();vibra();if(!confirm('Desfazer esta decisão? O cartão volta para A DECIDIR.'))return;b.disabled=true;v9Api({acao:'decDesfazer',chave:b.dataset.k},function(r){toast(r.msg||'Desfeito','ok');decAba='A';decAb=null;decCarregar();},function(){b.disabled=false;});};});} // v115
-function decEnviar(o,x,bt){if(bt)bt.disabled=true;x.acao='decDecidir';x.tipo=o.tipo;x.chave=o.chave;v9Api(x,function(r){toast(r.msg||'Feito','ok');decAb=null;delete decSel[o.chave];try{resumoCache.dec=Math.max(0,(resumoCache.dec||1)-1);}catch(e){}decCarregar();},function(){if(bt)bt.disabled=false;});}
+// v119.1: decisão otimista — o cartão sai na hora e a gravação na planilha corre em segundo plano; se falhar, o cartão volta com aviso
+var decPend={};
+function decTirar_(ch){var c=decC;if(!c)return null;var achou=null;['aDecidir','esperando'].forEach(function(k){(c[k]||[]).forEach(function(o,i){if(o.chave===ch&&!achou)achou={k:k,i:i,o:o};});if(achou&&achou.k===k)c[k].splice(achou.i,1);});return achou;}
+function decEnviar(o,x,bt){
+  if(decPend[o.chave])return;
+  x.acao='decDecidir';x.tipo=o.tipo;x.chave=o.chave;
+  var tirado=decTirar_(o.chave);decPend[o.chave]=1;decAb=null;delete decSel[o.chave];
+  try{resumoCache.dec=Math.max(0,(resumoCache.dec||1)-1);}catch(e){}
+  decRender();toast('✓ Decisão registrada','ok');
+  var nome=String(o.desc||o.prod||o.titulo||o.nome||'').slice(0,40);
+  var voltar=function(r){delete decPend[o.chave];if(tirado&&decC&&decC[tirado.k]&&!decC[tirado.k].some(function(y){return y.chave===o.chave;})){decC[tirado.k].splice(Math.min(tirado.i,decC[tirado.k].length),0,tirado.o);}try{resumoCache.dec=(resumoCache.dec||0)+1;}catch(e){}decRender();
+    if(r&&r.reauth){v9Erro(r);return;}
+    toast('⚠️ O cartão '+(nome?'"'+nome+'" ':'')+'voltou: '+(r&&r.erro?r.erro:'não gravou por queda de conexão')+' — decida de novo','err');};
+  x.quem=quem;x.token=token;
+  api(x).then(function(r){if(r&&r.ok){delete decPend[o.chave];if(r.msg&&!/^(feito|ok)$/i.test(r.msg))toast(r.msg,'ok');}else voltar(r);}).catch(function(){voltar(null);});
+}
 
 function v9Gestao(box){
   var gl=[['🗂️','Decisões',function(){var r=resumoCache||{};return r.dec?'<span class="v9Selo">'+r.dec+'</span> a decidir'+(r.decUrg?' · '+r.decUrg+' vence'+(r.decUrg>1?'m':'')+' em até 3 dias':''):'rebaixas, produto novo, contagem e código';},irDEC,'#0E4D32','conf'],['⏱️','Tarefas agendadas',function(){var r=resumoCache||{};return (r.agdEsp||r.agdErr)?'<span class="v9Selo">'+((r.agdEsp||0)+(r.agdErr||0))+'</span> '+[r.agdEsp?r.agdEsp+' esperando você':'',r.agdErr?r.agdErr+' com erro':''].filter(String).join(' · '):'situação de todas as rotinas';},irAGD,'#334155','sino']];gl.unshift(gl.splice(1,1)[0]); // v117: Tarefas agendadas primeiro
