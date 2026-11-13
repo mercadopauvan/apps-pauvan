@@ -622,7 +622,7 @@ function escPessoaModal(r,cod,extra){
     box.querySelectorAll('[data-fn]').forEach(function(b){b.onclick=function(){sel=b.dataset.fn;box.querySelectorAll('[data-fn]').forEach(function(x){x.classList.toggle('pri',x===b);});};});
     var env=function(fnc,b){var c=extra?$('epPes').value:cod;if(!c){toast('Escolha a pessoa',true);return;}if(fnc===null){}else if(!fnc){toast('Escolha a função',true);return;}b.disabled=true;api({acao:'pontoEscalaPor',data:r.data,codigo:c,funcao:fnc||'',presenca:extra?1:0}).then(function(x){if(!x.ok)throw x.erro;fecharModal();toast(fnc?'Escalado ✓':'Tirado da escala');gEscalaDia(r.data);}).catch(function(err){b.disabled=false;erro(err);});};
     $('epOk').onclick=function(){env(sel,this);};
-    if($('epTirar'))$('epTirar').onclick=function(){env('',this);};
+    if($('epTirar'))$('epTirar').onclick=function(){if(!confirm('Tirar '+(p?p.nome:'')+' da escala?'))return;env(null,this);};
   });
 }
 function escRevisar(r,porFn,tot){
