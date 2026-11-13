@@ -3060,7 +3060,7 @@ function v9Busca(inId,resId,cb){ // busca pelo nome em todos os produtos (ou SKU
   ul.innerHTML='<li class="dica">Procurando…</li>';
   api({acao:'buscarNome',texto:tx,kg:'todos'}).then(function(r){
     ul.innerHTML='';var its=(r&&r.itens)||[];if(!its.length){ul.innerHTML='<li class="dica">Nada encontrado</li>';return;}
-    its.forEach(function(it){var li=document.createElement('li');li.innerHTML=esc(it.desc)+'<small>SKU '+esc(it.sku)+'</small>';li.onclick=function(){ul.innerHTML='';$(inId).value='';cb({sku:it.sku});};ul.appendChild(li);});
+    its.forEach(function(it){var li=document.createElement('li');li.innerHTML=esc(it.desc)+'<small>SKU '+esc(it.sku)+'</small>';li.onclick=function(){ul.innerHTML='';$(inId).value='';cb({sku:it.sku,desc:it.desc});};ul.appendChild(li);});
   }).catch(function(){ul.innerHTML='';toast('Sem conexão','err');});
 }
 var etProd=null,etTam='PEQUENA',etQtd=1,etMeusC=null;
@@ -3165,10 +3165,12 @@ var ceBipando=null;
 SCAN_CB.fotoCE=function(cod){vibra();var it=ceBipando;if(!it)return;v9Api({acao:'v9Prod',codigo:cod},function(r){ceConf[it.id]=r.sku===String(it.sku)?'<div class="v9Tag ok">✅ É esse produto</div>':'<div class="v9Tag er">⚠️ Bipou outro produto: '+esc(r.desc)+'</div>';ceRender();});};
 
 // ---------- 📦 CONTAGEM — GESTÃO (Celio): pedir · decidir · histórico ----------
-var gcAba='PEDIR',gcC=null,gcProd=null,gcPara='',gcFil='TODAS',gcDec={};
+var gcAba='PEDIR',gcC=null,gcProd=null,gcPara='',gcFil='TODAS',gcDec={},gcAbrirK=0,gcPesUlt=['Ney','Regiane'],gcParaToque=false; // v119.2
 function irGC(){pararCamera();$('faixaGC').textContent='📦 CONTAGEM · GESTÃO';mostrar('tGC');gcRender();gcCarregar();}
 function gcCarregar(){v9Api({acao:'ctaGestao'},function(r){gcC=r;if(gcAba==='PEDIR'&&gcC.decidir.length&&!gcProd&&!gcC._vis){gcAba='DECIDIR';}gcC._vis=1;gcRender();});}
-function gcAbrir(q){toast('Buscando o produto…');v9Api({acao:'ctaInfo',codigo:q.codigo||'',sku:q.sku||''},function(r){gcProd=r;gcPara=(r.pessoas||[])[0]||'';gcRender();vibra();});}
+function gcAbrir(q){ // v119.2: abre na hora com o que a busca já trouxe; saldo/média chegam depois
+  var k=Date.now();gcAbrirK=k;gcParaToque=false;gcProd={sku:q.sku||'',desc:q.desc||(q.codigo?'Código '+q.codigo:'Buscando…'),_load:1,pessoas:gcPesUlt.slice()};if(gcProd.pessoas.indexOf(gcPara)<0)gcPara=gcProd.pessoas[0]||'';gcRender();
+  v9Api({acao:'ctaInfo',codigo:q.codigo||'',sku:q.sku||''},function(r){if(gcAbrirK!==k)return;var mot=($('gcMot')||{}).value||'';gcProd=r;gcPesUlt=(r.pessoas||[]).slice();if(!gcParaToque||(r.pessoas||[]).indexOf(gcPara)<0)gcPara=(r.pessoas||[])[0]||'';gcRender();if(mot&&$('gcMot'))$('gcMot').value=mot;vibra();},function(){if(gcAbrirK===k){gcProd=null;gcRender();}});}
 SCAN_CB.fotoGC=function(cod){vibra();gcAbrir({codigo:cod});};
 V9_VOLTAR.tGC=function(){if(gcProd){gcProd=null;gcRender();return true;}return false;};
 function gcStTag(s){var m={'AGUARDANDO CONTAGEM':'am','CONTADA - DECIDIR':'er','AJUSTADO':'ok','AUTORIZADO - A LANCAR':'az','BATEU - SEM AJUSTE':'ok','NAO AJUSTADO':'ci','RECONTAGEM':'am'};return '<span class="v9Tag '+(m[s]||'ci')+'">'+esc(s.replace('AUTORIZADO - A LANCAR','AUTORIZADO — A LANÇAR').replace(' - ',' — ').replace('NAO AJUSTADO','NÃO AJUSTADO'))+'</span>';}
@@ -3181,12 +3183,14 @@ function gcRender(){
     $('gcIn').onkeydown=function(e){if(e.key==='Enter')v9Busca('gcIn','gcRes',gcAbrir);};
     if(gcProd){var p=gcProd,d=$('gcProdBox');
       d.innerHTML='<div class="v9Box"><div class="v9D">'+esc(p.desc)+'</div><div class="v9M">SKU '+esc(p.sku)+(p.local?' · 📍 '+esc(p.local):'')+(p.rep?' · repõe: '+esc(p.rep):'')+'</div>'
-        +'<div class="gcNums"><div>SALDO NO SISTEMA<b>'+(p.saldo==null?'—':gcNum(p.saldo))+'</b><small>arquivo '+esc(p.saldoEm||'')+'</small></div><div>VENDE POR DIA<b>'+(p.media===''?'—':gcNum(p.media))+'</b><small>média</small></div></div>'
+        +'<div class="gcNums"><div>SALDO NO SISTEMA<b>'+(p._load?'…':(p.saldo==null?'—':gcNum(p.saldo)))+'</b><small>arquivo '+esc(p.saldoEm||'')+'</small></div><div>VENDE POR DIA<b>'+(p._load?'…':(p.media===''||p.media==null?'—':gcNum(p.media)))+'</b><small>média</small></div></div>'
         +'<div class="v9Lbl">QUEM CONTA</div><div class="v9Chips" id="gcPes"></div>'
         +'<div class="v9Lbl">MOTIVO (opcional)</div><input type="text" id="gcMot" placeholder="ex.: saldo estranho, sumiu da gôndola">'
-        +'<button class="btn ok" id="gcPed">PEDIR CONTAGEM</button><button class="btn cancel" onclick="gcProd=null;gcRender()">CANCELAR</button></div>';
-      var pe=$('gcPes');(p.pessoas||[]).forEach(function(n,i){var b=document.createElement('button');b.type='button';b.textContent=n+(i===0&&p.rep&&p.rep.indexOf(n)>=0?' (repositora)':'');b.className=gcPara===n?'on':'';b.onclick=function(){gcPara=n;vibra();pe.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});};pe.appendChild(b);});
-      $('gcPed').onclick=function(){var b=this;if(!gcPara){toast('Escolha quem vai contar','err');return;}b.disabled=true;v9Api({acao:'ctaPedir',sku:p.sku,para:gcPara,motivo:$('gcMot').value},function(){toast('Pedido para '+gcPara,'ok');gcProd=null;gcCarregar();},function(){b.disabled=false;});};
+        +'<button class="btn ok" id="gcPed">PEDIR CONTAGEM</button><button class="btn cancel" onclick="gcProd=null;gcAbrirK=0;gcRender()">CANCELAR</button></div>';
+      var pe=$('gcPes');(p.pessoas||[]).forEach(function(n,i){var b=document.createElement('button');b.type='button';b.textContent=n+(i===0&&p.rep&&p.rep.indexOf(n)>=0?' (repositora)':'');b.className=gcPara===n?'on':'';b.onclick=function(){gcPara=n;gcParaToque=true;vibra();pe.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});};pe.appendChild(b);});
+      $('gcPed').onclick=function(){if(!gcPara){toast('Escolha quem vai contar','err');return;}if(!p.sku){toast('Aguarde, carregando o produto…','err');return;} // v119.2: pede na hora e grava em segundo plano
+        var ped={sku:p.sku,desc:p.desc,para:gcPara,motivo:$('gcMot').value};gcProd=null;gcAbrirK=0;gcC=gcC||{aguard:[],decidir:[],hist:[],totMes:0};gcC.aguard.unshift({desc:ped.desc,para:ped.para,pedEm:'agora',motivo:ped.motivo,status:'AGUARDANDO CONTAGEM'});gcRender();toast('Pedido para '+ped.para,'ok');vibra();
+        v9Api({acao:'ctaPedir',sku:ped.sku,para:ped.para,motivo:ped.motivo},function(){gcCarregar();},function(){toast('⚠️ A contagem de '+ped.desc+' não foi pedida (falha de conexão). Peça de novo.','err');gcCarregar();});};
     }
     var h=document.createElement('div');h.className='v9Sub';h.textContent='PEDIDAS — AGUARDANDO CONTAGEM';box.appendChild(h);
     var ul=document.createElement('ul');ul.className='v9L';if(!c.aguard.length)ul.innerHTML='<li class="dica">Nenhuma aguardando.</li>';
