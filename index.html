@@ -247,6 +247,9 @@ ul.citens li .q{font-size:12px;color:#15803d;font-weight:600}
 #fotoCodEmb,#fotoTroca{display:none}
 .card{max-height:92vh;overflow:auto}
 .ccpe{font-size:12px;color:#b45309;font-weight:700;margin-top:4px}
+.b.kgun{background:#fef3c7;color:#92400e;border:1px solid #f59e0b}
+.kgunAv{margin:10px 0;background:#fef3c7;border:2px solid #f59e0b;border-radius:12px;padding:12px;color:#7c2d12;font-weight:800;font-size:15px;text-align:center;line-height:1.3}
+.kgunAv small{display:block;font-weight:500;font-size:12px;color:#92400e;margin-top:4px}
 .pedLbl{font-weight:800;margin:12px 0 6px;font-size:15px}
 .ped{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
 .ped button{flex:1 1 30%;border:2px solid var(--borda);background:#fff;border-radius:12px;padding:12px 4px;font-size:15px;font-weight:700;color:var(--txt)}
@@ -2235,7 +2238,7 @@ function renderConfNF(){
     var tr=(i.trocas||[]).map(function(t){return '🔁 '+t.qtdSubst+' trocado(s) por '+t.qtdNovo+' '+esc(t.produtoNovo);}).join('<br>');
     if(i.status==='NAO VEIO'||i.status==='RECUSADO')tr+=(tr?'<br>':'')+'📦 '+(i.motivo?esc(i.motivo)+' · ':'')+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
     if(i.faltaQtd)tr+=(tr?'<br>':'')+'📦 '+(i.faltaTipo==='RECUSADO'?'recusou ':'faltou ')+esc(i.faltaQtd)+(i.motivo?' · '+esc(i.motivo):'')+' · '+(i.devolucao?'devolvido NF '+esc(i.devolucao):'devolução pendente');
-    li.innerHTML='<div class="d">'+esc(i.produto)+(i.novo?' <span class="b semcad">SEM CADASTRO</span>':(i.novoCad?' <span class="b novo">NOVO</span>':''))+(i.devolver?' <span class="b dev">↩ DEVOLVER '+(String(i.devolver).toUpperCase()==='TOTAL'?'TUDO':esc(i.devolver))+'</span>':'')+(i.avDev?' <span class="b avi">⛔ DEVOLVER '+(i.avDev.qtd==='TUDO'?'TUDO':esc(i.avDev.qtd))+'</span>':'')+(i.bonifItem&&!nf.bonif?' <span class="b bonif">🎁 BONIFICADO</span>':'')+(i.grupo?' <span class="b bonif">compra + 🎁 bonificado</span>':'')+'<small>'+(i.sku?'SKU '+esc(i.sku)+' · ':'')+'cód. '+esc(i.codigo)+(i.un==='KG'?' · por kg':(i.un!=='UN'?' · em '+esc(i.un):''))+'</small>'+(i.vConv?'<div class="q" style="color:'+(/^⚠/.test(i.vConv)?'#b45309':'#0e7490')+'">📦 validade em unidade: '+esc(i.vConv)+'</div>':'')+(res?'<div class="q">'+esc(res)+'</div>':'')+(tr?'<div class="q" style="color:#7c2d12">'+tr+'</div>':'')+'</div>'
+    li.innerHTML='<div class="d">'+esc(i.produto)+(i.novo?' <span class="b semcad">SEM CADASTRO</span>':(i.novoCad?' <span class="b novo">NOVO</span>':''))+(i.kgUn?' <span class="b kgun">⚖️ KG NA NOTA → CONTAR UNIDADES</span>':'')+(i.devolver?' <span class="b dev">↩ DEVOLVER '+(String(i.devolver).toUpperCase()==='TOTAL'?'TUDO':esc(i.devolver))+'</span>':'')+(i.avDev?' <span class="b avi">⛔ DEVOLVER '+(i.avDev.qtd==='TUDO'?'TUDO':esc(i.avDev.qtd))+'</span>':'')+(i.bonifItem&&!nf.bonif?' <span class="b bonif">🎁 BONIFICADO</span>':'')+(i.grupo?' <span class="b bonif">compra + 🎁 bonificado</span>':'')+'<small>'+(i.sku?'SKU '+esc(i.sku)+' · ':'')+'cód. '+esc(i.codigo)+(i.un==='KG'?' · por kg':(i.un!=='UN'?' · em '+esc(i.un):''))+'</small>'+(i.vConv?'<div class="q" style="color:'+(/^⚠/.test(i.vConv)?'#b45309':'#0e7490')+'">📦 validade em unidade: '+esc(i.vConv)+'</div>':'')+(res?'<div class="q">'+esc(res)+'</div>':'')+(tr?'<div class="q" style="color:#7c2d12">'+tr+'</div>':'')+'</div>'
       +'<span class="st">'+(i.diverg&&i.status==='CONFERIDO'?(nf.status==='CONCLUIDA'?'RECONTAR':'NÃO CONFERE'):i.status==='CONFERIDO'?'✓':(i.status==='NAO VEIO'||i.status==='RECUSADO'?i.status.replace('NAO','NÃO'):(i.diverg&&nf.status==='CONCLUIDA'?'RECONTAR':'conferir')))+'</span>';
     li.onclick=function(){abrirConfItem(i);};
     ul.appendChild(li);
@@ -2512,7 +2515,7 @@ function abrirConfItem(i){
   $('ccDesc').textContent=i.produto;$('ccCod').textContent=(i.sku?'SKU '+i.sku+' · ':'')+'cód. '+i.codigo+(emb?' · a nota vem em '+i.un+(i.fator?' c/ '+i.fator:''):(i.fator?' · caixa c/ '+i.fator:''))+(i.unPlenus?' · vendido por '+(/QUILO/.test(i.unPlenus)?'kg':'unidade'):'');
   $('ccRec').style.display=confReconte[i.idItem]===1?'':'none'; // v40
   var dvb=$('ccDev');if(i.devolver){dvb.style.display='';dvb.textContent='↩ DEVOLVER a pedido do Celio: '+(String(i.devolver).toUpperCase()==='TOTAL'?'o item inteiro':i.devolver+' '+(i.un==='UN'?'un':i.un))+(i.devMotivo?' — '+i.devMotivo:'')+'. Conte tudo o que veio e separe para devolução.';}else dvb.style.display='none';
-  confKgUn=i.un==='KG'&&!!i.unPlenus&&!/QUILO/.test(i.unPlenus);
+  confKgUn=(i.un==='KG'&&!!i.unPlenus&&!/QUILO/.test(i.unPlenus))||!!i.kgUn;var kb=$('ccKgUn');if(!kb){kb=document.createElement('div');kb.id='ccKgUn';kb.className='kgunAv';kb.innerHTML='⚖️ VEM EM KG NA NOTA<br>CONTE QUANTAS UNIDADES CHEGARAM<small>Pese tudo e conte as peças — as unidades corrigem a nota no faturamento</small>';$('ccCod').after(kb);}kb.style.display=confKgUn&&i.un==='KG'?'block':'none' // v119.4;
   var fb=$('ccFormas');fb.innerHTML='';
   confKgCx=emb&&(i.unPlenus?/QUILO/.test(i.unPlenus):/\bKG\s*\**\s*$/i.test(i.produto)); // nota em caixa, vendido por kg: sem opção UNIDADE
   var lingCx=i.un==='KG'&&!confKgUn&&/\bLING\w*\.?\s.*\b(CALABRESA|TOSCANA)\b/.test(semAc(i.produto||'').toUpperCase())&&!/FININHA/.test(semAc(i.produto||'').toUpperCase()); // v106: linguiça calabresa/toscana: KG ou CAIXAS (kg por caixa)
@@ -2590,7 +2593,7 @@ function renderLotes(){
       +'<div class="lin"><label>'+(confForma==='KG'?'Peso (kg)':(confForma==='KGCX'?'Peso total (kg)':(confKgCx?'Quantas caixas':'Quantidade')))+'</label><input class="q" type="text" inputmode="decimal" placeholder="'+un+'" value="'+(l.qtdDig===''?'':l.qtdDig)+'">'+(confForma==='KG'||confForma==='KGCX'?'':'<button type="button" class="calcBt" title="somar"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0e7490" stroke-width="2" stroke-linecap="round"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/><path d="M8.5 13h.01M12 13h.01M15.5 13h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01"/></svg></button>')+'</div>'
       +(confForma==='CAIXA'?'<div class="lin"><label>'+(confKgCx?'Quantos kg por caixa?':'Vem quantas no fardo/caixa?')+'</label><input class="f" type="text" inputmode="'+(confKgCx?'decimal':'numeric')+'" placeholder="'+(confKgCx?'ex.: 10':'ex.: 12')+'" value="'+(l.fator||'')+'"></div>':'')
       +(confForma==='KGCX'?'<div class="lin"><label>Quantas caixas</label><input class="p" type="text" inputmode="numeric" placeholder="obrigatório" value="'+(l.pecas==null?'':l.pecas)+'"></div>':'')
-      +(confForma==='KG'?'<div class="lin"><label>'+(confKgUn?'Quantas peças':'Peças (opcional)')+'</label><input class="p" type="text" inputmode="numeric" placeholder="'+(confKgUn?'obrigatório':'ex.: 2')+'" value="'+(l.pecas==null?'':l.pecas)+'"></div>'+(confKgUn?'<div class="ccpe">'+(confPesoObrig&&confItemAtual.un==='UN'?'Vem por unidade, mas pese tudo: informe o peso total e quantas unidades vieram (o peso vai para o faturamento).':'Este produto é vendido por unidade: o nº de peças corrige a nota para o faturamento.')+'</div>':''):'')
+      +(confForma==='KG'?'<div class="lin"><label>'+(confKgUn?'Unidades que chegaram *':'Peças (opcional)')+'</label><input class="p" type="text" inputmode="numeric" placeholder="'+(confKgUn?'obrigatório':'ex.: 2')+'" value="'+(l.pecas==null?'':l.pecas)+'"></div>'+(confKgUn?'<div class="ccpe">'+(confPesoObrig&&confItemAtual.un==='UN'?'Vem por unidade, mas pese tudo: informe o peso total e quantas unidades vieram (o peso vai para o faturamento).':'Este produto é vendido por unidade: o nº de peças corrige a nota para o faturamento.')+'</div>':''):'')
       +'<div class="vpHost"></div>' // v109: validade com 4 botões
       +(confLotes.length>1?'<button class="rm">REMOVER</button>':'');
     var q=d.querySelector('.q'),fi=d.querySelector('.f'),pe=d.querySelector('.p'),rm=d.querySelector('.rm');
@@ -2618,7 +2621,7 @@ function salvarConfItem(){
     if(!(q>0))return toast('Digite a quantidade'+(confLotes.length>1?' da validade '+(k+1):''),'err');
     if(confForma==='CAIXA'&&!(parseFloat(String(l.fator).replace(',','.'))>0))return toast(confKgCx?'Informe quantos kg vêm por caixa':'Informe quantas vêm por caixa','err');
     if(confForma==='KGCX'&&!(parseFloat(String(l.pecas).replace(',','.'))>0))return toast('Informe quantas caixas vieram','err');
-    if(confForma==='KG'&&confKgUn&&!(parseFloat(String(l.pecas).replace(',','.'))>0))return toast('Informe quantas peças vieram','err');
+    if(confForma==='KG'&&confKgUn&&!(parseFloat(String(l.pecas).replace(',','.'))>0))return toast('Informe as unidades que chegaram','err');
     if(!l.validade)return toast('Informe a validade ou toque em SEM VALIDADE','err');
     lotes.push({forma:confForma,qtdDig:q,fator:confForma==='CAIXA'?parseFloat(String(l.fator).replace(',','.')):'',validade:l.validade,pecas:(confForma==='KG'||confForma==='KGCX')&&l.pecas!==''?parseFloat(String(l.pecas).replace(',','.')):'',emb:k===0?confEmb:'',qtdEmb:k===0&&confEmb&&confEmb!=='SACOLA/KG'?confQtdEmb:'',codLido:k===0?confCodLido:'',codStatus:k===0?confCodStatus:''});
   }
