@@ -2373,8 +2373,17 @@ function irHome(){
   mostrar('tHome');renderHome();atualizarPushUI();
   api({acao:'resumoHome',quem:quem}).then(function(r){if(r&&r.ok){resumoCache=r;try{localStorage.setItem('ci_resumo',JSON.stringify(r));}catch(e){}renderHome();}}).catch(function(){});
 }
+function pontoTopoRender(){ // v119.5: quadro do ponto no topo (aba ACESSOS: PONTO_TOPO)
+  var np=$('nhPonto');if(!np)return;var pt=resumoCache&&resumoCache.ponto,d=new Date(),hj=('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear();
+  if(appsCache.indexOf('PONTO_TOPO')<0||!pt||!pt.mostrar||pt.dia!==hj){np.style.display='none';return;}
+  var bs=pt.batidas||[],n=bs.length,u=bs[n-1];
+  if(!n){np.className='nhPonto nao';np.innerHTML='<span class="bol">!</span><span><b>Você ainda não bateu o ponto hoje</b></span>';}
+  else{var tx=n===1?'Ponto batido às '+u+'</b> · entrada':n===2?'Saiu para o almoço às '+u+'</b>':n===3?'Voltou do almoço às '+u+'</b>':n===4?'Saída às '+u+'</b>':'Última batida às '+u+'</b>';
+    np.className='nhPonto';np.innerHTML='<span class="bol">✓</span><span><b>'+tx+(n>1?'<br><small>'+bs.join(' · ')+'</small>':'')+'</span>';}
+  np.style.display='flex';
+}
 function renderHome(){
-  var box=$('nhLista');box.innerHTML='';var grupo='';
+  var box=$('nhLista');box.innerHTML='';var grupo='';pontoTopoRender();
   if(resumoCache.grm&&typeof irGRM==='function'){var gm=document.createElement('button');gm.className='nhR';gm.innerHTML='<span class="ib" style="background:#5b21b6;font-size:24px">📏</span><span><b>Conferir na loja</b><i><span class="v9Selo">'+resumoCache.grm+'</span> '+(resumoCache.grm===1?'pedido':'pedidos')+' do Celio</i></span><span class="ar">›</span>';gm.onclick=function(){vibra();irGRM();};box.appendChild(gm);} // v118
   (typeof HOME_ORDEM!=='undefined'?HOME_ORDEM:['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','CONFIRMACAO','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA']).forEach(function(a){ // v109
     if(appsCache.indexOf(a)<0)return;var d=HOME_DEF[a];
