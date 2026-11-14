@@ -89,6 +89,26 @@ body.escuro .tabbar button.on .ic{background:rgba(155,227,109,.15)}
 .maisL{display:flex;align-items:center;gap:12px;justify-content:flex-start}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;z-index:50;padding:30px 12px;overflow:auto}
 .modal .card{width:100%;max-width:560px;display:flex;flex-direction:column;gap:12px}
+.folhaF{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;display:flex;align-items:flex-end;justify-content:center;animation:fdF .15s}
+.folhaF .fl{width:100%;max-width:480px;background:var(--card);color:var(--txt);border-radius:22px 22px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.3);animation:sobeF .2s ease-out}
+body.escuro .folhaF .fl{background:#123826;color:#EAF3EC}
+.folhaF .pg{width:42px;height:4px;border-radius:4px;background:rgba(127,127,127,.35);margin:0 auto 16px}
+.folhaF .ico{width:56px;height:56px;border-radius:16px;background:var(--okb);color:var(--acento);display:flex;align-items:center;justify-content:center;margin:0 auto}
+body.escuro .folhaF .ico{background:rgba(155,227,109,.15);color:#9BE36D}
+.folhaF .ok{width:72px;height:72px;border-radius:50%;background:var(--acento);color:#fff;display:flex;align-items:center;justify-content:center;margin:6px auto 0}
+body.escuro .folhaF .ok{background:#9BE36D;color:#062016}
+.folhaF h3{text-align:center;font-family:Manrope,sans-serif;font-weight:800;font-size:20px;margin:12px 0 4px}
+.folhaF .tx{text-align:center;font-size:13.5px;color:var(--mut);line-height:1.45}
+body.escuro .folhaF .tx,body.escuro .folhaF .nt{color:#A9CDB6}
+.folhaF .qd{background:var(--bg);border-radius:14px;padding:12px 14px;margin-top:16px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+body.escuro .folhaF .qd{background:#0B2A1D}
+.folhaF .qd div{display:flex;justify-content:space-between;gap:10px}.folhaF .qd span{color:var(--mut)}
+.folhaF .nt{font-size:12.5px;color:var(--mut);margin-top:12px;line-height:1.45}
+.folhaF .bS{display:block;width:100%;border:0;border-radius:12px;padding:14px;font-weight:800;font-size:14.5px;margin-top:16px;background:var(--acento);color:#fff;cursor:pointer}
+body.escuro .folhaF .bS{background:#9BE36D;color:#062016}
+.folhaF .bS.perigo{background:#C62828;color:#fff}
+.folhaF .bN{display:block;width:100%;border:0;background:none;padding:13px;font-weight:600;color:var(--mut);cursor:pointer;font-size:14px}
+@keyframes sobeF{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}@keyframes fdF{from{opacity:0}to{opacity:1}}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{padding:6px 12px;border-radius:999px;border:1px solid var(--borda);background:var(--card);cursor:pointer;font-weight:500}
 .chip.on{background:var(--acento);color:#fff;border-color:var(--acento)}
@@ -184,7 +204,7 @@ function api(p){
 function erro(e){toast(String(e&&e.message||e),true);}
 function hojeBR(){var d=new Date();return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();}
 var FN_NOME={CAIXA:'OP. CAIXA',REPOSITOR:'Repositor',ACOUGUEIRO:'Açougueiro','AUXILIAR ACOUGUE':'Auxiliar de açougue',PADARIA:'Padaria','SERVICOS GERAIS':'Serviços gerais',GERENTE:'Gerente',ENTREGADOR:'Entregador'};
-var ICS={hoje:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4"/>',espelho:'<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h7"/>',lanc:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',banco:'<path d="M5 3h14M5 21h14"/><path d="M7 3v3.2c0 1.6 1.2 2.8 3 4.3l2 1.5-2 1.5c-1.8 1.5-3 2.7-3 4.3V21M17 3v3.2c0 1.6-1.2 2.8-3 4.3L12 12l2 1.5c1.8 1.5 3 2.7 3 4.3V21"/><path d="M9.5 19h5l-2.5-2.2z" fill="currentColor" stroke="none"/>',mais:'<circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/>',inicio:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',batidas:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="9.5" cy="10" r=".6"/><circle cx="14.5" cy="10" r=".6"/><path d="M9 14.5c1.6 1.4 4.4 1.4 6 0"/>',escala:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/>',conta:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',fech:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',func:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.6-5 6.5-5s5.5 1.5 6.5 5M16 4.5a3.5 3.5 0 0 1 0 7M18 15c2 .6 3.2 2.3 3.5 5"/>',config:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',fgts:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/>',extras:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.4-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2.1-.5-2.6-1.5M12 6.5V8M12 16v1.5"/>',meu:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',sair:'<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/>'};
+var ICS={hoje:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4"/>',espelho:'<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h7"/>',lanc:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',banco:'<path d="M5 3h14M5 21h14"/><path d="M7 3v3.2c0 1.6 1.2 2.8 3 4.3l2 1.5-2 1.5c-1.8 1.5-3 2.7-3 4.3V21M17 3v3.2c0 1.6-1.2 2.8-3 4.3L12 12l2 1.5c1.8 1.5 3 2.7 3 4.3V21"/><path d="M9.5 19h5l-2.5-2.2z" fill="currentColor" stroke="none"/>',mais:'<circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/>',inicio:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',batidas:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="9.5" cy="10" r=".6"/><circle cx="14.5" cy="10" r=".6"/><path d="M9 14.5c1.6 1.4 4.4 1.4 6 0"/>',escala:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/>',conta:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',fech:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',func:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.6-5 6.5-5s5.5 1.5 6.5 5M16 4.5a3.5 3.5 0 0 1 0 7M18 15c2 .6 3.2 2.3 3.5 5"/>',config:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',fgts:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/>',cartao:'<path d="M3 5h2l2.4 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 8H6.2"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="16.5" cy="19.5" r="1.3"/>',extras:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.4-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2.1-.5-2.6-1.5M12 6.5V8M12 16v1.5"/>',meu:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',sair:'<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/>',ok:'<path d="M5 12.5l4.5 4.5L19 7.5" stroke-width="2.6"/>'};
 function ic(n,s){return '<svg width="'+(s||22)+'" height="'+(s||22)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+(ICS[n]||'')+'</svg>';}
 function logoMP(s,claro){var bg=claro?'#0E4D32':'rgba(155,227,109,.14)';return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="'+bg+'"/><circle cx="50" cy="50" r="34" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3"/><g stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"><line x1="50" y1="12" x2="50" y2="18"/><line x1="88" y1="50" x2="82" y2="50"/><line x1="50" y1="88" x2="50" y2="82"/><line x1="12" y1="50" x2="18" y2="50"/></g><path d="M32 52 L45 64 L70 34" fill="none" stroke="#9BE36D" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
 function tabHTML(lista){return lista.map(function(t){return '<button data-t="'+t[0]+'"><span class="ic">'+ic(t[0])+'</span>'+t[1]+'</button>';}).join('');}
@@ -253,7 +273,7 @@ function entrar(){
 }
 
 // =================== GESTÃO ===================
-var TELAS=[['hoje','Hoje'],['espelho','Espelho de ponto'],['lanc','Lançamentos'],['banco','Banco de horas'],['fech','Fechamento do mês'],['func','Funcionários e jornadas'],['config','Configurações'],['fgts','FGTS'],['escala','Escala de domingos e feriados']];
+var TELAS=[['hoje','Hoje'],['espelho','Espelho de ponto'],['lanc','Lançamentos'],['banco','Banco de horas'],['fech','Fechamento do mês'],['func','Funcionários e jornadas'],['config','Configurações'],['fgts','FGTS'],['cartao','Cartão alimentação'],['escala','Escala de domingos e feriados']];
 var TAB_CEL=[['hoje','Hoje'],['espelho','Espelho'],['lanc','Lançar'],['banco','Banco'],['mais','Mais']];
 function irGestao(){
   S.modo='gestao';aplicarTema();
@@ -270,10 +290,10 @@ function abrir(t){
   if(t==='mais'){menuMais();return;}
   S.tela=t;try{history.replaceState(null,'','#'+t);}catch(e){}
   document.querySelectorAll('#gNav .nav').forEach(function(b){b.classList.toggle('on',b.dataset.t===t);});
-  document.querySelectorAll('#gTab button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t||(['fech','func','config','fgts','escala'].indexOf(t)>=0&&b.dataset.t==='mais'));});
+  document.querySelectorAll('#gTab button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t||(['fech','func','config','fgts','cartao','escala'].indexOf(t)>=0&&b.dataset.t==='mais'));});
   var m=$('gMain');m.innerHTML='<div class="sub">Carregando…</div>';window.scrollTo(0,0);
   if(t==='escala')S.escDia=null;
-  ({hoje:gHoje,espelho:gEspelho,lanc:gLanc,banco:gBanco,fech:gFech,func:gFunc,config:gConfig,fgts:gFgts,escala:gEscala})[t]();
+  ({hoje:gHoje,espelho:gEspelho,lanc:gLanc,banco:gBanco,fech:gFech,func:gFunc,config:gConfig,fgts:gFgts,cartao:gCartao,escala:gEscala})[t]();
 }
 function menuMais(){
   var telas=S.ini.gestao?TELAS.slice(4):[['escala','Escala de domingos e feriados']];
@@ -283,6 +303,13 @@ function menuMais(){
 }
 function modal(html,cb){fecharModal();var d=document.createElement('div');d.className='modal';d.id='modal';d.innerHTML='<div class="card">'+html+'<button class="btn" id="mFechar">Fechar</button></div>';d.onclick=function(e){if(e.target===d)fecharModal();};document.body.appendChild(d);$('mFechar').onclick=fecharModal;if(cb)cb(d);}
 function fecharModal(){var m=$('modal');if(m)m.remove();}
+// pop-up que sobe por baixo (no lugar da caixinha do navegador)
+function folha(o){return new Promise(function(res){var d=document.createElement('div');d.className='folhaF';
+  var qd=(o.quadro||[]).map(function(q){return '<div><span>'+esc(q[0])+'</span><b>'+esc(q[1])+'</b></div>';}).join('');
+  d.innerHTML='<div class="fl"><div class="pg"></div>'+(o.pronto?'<div class="ok">'+ic('ok',40)+'</div>':'<div class="ico">'+ic(o.icone||'escala',30)+'</div>')+'<h3>'+esc(o.titulo)+'</h3>'+(o.texto?'<div class="tx">'+o.texto+'</div>':'')+(qd?'<div class="qd">'+qd+'</div>':'')+(o.nota?'<div class="nt">'+o.nota+'</div>':'')+'<button class="bS'+(o.perigo?' perigo':'')+'" id="flS">'+esc(o.sim||'Confirmar')+'</button>'+(o.nao===false?'':'<button class="bN" id="flN">'+esc(o.nao||'Agora não')+'</button>')+'</div>';
+  function fim(v){d.remove();res(v);}d.onclick=function(e){if(e.target===d)fim(false);};document.body.appendChild(d);
+  d.querySelector('#flS').onclick=function(){fim(true);};var n=d.querySelector('#flN');if(n)n.onclick=function(){fim(false);};});}
+function diaSemanaBR(br){var p=String(br).split('/');var dt=new Date(+p[2],+p[1]-1,+p[0]);return ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][dt.getDay()]+', '+br;}
 function funcOpts(sel,todos){var h=todos?'<option value="TODOS">Todos os funcionários</option>':'';(S.ini.funcionarios||[]).filter(function(f){return /ATIVO/i.test(f.situacao)&&!/DIARISTA/i.test(f.perfil);}).sort(function(a,b){return a.nome.localeCompare(b.nome);}).forEach(function(f){h+='<option value="'+f.codigo+'"'+(String(sel)===f.codigo?' selected':'')+'>'+esc(primeiroNome(f.nome))+' — '+esc(f.nome)+'</option>';});return h;}
 function topoCel(t,s){return '<div class="gTopoCel"><div class="mpBr">'+logoMP(38,false)+'<div><div class="mpNome" style="font-size:19px;line-height:1">Meu <span>Pauvan</span></div><small>Gestão do ponto'+(s?' · '+s:'')+'</small></div></div></div>';}
 
@@ -504,7 +531,7 @@ function funcModal(f,novo){
   var js=S.cad.jornadas.map(function(j){return j.nome;});
   function inp(k,lab,tipo,extra){return '<label>'+lab+'<input data-k="'+k+'" '+(tipo||'')+' value="'+esc(f[k]||'')+'" '+(extra||'')+'></label>';}
   function sel(k,lab,ops){return '<label>'+lab+'<select data-k="'+k+'">'+ops.map(function(o){return '<option'+(String(f[k]||'')===o?' selected':'')+'>'+esc(o)+'</option>';}).join('')+'</select></label>';}
-  var h='<h2>'+(novo?'Novo funcionário':esc(f.NOME))+'</h2><div class="grade">'+inp('CODIGO','Código no relógio','',novo?'':'readonly')+inp('USUARIO APP','Usuário no app')+'</div>'+inp('NOME','Nome completo')+'<div class="grade">'+inp('CPF','CPF','inputmode="numeric"')+inp('CARGO','Cargo')+inp('ADMISSAO','Admissão (dd/mm/aaaa)')+inp('NASCIMENTO','Nascimento (dd/mm/aaaa)')+sel('JORNADA (MODELO)','Jornada',[''].concat(js))+sel('PERFIL','Perfil',['FUNCIONARIO','GESTOR','DIARISTA'])+sel('SITUACAO','Situação',['ATIVO','DESLIGADO'])+inp('DESLIGAMENTO','Desligamento (dd/mm/aaaa)')+sel('CALCULO','Cálculo do dia',['POR BATIDA','SALDO DO DIA'])+'</div>'+inp('OBS','Observação')+'<div class="sub">Diarista = só vê a escala de domingos/feriados no app. Lembre de cadastrar a pessoa também no relógio, com o mesmo código.</div><button class="btn pri" id="fmSalvar">Salvar</button>';
+  var h='<h2>'+(novo?'Novo funcionário':esc(f.NOME))+'</h2><div class="grade">'+inp('CODIGO','Código no relógio','',novo?'':'readonly')+inp('USUARIO APP','Usuário no app')+'</div>'+inp('NOME','Nome completo')+'<div class="grade">'+inp('CPF','CPF','inputmode="numeric"')+inp('CARGO','Cargo')+inp('ADMISSAO','Admissão (dd/mm/aaaa)')+inp('NASCIMENTO','Nascimento (dd/mm/aaaa)')+sel('SEXO','Sexo',['','F','M'])+inp('FILHOS (NASCIMENTO)','Filhos: nascimento de cada um (ex.: 12/03/2015, 08/07/2019)')+sel('JORNADA (MODELO)','Jornada',[''].concat(js))+sel('PERFIL','Perfil',['FUNCIONARIO','GESTOR','DIARISTA'])+sel('SITUACAO','Situação',['ATIVO','DESLIGADO'])+inp('DESLIGAMENTO','Desligamento (dd/mm/aaaa)')+sel('CALCULO','Cálculo do dia',['POR BATIDA','SALDO DO DIA'])+'</div>'+inp('OBS','Observação')+'<div class="sub">Diarista = só vê a escala de domingos/feriados no app. Lembre de cadastrar a pessoa também no relógio, com o mesmo código.</div><button class="btn pri" id="fmSalvar">Salvar</button>';
   modal(h,function(box){$('fmSalvar').onclick=function(){var o={};box.querySelectorAll('[data-k]').forEach(function(x){o[x.dataset.k]=x.value.trim();});Object.keys(f).forEach(function(k){if(!(k in o)&&!/^(linha|codigo)$/.test(k))o[k]=f[k];});api({acao:'pontoSalvarFunc',func:o,novo:!!novo}).then(function(r){if(!r.ok)throw r.erro;toast('Salvo ✓');fecharModal();recarregarIni();abrir('func');}).catch(erro);};});
 }
 function jornModal(j,nova){
@@ -542,6 +569,25 @@ function gFgts(){
     $('gMain').innerHTML=h;
     $('gComp').onchange=function(){S.fgtsComp=this.value;gFgts();};
     $('gSalvar').onclick=function(){var it=[];$('gMain').querySelectorAll('input[data-c]').forEach(function(i){if(i.value.trim())it.push({codigo:i.dataset.c,valor:i.value.trim()});});if(!it.length){toast('Preencha algum valor',true);return;}var b=this;b.disabled=true;api({acao:'pontoSalvarFgts',competencia:$('gComp').value,data:isoBR($('gData').value),itens:it}).then(function(x){b.disabled=false;if(!x.ok)throw x.erro;toast(x.salvos+' salvos · avisos enviados');gFgts();}).catch(function(e){b.disabled=false;erro(e);});};
+  }).catch(erro);
+}
+
+// ----- CARTÃO ALIMENTAÇÃO (v120) -----
+function gCartao(){
+  var m=mesAnt(mesAtual()),comp=S.cartComp||(m.slice(5,7)+'/'+m.slice(0,4));
+  api({acao:'pontoCartao',competencia:comp}).then(function(r){
+    if(!r.ok)throw r.erro;
+    var ops='';var x=mesAtual();for(var i=0;i<12;i++){var c=x.slice(5,7)+'/'+x.slice(0,4);ops+='<option value="'+c+'"'+(c===comp?' selected':'')+'>'+mesNome(x)+'</option>';x=mesAnt(x);}
+    var dt=(r.itens.filter(function(i){return i.data;})[0]||{}).data||hojeBR();
+    var h=topoCel('Cartão alimentação','')+'<div><h1>Cartão alimentação</h1><div class="sub">Quando o cartão for liberado, anote o dia e o valor de cada um. O funcionário recebe o aviso no app, que fica visível por 3 dias.</div></div>';
+    h+='<div class="linha"><label>Mês<select id="gComp">'+ops+'</select></label><label>Dia da liberação<input type="date" id="gData" value="'+brISO(dt)+'"></label></div>';
+    h+='<div class="linha" style="align-items:center"><label style="max-width:220px">Mesmo valor para todos<input id="gTodos" inputmode="decimal" placeholder="0,00"></label><button class="btn" id="gAplicar">Preencher todos</button></div>';
+    h+='<div class="tw"><table><thead><tr><th>Funcionário</th><th>Valor liberado (R$)</th><th>Aviso</th></tr></thead><tbody>'+r.itens.map(function(i){return '<tr><td>'+esc(i.nome)+'</td><td><input data-c="'+i.codigo+'" inputmode="decimal" value="'+esc(i.valor)+'" placeholder="0,00" style="width:140px;text-align:right"></td><td>'+(i.aviso?'<span class="pill ok">Enviado '+esc(i.aviso.slice(0,5))+'</span>':'<span class="pill mute">Não enviado</span>')+'</td></tr>';}).join('')+'</tbody></table></div>';
+    h+='<div class="linha" style="align-items:center"><button class="btn pri" id="gSalvar">Salvar e avisar os funcionários</button><div class="card" style="background:var(--verde);color:#fff;max-width:360px;padding:12px 14px"><b style="font-family:Manrope">🛒 Cartão alimentação liberado</b><br>Seu cartão alimentação foi liberado com R$ [valor]. Aproveite!</div></div>';
+    $('gMain').innerHTML=h;
+    $('gComp').onchange=function(){S.cartComp=this.value;gCartao();};
+    $('gAplicar').onclick=function(){var v=$('gTodos').value.trim();if(!v)return;$('gMain').querySelectorAll('input[data-c]').forEach(function(i){i.value=v;});};
+    $('gSalvar').onclick=function(){var it=[];$('gMain').querySelectorAll('input[data-c]').forEach(function(i){if(i.value.trim())it.push({codigo:i.dataset.c,valor:i.value.trim()});});if(!it.length){toast('Preencha algum valor',true);return;}var b=this;b.disabled=true;api({acao:'pontoSalvarCartao',competencia:$('gComp').value,data:isoBR($('gData').value),itens:it}).then(function(x){b.disabled=false;if(!x.ok)throw x.erro;toast(x.salvos+' salvos · avisos enviados');gCartao();}).catch(function(e){b.disabled=false;erro(e);});};
   }).catch(erro);
 }
 
@@ -665,6 +711,7 @@ function fAbrir(t){
     topo+='<div style="font-size:13px;color:#CFE5D7">'+(mar.length?'✓ Você já bateu o ponto hoje às '+mar[0].replace('*',''):(jor.length?'Você ainda não bateu o ponto hoje':'Hoje é sua folga'))+'</div></div>';
     h=topo+'<div class="fCorpo">';
     if(r.aniversario)h+='<div style="background:linear-gradient(135deg,#9BE36D,#3FB36A);color:#062016;border-radius:16px;padding:16px;position:relative;overflow:hidden"><div style="position:absolute;right:6px;top:2px;font-size:54px">🎂</div><div style="font-size:11px;font-weight:800;letter-spacing:.6px;opacity:.75">HOJE É O SEU DIA!</div><div style="font-family:Manrope;font-weight:800;font-size:19px;margin:3px 0 5px;padding-right:60px">Feliz aniversário, '+esc(r.nome)+'!</div><div style="font-size:13px;line-height:1.4;padding-right:40px">Toda a equipe do Mercado Pauvan deseja muita saúde, alegria e conquistas. Obrigado por fazer parte da nossa história!</div></div>';
+    if(r.cartao)h+='<div class="card" style="border-color:var(--acento)"><b style="font-family:Manrope;font-size:16px">🛒 Cartão alimentação liberado</b><div style="margin-top:4px">Seu cartão alimentação foi liberado com <b>R$ '+esc(r.cartao.valor)+'</b>. Aproveite!</div></div>';
     if(r.fgts)h+='<div class="card" style="border-color:var(--acento)"><b style="font-family:Manrope;font-size:16px">💰 FGTS depositado</b><div style="margin-top:4px">Foi depositado na sua conta Caixa <b>R$ '+esc(r.fgts.valor)+'</b> de FGTS referente a '+esc(MESES[+r.fgts.competencia.slice(0,2)-1])+', no dia '+esc(r.fgts.data.slice(0,5))+'. Esse dinheiro é seu.</div></div>';
     h+='<div class="card"><div class="sub" style="margin-bottom:8px">Batidas de hoje'+(jor.length?' · jornada '+jor.join(' '):'')+'</div><div class="bat">'+['Entrada','Saída almoço','Volta','Saída'].map(function(l,i){return '<div><b>'+(mar[i]||'--:--')+'</b><span>'+l+'</span></div>';}).join('')+'</div>'+(mar.length>4?'<div class="sub" style="margin-top:6px">Mais batidas: '+mar.slice(4).join(' ')+'</div>':'')+'</div>';
     if(r.bonus){var b=r.bonus;h+='<div class="card"><b style="font-family:Manrope;font-size:16px">'+(b.emDia?'⭐ Você está pontual este mês!':'Bônus pontualidade')+'</b><div class="sub" style="margin-top:4px">'+(b.emDia?'Continue assim'+(b.valor?' e ganhe R$ '+esc(b.valor)+' de bônus no fim do mês.':' para ganhar o bônus no fim do mês.'):'Este mês teve '+(b.atrasos?b.atrasos+' atraso(s)':'')+(b.atrasos&&b.faltas?' e ':'')+(b.faltas?b.faltas+' falta(s)':'')+'. O bônus volta no mês que vem.')+'</div></div>';}
@@ -698,8 +745,8 @@ function fAbrir(t){
   }
   $('fMain').innerHTML=h;
   var fm=$('fMes');if(fm)fm.onchange=function(){api({acao:'pontoMeu',mes:this.value}).then(function(x){if(x.ok){S.meu=x;fAbrir('batidas');}}).catch(erro);};
-  $('fMain').querySelectorAll('[data-d][data-f]').forEach(function(b){b.onclick=function(){if(!confirm('Quero trabalhar em '+b.dataset.d+' como '+fn(b.dataset.f)+'?'))return;api({acao:'pontoQuero',data:b.dataset.d,funcao:b.dataset.f}).then(function(x){if(!x.ok)throw x.erro;toast('Inscrição enviada ✓');irMeuAtualiza('escala');}).catch(erro);};});
-  $('fMain').querySelectorAll('[data-des]').forEach(function(b){b.onclick=function(){api({acao:'pontoDesistir',data:b.dataset.des}).then(function(x){if(!x.ok)throw x.erro;toast('Inscrição cancelada');irMeuAtualiza('escala');}).catch(erro);};});
+  $('fMain').querySelectorAll('[data-d][data-f]').forEach(function(b){b.onclick=function(){var d=b.dataset.d,f=b.dataset.f;folha({titulo:'Quer mesmo esta vaga?',texto:'Você vai se candidatar para trabalhar neste dia.',quadro:[['Dia',diaSemanaBR(d)],['Função',fn(f)]],nota:'O Ney escolhe quem vai trabalhar. Quando ele confirmar, você recebe o OK aqui no app. Até lá, dá para desistir.',sim:'SIM, QUERO ESTA VAGA'}).then(function(ok){if(!ok)return;api({acao:'pontoQuero',data:d,funcao:f}).then(function(x){if(!x.ok)throw x.erro;irMeuAtualiza('escala');folha({pronto:true,titulo:'Inscrição enviada!',texto:esc(diaSemanaBR(d).replace(/\/\d{4}$/,''))+' · '+esc(fn(f))+'<br>Aguarde a confirmação do Ney. Você recebe o aviso aqui no app.',sim:'Entendi',nao:false});}).catch(erro);});};});
+  $('fMain').querySelectorAll('[data-des]').forEach(function(b){b.onclick=function(){folha({titulo:'Desistir desta vaga?',texto:'Sua inscrição para '+esc(diaSemanaBR(b.dataset.des))+' será cancelada.',sim:'Sim, desistir',nao:'Continuar inscrito',perigo:true}).then(function(ok){if(!ok)return;api({acao:'pontoDesistir',data:b.dataset.des}).then(function(x){if(!x.ok)throw x.erro;toast('Inscrição cancelada');irMeuAtualiza('escala');}).catch(erro);});};});
   var ft=$('fTema');if(ft)ft.querySelectorAll('.chip').forEach(function(c){c.onclick=function(){ls('ponto_tema',c.dataset.v);aplicarTema();fAbrir('conta');};});
 }
 function irMeuAtualiza(t){api({acao:'pontoMeu'}).then(function(x){if(x.ok){S.meu=x;fAbrir(t);}});}
