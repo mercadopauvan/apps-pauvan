@@ -539,7 +539,12 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .v9Box.vf.feito{background:#f8fafc}
 .vfQ{margin:10px 0 6px;font-size:15px}
 .vfOps{display:flex;flex-wrap:wrap;gap:6px}.vfOps button{border:2px solid #a16207;background:#fffbeb;color:#92400e;border-radius:12px;padding:10px 12px;font-weight:800;font-size:16px;font-family:inherit}
-.vfOps button.out{border-color:#0e7490;background:#ecfeff;color:#0e7490;font-size:14px}.vfOps button.nt{border-color:#cbd5e1;background:#fff;color:#475569;font-size:13px}
+.vfOps button.out{border-color:#0e7490;background:#ecfeff;color:#0e7490;font-size:14px}.alAv{background:#fff7ed;border:2px solid #fb923c;border-radius:12px;padding:8px 10px;color:#7c2d12;font-size:13px;font-weight:700;margin-top:8px}
+.alBt{display:flex;gap:8px;margin-top:10px}.alBt button{flex:1;border-radius:12px;padding:13px 6px;font-weight:800;font-size:15px;font-family:inherit;border:2px solid}
+.alBt .s{background:#16a34a;border-color:#16a34a;color:#fff}.alBt .n{background:#fff;border-color:#dc2626;color:#dc2626}
+.alIn{display:flex;gap:8px}.alIn div{flex:1}.alIn input{width:100%;box-sizing:border-box;font-size:20px;padding:10px;border:2px solid #cbd5e1;border-radius:10px}
+.alTot{margin-top:8px;font-size:14px;color:#334155}.vfOps button.alSel{background:#a16207;color:#fff}
+.vfOps button.nt{border-color:#cbd5e1;background:#fff;color:#475569;font-size:13px}
 .vfR{margin-top:8px;border-radius:10px;padding:8px 10px;font-weight:700;font-size:14px}.vfR.ok{background:#dcfce7;color:#14532d}.vfR.am{background:#fef3c7;color:#92400e}.vfR.er{background:#fee2e2;color:#991b1b}.vfR.ci{background:#f1f5f9;color:#475569}.vfR.az{background:#dbeafe;color:#1e3a8a}
 .vfAch{display:flex;gap:6px;margin-top:8px}.vfAch input{flex:1;min-width:0;font-size:17px;padding:10px}.vfAch .btn{width:auto;margin:0;padding:10px 16px}
 </style>
@@ -679,7 +684,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 <!-- 11. VALIDADES — TROCA DE FRENTE (v81) -->
 <section class="tela" id="tVAL">
   <div class="faixa validades"><span id="faixaVAL"></span><button onclick="irTipo()">TROCAR</button></div>
-  <div class="valTabs"><button id="valTabCV" onclick="valAba='CV';renderVAL()">Conferência de validade</button><button id="valTabTF" onclick="valAba='TF';renderVAL()">Troca de frente</button><button id="valTabVF" onclick="valAba='VF';vfC=null;renderVAL()">👀 Na frente</button></div>
+  <div class="valTabs"><button id="valTabCV" onclick="valAba='CV';renderVAL()">Conferência de validade</button><button id="valTabTF" onclick="valAba='TF';renderVAL()">Troca de frente</button><button id="valTabVF" onclick="valAba='VF';vfC=null;renderVAL()">👀 Na frente</button><button id="valTabAL" onclick="valAba='AL';alC=null;renderVAL()">🔎 Achar</button></div>
   <div class="contTop"><span id="valTit">Conferência de validade</span><span id="valProg"></span></div>
   <p class="dica" id="valDica" style="text-align:left;margin:0 0 10px"></p>
   <div id="valLista"></div>
@@ -1515,6 +1520,7 @@ function valMarcar(it,b,desf){
 function renderVAL(){
   var box=$('valLista');box.innerHTML='';
   $('valTabCV').className=valAba==='CV'?'on':'';$('valTabTF').className=valAba==='TF'?'on':'';$('valTabVF').className=valAba==='VF'?'on':''; // v109
+  if($('valTabAL'))$('valTabAL').className=valAba==='AL'?'on':'';if(valAba==='AL'){alRender(box);return;} // v119.7
   if(valAba==='VF'){vfRender(box);return;}
   if(!valCache){box.innerHTML='<p class="dica">Carregando…</p>';return;}
   var nCV=((valCache.cv||{}).itens||[]).filter(function(i){return i.status==='PENDENTE';}).length;
@@ -3235,6 +3241,37 @@ function gcCartao(o,c){
 }
 // ---------- 7. 👀 VALIDADE NA FRENTE (aba do módulo Validades) ----------
 var vfC=null,vfRes={},vfOutra={},vfAchar={};
+// v119.7: 🔎 ACHAR NA LOJA — produto parado que ia virar rebaixa: a repositora precisa achar antes
+var alC=null,alEd={};
+function alCarregar(){v9Api({acao:'acharLista'},function(r){alC=r;if($('tVAL').classList.contains('on')&&valAba==='AL')renderVAL();},function(){if(!alC){alC={itens:[]};renderVAL();}});}
+function alResp(it,x,b){if(b)b.disabled=true;x.acao='acharResp';x.id=it.id;v9Api(x,function(r){toast(x.achou==='S'?'✅ Salvo! Obrigado':'Registrado — o Celio vai ver','ok');delete alEd[it.id];alCarregar();},function(){if(b)b.disabled=false;});}
+function alRender(box){
+  $('valTit').textContent='🔎 Achar na loja';$('valProg').textContent='';
+  $('valDica').innerHTML='Produtos <b>parados no sistema</b>. Vá até o local e diga se o produto <b>está na loja</b>.';
+  if(!alC){box.innerHTML='<p class="dica">Carregando…</p>';alCarregar();return;}
+  var its=alC.itens||[],np=its.filter(function(i){return i.status==='PENDENTE';}).length;
+  $('valTabAL').textContent='🔎 Achar'+(np?' ('+np+')':'');
+  if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">Nenhum produto para achar. 👍</p>';return;}
+  its.forEach(function(it){
+    var d=document.createElement('div'),e=alEd[it.id];d.className='v9Box vf'+(it.status==='PENDENTE'?'':' feito');
+    var h='<div class="v9D">'+esc(it.desc)+'</div><div class="v9M">'+(it.local?'📍 '+esc(it.local)+' · ':'')+'SKU '+esc(it.sku)+(alC.tudo&&it.quem?' · 👩 '+esc(it.quem):'')+'</div>';
+    if(it.status!=='PENDENTE')h+='<div class="vfR '+(it.status==='ACHOU'?'ok':'er')+'">'+(it.status==='ACHOU'?'✅ Achado — '+esc(it.total)+' un · val. '+esc(vfCurta(it.validade)):'🚫 Não achado — o Celio vai ver')+'</div>';
+    else if(!e)h+='<div class="alAv">⏳ Sem venda'+(it.dias?' há '+esc(it.dias)+' dias':'')+' — precisamos saber se ele está na loja</div><div class="vfQ">Você achou este produto?</div><div class="alBt"><button type="button" class="s">✅ ACHEI</button><button type="button" class="n">🚫 NÃO ACHEI</button></div>';
+    else h+='<div class="vfQ">Qual a <b>validade</b> do produto?</div><div class="vfOps"></div><div class="alVp"></div><div class="v9Lbl">QUANTAS TEM?</div><div class="alIn"><div><div class="v9M">Na gôndola</div><input type="text" inputmode="decimal" class="alG" placeholder="0" value="'+esc(e.g||'')+'"></div><div><div class="v9M">No depósito</div><input type="text" inputmode="decimal" class="alD" placeholder="0" value="'+esc(e.d||'')+'"></div></div><div class="alTot"></div><button class="btn ok alOk" style="margin-top:12px">SALVAR</button><button class="btn cancel alVolta">VOLTAR</button>';
+    d.innerHTML=h;
+    var bs=d.querySelector('.alBt');if(bs){bs.querySelector('.s').onclick=function(){vibra();alEd[it.id]={v:'',g:'',d:''};renderVAL();};bs.querySelector('.n').onclick=function(){if(!confirm('Não achou mesmo? Procure também no depósito antes de confirmar.'))return;alResp(it,{achou:'N'},this);};}
+    if(e){var ops=d.querySelector('.vfOps');
+      (it.validades||[]).forEach(function(v){var b=document.createElement('button');b.type='button';b.textContent=vfCurta(v);if(!e.outra&&e.v===v)b.className='alSel';b.onclick=function(){vibra();e.v=v;e.outra=false;renderVAL();};ops.appendChild(b);});
+      var bo=document.createElement('button');bo.type='button';bo.className='out'+(e.outra?' alSel':'');bo.textContent='📅 OUTRA';bo.onclick=function(){vibra();e.outra=!e.outra;e.v='';renderVAL();};ops.appendChild(bo);
+      if(e.outra)vpMontar(d.querySelector('.alVp'),e.v,function(v){e.v=v;},{modos:['ROL']});
+      var tot=function(){var a=Number(String(e.g||'0').replace(',','.'))||0,b=Number(String(e.d||'0').replace(',','.'))||0;d.querySelector('.alTot').innerHTML='Total achado: <b>'+(Math.round((a+b)*1000)/1000)+' un</b>';};
+      d.querySelector('.alG').oninput=function(){e.g=this.value;tot();};d.querySelector('.alD').oninput=function(){e.d=this.value;tot();};tot();
+      d.querySelector('.alVolta').onclick=function(){delete alEd[it.id];renderVAL();};
+      d.querySelector('.alOk').onclick=function(){if(!e.v)return toast('Escolha a validade','err');if(String(e.g).trim()===''&&String(e.d).trim()==='')return toast('Quantas tem? (gôndola e depósito)','err');alResp(it,{achou:'S',validade:e.v,gondola:String(e.g||'0'),deposito:String(e.d||'0')},this);};
+    }
+    $('valLista').appendChild(d);
+  });
+}
 function vfCarregar(){v9Api({acao:'vfLista'},function(r){vfC=r;if($('tVAL').classList.contains('on')&&valAba==='VF')renderVAL();},function(){if(!vfC){vfC={itens:[],feitos:0,meta:5,erro:1};renderVAL();}});}
 function vfCurta(v){return String(v).slice(0,6)+String(v).slice(8);}
 function vfRender(box){
@@ -3429,9 +3466,10 @@ function decPill(t){return '<span class="decPill">'+t+'</span>';}
 function decOrg(o){var g=o.org;if(!g)return '';var nm=function(v){return v==null||v===''||isNaN(v)?'?':v;};
   if(g.t==='CONTAGEM')return '<div class="decOrg o1"><i>👩</i><div><b>Contagem</b>'+esc([g.quem,g.data].filter(String).join(' · ')||'conferência de validade')+'<div class="decLoc"><span>Área de venda '+nm(g.area)+'</span>'+(g.dep==null?'<span class="x">Depósito ✖</span>':'<span>Depósito '+g.dep+'</span>')+'</div></div></div>';
   if(g.t==='ACHADO')return '<div class="decOrg o3"><i>👀</i><div><b>Achado</b>'+esc([g.quem,g.qtd!=null?g.qtd+' un':'',g.data].filter(String).join(' · '))+'</div></div>';
+  if(g.t==='LOJA'){var df=Math.round((g.total-g.sis)*10)/10;return '<div class="decOrg o3"><i>🔎</i><div><b>Achado na loja</b>'+esc([g.quem,g.data].filter(String).join(' · '))+'<div class="decLoc"><span>Achado '+g.total+' un (gôndola '+g.gon+' + depósito '+g.dep+')</span><span'+(df<0?' class="x"':'')+'>Sistema '+nm(g.sis)+' un'+(df?' ('+(df>0?'+':'')+df+')':'')+'</span></div></div></div>';} // v119.7
   if(g.t==='SISTEMA')return '<div class="decOrg o2"><i>📊</i><div><b>Sistema</b>'+esc(['saldo do Plenus '+nm(g.saldo)+' un',g.lote].filter(String).join(' · '))+'</div></div>';
   return '<div class="decOrg o4"><i>✍️</i><div><b>Por você</b></div></div>';} // v116
-var decOri='TODAS',DEC_ORI={CONTAGEM:'👩 Contagem',ACHADO:'👀 Achado',SISTEMA:'📊 Sistema',LANCADO:'✍️ Por você'};
+var decOri='TODAS',DEC_ORI={CONTAGEM:'👩 Contagem',ACHADO:'👀 Achado',LOJA:'🔎 Achado na loja',SISTEMA:'📊 Sistema',LANCADO:'✍️ Por você'};
 function decCard(o){
   var d=document.createElement('div');d.className='decCard t'+o.tipo+(o.tipo==='REBAIXA'&&o.dias<=3?' urg':'');var h='',k=o.chave;
   if(o.volta)h+='<div class="decTop" style="color:#92400e">⏸️ esperando · volta em '+esc(o.volta)+' <button type="button" class="decUndo mini" data-k="'+esc(k)+'">↩️ voltar agora</button></div>';
@@ -3472,13 +3510,13 @@ function decCard(o){
   }
   if(o.tipo==='REBAIXA'||o.tipo==='PRODUTO_NOVO'){
     var b1=o.tipo==='REBAIXA'?['FAZER','🏷️ FAZER REBAIXA']:['VINCULAR','🔗 VINCULAR'];
-    h+='<div class="decBts"><button type="button" class="b1" data-ab="'+b1[0]+'">'+b1[1]+'</button>'+(o.tipo==='PRODUTO_NOVO'?'<button type="button" class="bN" data-ab="CADASTRAR">➕ CADASTRAR NOVO</button>':'')+'<button type="button" class="b2" data-ab="ESPERAR">⏸️ ESPERAR</button>'+(o.tipo==='REBAIXA'?'<button type="button" class="b3" data-ab="NAO FAZER">✖️ NÃO FAZER</button>':'')+'</div>';
+    h+='<div class="decBts"><button type="button" class="b1" data-ab="'+b1[0]+'">'+b1[1]+'</button>'+(o.tipo==='PRODUTO_NOVO'?'<button type="button" class="bN" data-ab="CADASTRAR">➕ CADASTRAR NOVO</button>':'')+'<button type="button" class="b2" data-ab="ESPERAR">⏸️ ESPERAR</button>'+(o.tipo==='REBAIXA'?'<button type="button" class="b3" data-ab="NAO FAZER">✖️ NÃO FAZER</button>':'')+(o.tipo==='REBAIXA'&&o.org&&o.org.t==='LOJA'&&o.org.total!==o.org.sis?'<button type="button" class="b3" data-ab="CONTAR">📦 CONTAR DIFERENÇA</button>':'')+'</div>';
     if(decAb&&decAb.k===k)h+='<div class="decPn">'+decPainel(o,decAb.op)+'</div>';
   }
   d.innerHTML=h;decUndoLiga(d);
   d.querySelectorAll('.decOp').forEach(function(el){el.onclick=function(){vibra();decSel[k]=el.dataset.sku||el.dataset.op;decRender();};});
   d.querySelectorAll('[data-pp]').forEach(function(el){el.onclick=function(){vibra();decGrmPara[k]=el.dataset.pp;decRender();};}); // v118
-  d.querySelectorAll('[data-ab]').forEach(function(el){el.onclick=function(){vibra();var op=el.dataset.ab;if(op==='VINCULAR'){if(!decSel[k])return toast('Escolha ou busque o cadastro','err');return decEnviar(o,{op:'VINCULAR',sku:decSel[k],fator:o.fator||'',prod:o.prod},el);}decAb=decAb&&decAb.k===k&&decAb.op===op?null:{k:k,op:op};decRender();};});
+  d.querySelectorAll('[data-ab]').forEach(function(el){el.onclick=function(){vibra();var op=el.dataset.ab;if(op==='CONTAR'){el.disabled=true;return v9Api({acao:'decDecidir',tipo:'REBAIXA',op:'CONTAR',chave:o.chave,prod:o.prod,validade:o.validade},function(r){toast(r.msg||'Contagem pedida','ok');},function(){el.disabled=false;});}if(op==='VINCULAR'){if(!decSel[k])return toast('Escolha ou busque o cadastro','err');return decEnviar(o,{op:'VINCULAR',sku:decSel[k],fator:o.fator||'',prod:o.prod},el);}decAb=decAb&&decAb.k===k&&decAb.op===op?null:{k:k,op:op};decRender();};});
   var bs=d.querySelector('.decBus');if(bs){bs.querySelector('button').onclick=function(){var tx=bs.querySelector('input').value.trim();if(!tx)return;api({acao:'buscarNome',texto:tx,kg:'todos'}).then(function(r){var its=((r&&r.itens)||[]).slice(0,5).map(function(x){return {sku:String(x.sku),desc:x.desc||x.descricao||''};});if(!its.length)return toast('Nada encontrado','err');decBusca[k]=its;decSel[k]=its[0].sku;decRender();}).catch(function(){toast('Sem conexão','err');});};}
   var go=d.querySelector('.decGo');if(go)go.onclick=function(){var obs=(d.querySelector('.decObs')||{}).value||'';var x={op:decSel[k],obs:obs};if(o.tipo==='CODIGO'){x.sku=o.sku;x.prod=o.prod;x.nf=o.nf;x.quemBipou=o.quem;if(decSel[k]==='UVA')x.skuDestino=o.irmao.sku;if(decSel[k]==='GRAMATURA')x.para=decGrmPara[k];if(decSel[k]==='NOVO_PESO'||decSel[k]==='CORRIGIR_PESO'){x.desc=(d.querySelector('.grmDesc')||{}).value||'';x.pesoNovo=o.grm&&o.grm.peso;x.foto=o.grm&&o.grm.foto;if(!x.desc.trim())return toast('Informe o nome','err');}}if(o.tipo==='CONTAGEM')x.para=o.para;decEnviar(o,x,go);};
   var pn=d.querySelector('.decPn');if(pn)decLigarPainel(o,pn);
