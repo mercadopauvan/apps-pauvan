@@ -2378,7 +2378,7 @@ function pontoTopoRender(){ // v119.5: quadro do ponto no topo (aba ACESSOS: PON
   if(appsCache.indexOf('PONTO_TOPO')<0||!pt||!pt.mostrar||pt.dia!==hj){np.style.display='none';return;}
   var bs=pt.batidas||[],n=bs.length,u=bs[n-1];
   if(!n){np.className='nhPonto nao';np.innerHTML='<span class="bol">!</span><span><b>Você ainda não bateu o ponto hoje</b></span>';}
-  else{var tx=n===1?'Ponto batido às '+u+'</b> · entrada':n===2?'Saiu para o almoço às '+u+'</b>':n===3?'Voltou do almoço às '+u+'</b>':n===4?'Saída às '+u+'</b>':'Última batida às '+u+'</b>';
+  else{var tx=n===1?'Ponto batido às '+u+'</b> · entrada':(n%2===0?'Saiu às '+u+'</b>':'Voltou às '+u+'</b>'); // v119.6: vale para 4, 6 ou mais batidas
     np.className='nhPonto';np.innerHTML='<span class="bol">✓</span><span><b>'+tx+(n>1?'<br><small>'+bs.join(' · ')+'</small>':'')+'</span>';}
   np.style.display='flex';
 }
