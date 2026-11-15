@@ -1196,7 +1196,7 @@ function lerLoop(){
       setTimeout(tick,220);
     })();
   } else if(window.ZXing){
-    zx=new ZXing.BrowserMultiFormatReader();
+    zx=zxBarras(); // v121.6: só código de barras (sem QR)
     zx.decodeFromStream(stream,v,function(res,err){if(res&&lendo)achou(res.getText());});
   } else {
     $('status').textContent='Leitor não carregou. Digite o código.';
@@ -1222,6 +1222,8 @@ $('manual').addEventListener('input',function(){if(!this.value.trim())$('res').i
 $('manual').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();buscarManual();}});
 // Leitura de foto em várias passagens: tamanhos diferentes, recorte do centro, rotação e modo "esforço máximo"
 var zxFoto=null;
+// v121.6: leitor reserva (ZXing) limitado aos códigos de barras — não lê QR Code (Celio 15/11)
+function zxBarras(){try{var h=new Map();h.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E,ZXing.BarcodeFormat.CODE_128,ZXing.BarcodeFormat.CODE_39,ZXing.BarcodeFormat.ITF]);return new ZXing.BrowserMultiFormatReader(h);}catch(e){return new ZXing.BrowserMultiFormatReader();}}
 function zxLeitor(){
   if(zxFoto||!window.ZXing)return zxFoto;
   try{
@@ -2314,7 +2316,7 @@ function escanear(id){
   .then(function(){
     if(!scanOn)return;
     if(detector){(function tick(){if(!scanOn)return;if(v.readyState>=2){detector.detect(v).then(function(cs){if(cs&&cs.length)ok(cs[0].rawValue);}).catch(function(){});}setTimeout(tick,200);})();}
-    else if(window.ZXing){scanZx=new ZXing.BrowserMultiFormatReader();scanZx.decodeFromStream(scanSt,v,function(r){if(r)ok(r.getText());});}
+    else if(window.ZXing){scanZx=zxBarras();scanZx.decodeFromStream(scanSt,v,function(r){if(r)ok(r.getText());});}
     else semAoVivo();
   })
   .catch(function(){if(scanOn)semAoVivo();});
