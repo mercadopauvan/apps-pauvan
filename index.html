@@ -3284,7 +3284,19 @@ function alRender(box){
   var its=alC.itens||[],np=its.filter(function(i){return i.status==='PENDENTE';}).length;
   $('valTabAL').textContent='🔎 Achar'+(np?' ('+np+')':'');
   if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">Nenhum produto para achar. 👍</p>';return;}
-  its.forEach(function(it){
+  // v121.3: pendentes separados por repositora (quem vê tudo) e por corredor; respondidos no fim (Celio 15/11)
+  var L=$('valLista'),pend=its.filter(function(i){return i.status==='PENDENTE';}),feit=its.filter(function(i){return i.status!=='PENDENTE';});
+  var cmp=function(x,y){return String(x.local||'~').localeCompare(String(y.local||'~'))||String(x.desc).localeCompare(String(y.desc));};
+  var grupos={},ordem=[];pend.forEach(function(i){var g=alC.tudo?String(i.quem||'Ney').toUpperCase():'';if(!grupos[g]){grupos[g]=[];ordem.push(g);}grupos[g].push(i);});ordem.sort();
+  ordem.forEach(function(g){var lista=grupos[g].sort(cmp),host=L;
+    if(g){var k='al|'+g,fe=cvFechado(k,false),hd=document.createElement('div');hd.className='grp tg';hd.innerHTML='<span>👩 '+esc(g)+' ('+lista.length+')</span><span class="sx">'+(fe?'▸':'▾')+'</span>';L.appendChild(hd);
+      host=document.createElement('div');if(fe)host.style.display='none';L.appendChild(host);
+      (function(hd,host,k){hd.onclick=function(){var f=host.style.display!=='none';host.style.display=f?'none':'';hd.querySelector('.sx').textContent=f?'▸':'▾';cvGuardaFech(k,f);};})(hd,host,k);}
+    var ult=null;lista.forEach(function(it){var lc=it.local||'sem local no cadastro';if(lc!==ult){ult=lc;var s=document.createElement('div');s.className='loc';s.textContent='📍 '+lc;host.appendChild(s);}host.appendChild(alCard(it));});
+  });
+  if(feit.length){var hf=document.createElement('div');hf.className='grp ok';hf.textContent='✅ RESPONDIDOS HOJE ('+feit.length+')';L.appendChild(hf);feit.forEach(function(it){L.appendChild(alCard(it));});}
+}
+function alCard(it){
     var d=document.createElement('div'),e=alEd[it.id];d.className='v9Box vf'+(it.status==='PENDENTE'?'':' feito');
     var h='<div class="v9D">'+esc(it.desc)+'</div><div class="v9M">'+(it.local?'📍 '+esc(it.local)+' · ':'')+'SKU '+esc(it.sku)+(alC.tudo&&it.quem?' · 👩 '+esc(it.quem):'')+'</div>';
     if(it.status!=='PENDENTE')h+='<div class="vfR '+(it.status==='ACHOU'?'ok':'er')+'">'+(it.status==='ACHOU'?'✅ Achado — '+esc(it.total)+' un · val. '+esc(vfCurta(it.validade)):'🚫 Não achado — o Celio vai ver')+'</div>';
@@ -3301,8 +3313,7 @@ function alRender(box){
       d.querySelector('.alVolta').onclick=function(){delete alEd[it.id];renderVAL();};
       d.querySelector('.alOk').onclick=function(){if(!e.v)return toast('Escolha a validade','err');if(String(e.g).trim()===''&&String(e.d).trim()==='')return toast('Quantas tem? (gôndola e depósito)','err');alResp(it,{achou:'S',validade:e.v,gondola:String(e.g||'0'),deposito:String(e.d||'0')},this);};
     }
-    $('valLista').appendChild(d);
-  });
+    return d;
 }
 function vfCarregar(){v9Api({acao:'vfLista'},function(r){vfC=r;if($('tVAL').classList.contains('on')&&valAba==='VF')renderVAL();},function(){if(!vfC){vfC={itens:[],feitos:0,meta:5,erro:1};renderVAL();}});}
 function vfCurta(v){return String(v).slice(0,6)+String(v).slice(8);}
