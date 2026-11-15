@@ -3513,7 +3513,7 @@ function decOrg(o){var g=o.org;if(!g)return '';var nm=function(v){return v==null
   if(g.t==='CONTAGEM')return '<div class="decOrg o1"><i>👩</i><div><b>Contagem</b>'+esc([g.quem,g.data].filter(String).join(' · ')||'conferência de validade')+'<div class="decLoc"><span>Área de venda '+nm(g.area)+'</span>'+(g.dep==null?'<span class="x">Depósito ✖</span>':'<span>Depósito '+g.dep+'</span>')+'</div></div></div>';
   if(g.t==='ACHADO')return '<div class="decOrg o3"><i>👀</i><div><b>Achado</b>'+esc([g.quem,g.qtd!=null?g.qtd+' un':'',g.data].filter(String).join(' · '))+'</div></div>';
   if(g.t==='LOJA'){var df=Math.round((g.total-g.sis)*10)/10;return '<div class="decOrg o3"><i>🔎</i><div><b>Achado na loja</b>'+esc([g.quem,g.data].filter(String).join(' · '))+'<div class="decLoc"><span>Achado '+g.total+' un (gôndola '+g.gon+' + depósito '+g.dep+')</span><span'+(df<0?' class="x"':'')+'>Sistema '+nm(g.sis)+' un'+(df?' ('+(df>0?'+':'')+df+')':'')+'</span></div></div></div>';} // v119.7
-  if(g.t==='SISTEMA')return '<div class="decOrg o2"><i>📊</i><div><b>Sistema</b>'+esc(['saldo do Plenus '+nm(g.saldo)+' un',g.lote].filter(String).join(' · '))+'</div></div>';
+  if(g.t==='SISTEMA')return '<div class="decOrg o2"><i>📊</i><div><b>Sistema</b>'+esc(['saldo do Plenus '+nm(g.saldo)+' un',g.lote==='lote conferido'?'✅ conferido pelo sistema':g.lote].filter(String).join(' · ')) /* v121.5: Celio 15/11 */+'</div></div>';
   return '<div class="decOrg o4"><i>✍️</i><div><b>Por você</b></div></div>';} // v116
 var decOri='TODAS',DEC_ORI={CONTAGEM:'👩 Contagem',ACHADO:'👀 Achado',LOJA:'🔎 Achado na loja',SISTEMA:'📊 Sistema',LANCADO:'✍️ Por você'};
 function decCard(o){
