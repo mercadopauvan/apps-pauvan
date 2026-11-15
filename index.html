@@ -2636,7 +2636,7 @@ function renderLotes(){
     var q=d.querySelector('.q'),fi=d.querySelector('.f'),pe=d.querySelector('.p'),rm=d.querySelector('.rm');
     q.oninput=function(){l.qtdDig=q.value;};if(fi)fi.oninput=function(){l.fator=fi.value;};
     var cb=d.querySelector('.calcBt');if(cb)cb.onclick=function(){calcAbrir(q.value,function(v){q.value=v;l.qtdDig=v;});};if(pe)pe.oninput=function(){l.pecas=pe.value;};
-    vpMontar(d.querySelector('.vpHost'),l.validade,function(v){l.validade=v;checarAut();}); // v109
+    vpMontar(d.querySelector('.vpHost'),l.validade,function(v){l.validade=v;checarAut();},{modos:['ROL','CAL','MA','SEM']}); // v109; v121.1: roleta é a principal (Celio 15/11)
     if(rm)rm.onclick=function(){confLotes.splice(idx,1);renderLotes();};
     box.appendChild(d);
   });
