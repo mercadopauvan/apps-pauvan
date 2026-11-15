@@ -324,6 +324,7 @@ div.grp.dob.fech::after{content:'▸'}
 #psvLista .grp{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;background:#ccfbf1;color:#134e4a;font-weight:800;font-size:13px;letter-spacing:.4px;padding:10px 12px;border-radius:10px;margin:14px 0 8px}
 #psvLista .grp .sx{font-size:16px;line-height:1}
 #psvLista .loc{font-size:13px;font-weight:700;color:#115e59;margin:10px 2px 6px}
+#psvLista .locOk{color:#64748b;border-top:2px dashed #cbd5e1;padding-top:10px;margin-top:16px} /* v121.2 */
 #psvLista .vazio{font-size:16px;margin-top:24px;line-height:1.5}
 ul.psv{list-style:none;padding:0;margin:0}
 ul.psv li{border:2px solid var(--borda);border-radius:14px;padding:12px;margin-bottom:10px;background:#fff}
@@ -1808,10 +1809,19 @@ function psvBloco(box,tit,lista,tudo){
   var pend=lista.filter(function(i){return !i.resp;}).length,k='psv'+psvAba+'|'+tit,m=cvFechMapa(),fech=m[k]!==undefined?!!m[k]:(tudo&&lista.length>40);
   var hd=document.createElement('div');hd.className='grp';hd.innerHTML='<span>'+esc(tit)+' ('+pend+(pend!==lista.length?' de '+lista.length:'')+')</span><span class="sx">'+(fech?'▸':'▾')+'</span>';box.appendChild(hd);
   var ul=document.createElement('ul');ul.className='psv';box.appendChild(ul);var cheio=false;
-  function encher(){if(cheio)return;cheio=true;var ult=null;lista.forEach(function(it){var lc=it.local||'sem local no cadastro';if(lc!==ult){ult=lc;var s=document.createElement('div');s.className='loc';s.textContent='📍 '+lc;ul.appendChild(s);}ul.appendChild(psvItem(it));});}
+  function encher(){if(cheio)return;cheio=true;var ult=null,feitos=[];lista.forEach(function(it){if(it.resp){feitos.push(it);return;}var lc=it.local||'sem local no cadastro';if(lc!==ult){ult=lc;var s=document.createElement('div');s.className='loc';s.textContent='📍 '+lc;ul.appendChild(s);}ul.appendChild(psvItem(it));});
+    // v121.2: conferidos vão para o fim da tela (Celio 15/11), não para o fim do corredor
+    if(feitos.length)psvSecFeitos(ul);feitos.forEach(function(it){ul.appendChild(psvItem(it));});}
   if(fech)ul.style.display='none';else encher();
   hd.onclick=function(){var f=ul.style.display!=='none';if(!f)encher();ul.style.display=f?'none':'';hd.querySelector('.sx').textContent=f?'▸':'▾';cvGuardaFech(k,f);};
 }
+// v121.2: cabeçalho "✅ CONFERIDOS" no fim da lista; criado uma vez por bloco
+function psvSecFeitos(ul){var s=ul.querySelector('.locOk');if(!s){s=document.createElement('div');s.className='loc locOk';s.textContent='✅ CONFERIDOS';ul.appendChild(s);}return s;}
+// v121.2: leva o item respondido para o fim da tela e tira o 📍 corredor que ficou vazio
+function psvMoverFim(li,novo){var ul=li.parentNode;if(!ul||!ul.classList||!ul.classList.contains('psv')){li.replaceWith(novo);return;}
+  var ant=li.previousElementSibling,prox=li.nextElementSibling;li.remove();
+  if(ant&&ant.classList.contains('loc')&&!ant.classList.contains('locOk')&&(!prox||prox.classList.contains('loc')))ant.remove();
+  psvSecFeitos(ul);ul.appendChild(novo);}
 function psvVal(v){if(!v)return '';if(/:\d/.test(v)&&!/\|(SUG|REB)/.test(v))return '<div class="pv">⏳ lotes: '+String(v).split(' | ').map(function(x){var q=x.split(':');return '<b>'+esc(q[0].replace(/\/\d{2}$/,''))+'</b> '+esc(q[1]||'')+' un';}).join(' · ')+'</div>'; // v110.4: crítica de lote
   var p=String(v).split('|');if(!p[0])return '';return '<div class="pv">⏳ vence <b>'+esc(p[0].slice(0,5))+'</b> · deve sobrar '+esc(p[1]||'?')+' · '+(/^REB/.test(p[2]||'')?'já está na rebaixa'+esc(String(p[2]).replace(/^REB/,'')):'sugestão de rebaixa enviada ao Celio')+'</div>';} // v99
 function psvNum(v){return String(v==null?'':v).replace('.',',');}
@@ -1849,7 +1859,7 @@ function psvResp(it,resp,motivo,b,li){
       if(resp==='DESFAZER'){it.resp='';it.motivo='';it.por='';it.hora='';toast('Voltou para a lista','ok');}
       else{it.resp=r.resposta;it.motivo=motivo;it.por=quem;it.hora=r.hora;toast('Registrado','ok');}
       try{localStorage.setItem('ci_psv',JSON.stringify(psvCache));}catch(e){}
-      li.replaceWith(psvItem(it));psvCont();return;
+      if(resp==='DESFAZER')li.replaceWith(psvItem(it));else psvMoverFim(li,psvItem(it));psvCont();return; // v121.2
     }
     b.disabled=false;b.textContent=tx;
     if(r&&r.reauth){toast('Sessão expirada — digite o PIN de novo','err');try{localStorage.removeItem('ci_token');}catch(e){}irPin();return;}
