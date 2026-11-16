@@ -554,6 +554,36 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .vfOps button.nt{border-color:#cbd5e1;background:#fff;color:#475569;font-size:13px}
 .vfR{margin-top:8px;border-radius:10px;padding:8px 10px;font-weight:700;font-size:14px}.vfR.ok{background:#dcfce7;color:#14532d}.vfR.am{background:#fef3c7;color:#92400e}.vfR.er{background:#fee2e2;color:#991b1b}.vfR.ci{background:#f1f5f9;color:#475569}.vfR.az{background:#dbeafe;color:#1e3a8a}
 .vfAch{display:flex;gap:6px;margin-top:8px}.vfAch input{flex:1;min-width:0;font-size:17px;padding:10px}.vfAch .btn{width:auto;margin:0;padding:10px 16px}
+/* v123: Agenda Celio */
+.faixa.pend{background:#1e3a8a}
+.pdH{font:800 13px system-ui;color:#475569;letter-spacing:.4px;margin:14px 2px 8px;display:flex;justify-content:space-between}
+.pdI{border:2px solid #e2e8f0;border-left-width:8px;border-radius:14px;padding:10px 12px;margin:8px 0;background:#fff}
+.pdTop{display:flex;gap:10px;align-items:center}
+.pdI .tx{flex:1}
+.pdI b{display:block;font-size:15px;color:#0f172a}
+.pdI small{color:#64748b;font-size:12px}
+.pdI .hr{font:900 18px system-ui;color:#1e3a8a;min-width:54px;text-align:center}
+.pdI.alta{border-left-color:#dc2626;background:#fef2f2}
+.pdI.media{border-left-color:#eab308;background:#fefce8}
+.pdI.baixa{border-left-color:#16a34a;background:#f0fdf4}
+.pdI.ag{border-left-color:#1e3a8a}
+.pdI.passou{background:#f1f5f9;border-left-color:#94a3b8}
+.pdI.passou .hr,.pdI.passou b{color:#94a3b8}
+.pdTag{display:inline-block;font:800 11px system-ui;border-radius:999px;padding:2px 8px;margin:4px 4px 0 0}
+.pdTag.alta{background:#dc2626;color:#fff}
+.pdTag.media{background:#eab308;color:#422006}
+.pdTag.baixa{background:#16a34a;color:#fff}
+.pdTag.atr{background:#fff;color:#b91c1c;border:1px solid #fca5a5}
+.pdBts{display:flex;gap:8px;margin-top:10px}
+.pdBts button{flex:1;border:0;border-radius:10px;font:800 14px system-ui;padding:11px 6px}
+.pdOk{background:#16a34a;color:#fff}
+.pdAd{background:#fff;color:#1e3a8a;border:2px solid #1e3a8a!important}
+.pdAdOp{margin-top:8px;background:#eff6ff;border:2px dashed #93c5fd;border-radius:12px;padding:8px}
+.pdAdOp p{margin:0 0 6px;font:700 12px system-ui;color:#1e3a8a}
+.pdAdOp .r{display:flex;gap:6px}
+.pdAdOp button{flex:1;background:#1e3a8a;color:#fff;border:0;border-radius:10px;padding:9px 4px;font:800 13px system-ui;line-height:1.2}
+.pdAdOp button small{display:block;color:#bfdbfe;font:600 11px system-ui}
+.pdVaz{text-align:center;color:#64748b;font:600 14px system-ui;padding:14px;border:2px dashed #e2e8f0;border-radius:14px}
 </style>
 </head>
 <body>
@@ -588,7 +618,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 <!-- v62: TELA INICIAL NOVA (app hospedado) -->
 <svg width="0" height="0" style="position:absolute"><defs>
 <symbol id="ic-loja" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M4 9v11h16V9M3 9h18M9 20v-6h6v6"/></symbol>
-<symbol id="ic-casa" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></symbol>
+<symbol id="ic-agenda" viewBox="0 0 24 24"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4M8 14h3"/></symbol><symbol id="ic-casa" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></symbol>
 <symbol id="ic-aler" viewBox="0 0 24 24"><path d="M12 3l9 16H3zM12 10v4M12 17h.01"/></symbol><symbol id="ic-foto" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></symbol>
 <symbol id="ic-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8zM7.5 7.5h.01"/></symbol>
 <symbol id="ic-conf" viewBox="0 0 24 24"><path d="M9 5H6v16h12V5h-3M9 3h6v4H9zM9 13l2 2 4-4"/></symbol>
@@ -917,6 +947,12 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div id="decChips"></div>
   <div class="v9Info" id="decAviso"></div>
   <div id="decLista"></div>
+</section>
+<!-- v123: AGENDA CELIO -->
+<section class="tela" id="tAGC">
+  <div class="faixa pend"><span>📅 AGENDA CELIO</span><button onclick="irTipo()">VOLTAR</button></div>
+  <div class="contTop"><span id="agcDia"></span><span id="agcCont"></span></div>
+  <div id="agcLista"><div class="pdVaz">Carregando…</div></div>
 </section>
 <!-- v109: CONTAGEM DE ESTOQUE (quem conta) -->
 <section class="tela" id="tCE">
@@ -3607,6 +3643,7 @@ function decEnviar(o,x,bt){
 
 function v9Gestao(box){
   var gl=[['🗂️','Decisões',function(){var r=resumoCache||{};return r.dec?'<span class="v9Selo">'+r.dec+'</span> a decidir'+(r.decUrg?' · '+r.decUrg+' vence'+(r.decUrg>1?'m':'')+' em até 3 dias':''):'rebaixas, produto novo, contagem e código';},irDEC,'#0E4D32','conf'],['⏱️','Tarefas agendadas',function(){var r=resumoCache||{};return (r.agdEsp||r.agdErr)?'<span class="v9Selo">'+((r.agdEsp||0)+(r.agdErr||0))+'</span> '+[r.agdEsp?r.agdEsp+' esperando você':'',r.agdErr?r.agdErr+' com erro':''].filter(String).join(' · '):'situação de todas as rotinas';},irAGD,'#334155','sino']];gl.unshift(gl.splice(1,1)[0]); // v117: Tarefas agendadas primeiro
+  if(semAc(quem||'').toLowerCase().trim()==='celio')gl.unshift(['📅','Agenda Celio',function(){var r=resumoCache||{},a=r.agc;if(!a)return 'pendências e agenda do dia';return '<span class="v9Selo">'+a.p+'</span> pendência'+(a.p===1?'':'s')+' · '+a.a+' na agenda de hoje';},irAGC,'#1e3a8a','agenda']); // v123
   if(appsCache.indexOf('ETIQUETAS_FILA')>=0)gl.push(['🏷️','Fila de etiquetas',function(){var r=resumoCache||{};return r.etqFila?'<span class="v9Selo">'+r.etqFila+'</span> na fila para imprimir':'nenhuma etiqueta na fila';},irEF,'#9333ea','tag']);
   if(appsCache.indexOf('POFF_FILA')>=0||semAc(quem||'').toLowerCase().trim()==='celio')gl.push(['💲','Fila de preços on-line',function(){var r=resumoCache||{};return r.pfFila?'<span class="v9Selo">'+r.pfFila+'</span> para ativar'+(r.pfEm?' · '+r.pfEm+' em ativação':''):(r.pfEm?r.pfEm+' em ativação':'nenhum preço esperando');},irPF,'#0369a1','tag']);
   gl.concat([['📦','Contagem de estoque',function(){var r=resumoCache||{};return r.ctaDec?'<span class="v9Selo">'+r.ctaDec+'</span> a decidir'+(r.ctaAg?' · '+r.ctaAg+' aguardando':''):(r.ctaAg?r.ctaAg+' aguardando contagem':'pedir, decidir e histórico');},irGC,'#0f766e','cont'],
@@ -3632,7 +3669,43 @@ function v9Abrir(ab){
   if(ab==='agendados'&&cel){irAGD();return true;} // v114
   if(ab==='conferirloja'){irGRM();return true;} // v118
   if(ab==='gvalfrente'&&cel){irGV();return true;}
+  if(ab==='agenda'&&cel){irAGC();return true;} // v123
   return false;
+}
+
+// v123: 📅 AGENDA CELIO — planilha "PENDÊNCIAS DO DIA - Celio"
+var agcC=null,agcAb=null,agcOcultos={};
+var AGC_DS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+function agcDd(d){return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2);}
+function agcDatas(){var h=new Date();h.setHours(0,0,0,0);var a=new Date(h);a.setDate(a.getDate()+1);var s=new Date(h);s.setDate(s.getDate()+((8-s.getDay())%7||7));var m=new Date(h.getFullYear(),h.getMonth()+1,1);
+  return {DIA:AGC_DS[a.getDay()].slice(0,3)+' '+agcDd(a),SEMANA:'Seg '+agcDd(s),MES:AGC_DS[m.getDay()].slice(0,3)+' '+agcDd(m)};}
+function irAGC(){pararCamera();mostrar('tAGC');agcAb=null;var h=new Date();$('agcDia').textContent=AGC_DS[h.getDay()]+', '+agcDd(h);agcRender();agcCarregar();}
+function agcCarregar(){v9Api({acao:'agcLista'},function(r){agcC=r;agcOcultos={};agcRender();});}
+function agcResumo(){if(!agcC)return;var p=agcC.pend.length,a=agcC.agenda.length;$('agcCont').textContent=p+' pendência'+(p===1?'':'s')+' · '+a+' na agenda';try{resumoCache=resumoCache||{};resumoCache.agc={p:p,a:a};}catch(e){}}
+function agcPri(v){v=semAc(v||'').toLowerCase().trim();return v==='alta'||v==='media'||v==='baixa'?v:'';}
+function agcRender(){
+  var box=$('agcLista');if(!agcC){box.innerHTML='<div class="pdVaz">Carregando…</div>';return;}
+  ['agenda','pend'].forEach(function(k){agcC[k]=agcC[k].filter(function(o){return !agcOcultos[o.row];});});
+  agcResumo();
+  var agora=new Date(),hm=('0'+agora.getHours()).slice(-2)+':'+('0'+agora.getMinutes()).slice(-2),D=agcDatas(),h='';
+  var bts=function(o){return '<div class="pdBts"><button class="pdOk" onclick="agcFazer('+o.row+',\'FEITO\')">✔ FEITO</button><button class="pdAd" onclick="agcAbrir('+o.row+')">⏭ ADIAR</button></div>'+
+    (agcAb===o.row?'<div class="pdAdOp"><p>Adiar para quando? Some da tela e volta nesse dia.</p><div class="r">'+[['DIA','1 DIA'],['SEMANA','1 SEMANA'],['MES','1 MÊS']].map(function(x){return '<button onclick="agcFazer('+o.row+',\'ADIAR\',\''+x[0]+'\')">'+x[1]+'<small>'+D[x[0]]+'</small></button>';}).join('')+'</div></div>':'');};
+  h+='<div class="pdH"><span>📅 AGENDA DE HOJE</span><span>'+agcC.agenda.length+'</span></div>';
+  if(!agcC.agenda.length)h+='<div class="pdVaz">Nada na agenda de hoje</div>';
+  agcC.agenda.forEach(function(o){var ps=o.hora&&o.hora<hm;
+    h+='<div class="pdI ag'+(ps?' passou':'')+'"><div class="pdTop"><span class="hr">'+esc(o.hora||'--:--')+'</span><span class="tx"><b>'+esc(o.tarefa)+'</b>'+(o.obs?'<small>'+esc(o.obs)+'</small>':'')+(ps?'<small> · horário já passou</small>':'')+'</span></div>'+bts(o)+'</div>';});
+  h+='<div class="pdH"><span>📌 PENDÊNCIAS</span><span>'+agcC.pend.length+'</span></div>';
+  if(!agcC.pend.length)h+='<div class="pdVaz">Nenhuma pendência para hoje 🎉</div>';
+  agcC.pend.forEach(function(o){var p=agcPri(o.pri);
+    h+='<div class="pdI '+p+'"><div class="pdTop"><span class="tx"><b>'+esc(o.tarefa)+'</b>'+(o.obs?'<small>'+esc(o.obs)+'</small>':'')+'<div>'+(p?'<span class="pdTag '+p+'">'+esc(o.pri.toUpperCase())+'</span>':'')+(o.dias>0?'<span class="pdTag atr">⏰ atrasada há '+o.dias+' dia'+(o.dias>1?'s':'')+'</span>':'')+'</div></span></div>'+bts(o)+'</div>';});
+  box.innerHTML=h;
+}
+function agcAbrir(row){vibra();agcAb=agcAb===row?null:row;agcRender();}
+function agcFazer(row,op,quando){vibra();if(!agcC)return;
+  var o=agcC.agenda.concat(agcC.pend).filter(function(x){return x.row===row;})[0];if(!o)return;
+  agcOcultos[row]=1;agcAb=null;agcRender();
+  toast(op==='FEITO'?'✔ Feito':'⏭ Adiada — volta '+agcDatas()[quando],'ok');
+  v9Api({acao:'agcAcao',row:row,tarefa:o.tarefa,op:op,quando:quando},function(){},function(){delete agcOcultos[row];agcCarregar();});
 }
 ['fotoET','fotoCE','fotoGC'].forEach(function(id){try{$(id).addEventListener('change',function(){lerFotoPara(this,SCAN_CB[id]);});}catch(e){}});
 // v118: 📏 CONFERIR NA LOJA — o Celio pede (cartão Código das Decisões) para conferir o peso na embalagem
