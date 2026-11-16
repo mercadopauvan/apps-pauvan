@@ -371,6 +371,7 @@ ul.cv li .corr{margin-top:8px;border:1px solid #a16207;background:#fff;color:#a1
 #lcRes{list-style:none;padding:0;margin:4px 0} #lcRes li{padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:4px;display:flex;justify-content:space-between;gap:8px;font-size:14px;cursor:pointer} #lcRes li small{color:#64748b}
 ul.cv li .tag.sug{background:#b45309} ul.cv li .tag.nreb{background:#64748b} ul.cv li .tag.curta{background:#7c3aed} ul.cv li .tag.jreb{background:#0f766e} ul.cv li.curta{border-color:#7c3aed}
 #valLista .grp.curta{background:#7c3aed;color:#fff}
+ul.cv li .tag.rap{background:#0369a1} #valLista .grp.rap{background:#e0f2fe;color:#075985} /* v124 */
 ul.cv li .bts.vdL{margin-top:6px} ul.cv li .bts.vdL button.vd{background:#fff;color:#7c3aed;border:2px solid #7c3aed} /* v100 */
 ul.cv li .vdBox{margin-top:10px} ul.cv li .vdLb{font-size:12px;font-weight:800;color:#475569;text-transform:uppercase}
 ul.cv li .vdDt{display:flex;gap:8px;align-items:center;margin-top:6px;font-size:14px} ul.cv li .vdDt s{color:#94a3b8} ul.cv li .vdDt input{flex:1;font-size:17px;padding:9px 10px;border:2px solid #7c3aed;border-radius:10px;font-family:inherit;min-width:0}
@@ -1632,7 +1633,7 @@ function cvCrit(it){if(it.status==='NAO TEM')return '<span class="tag nao">NÃO 
   else if(it._salvando)t='<span class="tag sm">salvando…</span>';else if(it.critica==='SEM MEDIA')t='<span class="tag sm">SEM HISTÓRICO</span>';if(it.estPend)t+='<span class="tag est">ESTOQUE NÃO CONFERIDO</span>';return t;}
 function cvItem(it,modo){
   var li=document.createElement('li');if(it.atrasado&&it.status==='PENDENTE')li.className='atr';if(it.janela==='CURTA'&&it.status==='PENDENTE')li.className='curta';if(modo==='feito')li.className='feito';
-  var h='<div class="d">'+(it.janela==='CURTA'&&it.status==='PENDENTE'?'<span class="tag curta">⏰ VALIDADE CURTA</span>':'')+(it.atrasado&&it.status==='PENDENTE'?'<span class="tag">ATRASADO</span>':'')+(modo==='feito'?cvCrit(it):'')+esc(it.desc)+'</div><div class="m">validade <b>'+esc(it.validade)+'</b>'+(valCache.cv.tudo&&modo!=='feito'?' · '+esc(it.para)+(it.janela==='CURTA'?' (chegou com validade curta)':' ('+esc(it.janela)+' dias)'):'')+(it.secao?' · '+esc(it.secao):'')+'</div>';
+  var h='<div class="d">'+(it.janela==='CURTA'&&it.status==='PENDENTE'?'<span class="tag curta">⏰ VALIDADE CURTA</span>':'')+(it.atrasado&&it.status==='PENDENTE'?'<span class="tag">ATRASADO</span>':'')+(it.rapida&&it.status==='PENDENTE'?'<span class="tag rap">⚡ CONFERÊNCIA RÁPIDA</span>':'')+(modo==='feito'?cvCrit(it):'')+esc(it.desc)+'</div><div class="m">validade <b>'+esc(it.validade)+'</b>'+(valCache.cv.tudo&&modo!=='feito'?' · '+esc(it.para)+(it.janela==='CURTA'?' (chegou com validade curta)':' ('+esc(it.janela)+' dias)'):'')+(it.secao?' · '+esc(it.secao):'')+'</div>';
   if(it.ney)h+='<div class="ney">Ney conferiu'+(it.ney.em?' em '+esc(String(it.ney.em).slice(0,5)):'')+': '+(it.ney.st==='NAO TEM'?'<b>não tinha mais</b>':'<b>'+esc(it.ney.total)+'</b> (área '+esc(it.ney.area)+(it.ney.est!==''?' + estoque '+esc(it.ney.est):' · estoque não conferido')+')')+'</div>';
   if(modo==='feito'){
     h+='<div class="m">'+(it.status==='NAO TEM'?'':'área '+esc(it.area)+(it.estoque!==''?' + estoque '+esc(it.estoque):'')+' = <b>'+esc(it.total)+'</b> · ')+esc(it.quem)+' · '+esc(it.em)+'</div><button class="corr">CORRIGIR</button>';
@@ -1671,7 +1672,7 @@ function cvItem(it,modo){
 function renderCV(box){
   var cv=valCache.cv||{itens:[]},its=cv.itens||[],tudo=cv.tudo;
   $('valTit').textContent='Conferência de validade'+(cv.semana?' · semana de '+String(cv.semana).slice(0,5):'');
-  $('valDica').innerHTML='Conte o produto com essa validade: <b>área de venda</b> (obrigatório) e <b>estoque/depósito</b>. Se não achar nenhum, toque em <b>NÃO TEM MAIS</b>. A lista está na ordem dos locais da loja.';
+  $('valDica').innerHTML='Conte o produto com essa validade: <b>área de venda</b> (obrigatório) e <b>estoque/depósito</b>. Se não achar nenhum, toque em <b>NÃO TEM MAIS</b>. A lista está na ordem dos locais da loja. Os de <b>⚡ CONFERÊNCIA RÁPIDA</b> (no fim) provavelmente já foram vendidos: só olhe se ainda tem — conferir nesta semana.';
   var pend=its.filter(function(i){return i.status==='PENDENTE'||cvAberto[i.id];}),feitos=its.filter(function(i){return i.status!=='PENDENTE'&&!cvAberto[i.id];});
   $('valProg').textContent=feitos.length+' / '+its.length+' conferidos';
   lcAprovar(box,valCache.locais,'CV'); // v99
@@ -1680,12 +1681,12 @@ function renderCV(box){
   function ord(a,b){return String(a.local||'~').localeCompare(String(b.local||'~'))||String(a.validade).split('/').reverse().join('').localeCompare(String(b.validade).split('/').reverse().join(''))||String(a.desc).localeCompare(String(b.desc));} // v84: dentro do local, validade mais próxima primeiro
   var curta=pend.filter(function(i){return i.janela==='CURTA'&&i.status==='PENDENTE';}).sort(ord); // v99: chegou com validade curta = prioridade
   pend=pend.filter(function(i){return curta.indexOf(i)<0;});
-  var blocos=[],atr=pend.filter(function(i){return i.atrasado&&!i.semSecao;}).sort(ord),sem=pend.filter(function(i){return i.semSecao;}).sort(ord),grupos={},ordem=[];
+  var blocos=[],atr=pend.filter(function(i){return i.atrasado&&!i.semSecao;}).sort(function(a,b){return (a.rapida?1:0)-(b.rapida?1:0)||ord(a,b);}),sem=pend.filter(function(i){return i.semSecao;}).sort(ord),grupos={},ordem=[];
   if(curta.length)blocos.push(['⏰ CHEGOU COM VALIDADE CURTA','curta',curta]);
   pend.filter(function(i){return !i.atrasado&&!i.semSecao;}).forEach(function(i){var g=tudo?(String(i.para).toUpperCase()+' · '+i.janela+' DIAS'):'MINHA LISTA';if(!grupos[g]){grupos[g]=[];ordem.push(g);}grupos[g].push(i);});
   ordem.sort();
   if(atr.length){if(tudo){var ga={},oa=[];atr.forEach(function(i){var g=String(i.para||'?').toUpperCase();if(!ga[g]){ga[g]=[];oa.push(g);}ga[g].push(i);});oa.sort().forEach(function(g){blocos.push(['⚠ ATRASADOS — '+g,'atr',ga[g]]);});}else blocos.push(['⚠ ATRASADOS — semana passada','atr',atr]);} // v110.2: na visão geral, atrasados separados por pessoa
-  ordem.forEach(function(g){blocos.push([g,'',grupos[g].sort(ord)]);});
+  ordem.forEach(function(g){var so=grupos[g].filter(function(i){return !i.rapida;}).sort(ord),ra=grupos[g].filter(function(i){return i.rapida;}).sort(ord);if(so.length)blocos.push([g,'',so]);if(ra.length)blocos.push([g+' — ⚡ CONFERÊNCIA RÁPIDA','rap',ra]);}); // v124: provável sobra primeiro, provavelmente vendido depois
   if(sem.length)blocos.push(['SEM SEÇÃO','sem',sem]);
   if(!pend.length&&!curta.length)box.insertAdjacentHTML('beforeend','<p class="dica" style="font-size:16px;margin-top:16px">Tudo conferido nesta semana. 👍</p>');
   // v83: cada bloco encolhe/abre ao tocar no título (lembra a escolha no aparelho)
