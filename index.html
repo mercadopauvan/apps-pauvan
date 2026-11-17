@@ -142,7 +142,7 @@ ul.cont li .q{font-size:13px;color:#15803d;margin-top:6px;font-weight:600}
   ul.ult li .q{font-weight:700;white-space:nowrap}
   ul.ult li .x{border:0;background:transparent;color:#b91c1c;font-size:18px;padding:4px 8px}
   ul.ult li .tp{display:inline-block;font-size:11px;padding:2px 6px;border-radius:6px;color:#fff;margin-right:4px}
-  .tp.mercado{background:var(--azul)} .tp.proprio{background:var(--laranja)} .tp.avaria{background:#b91c1c}
+  .tp.mercado{background:var(--azul)}.tp.perda{background:#c2410c} .tp.proprio{background:var(--laranja)} .tp.avaria{background:#b91c1c}
   .sub{font-size:13px;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.5px}
   .dica{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
   #foto,#fotoAv,#fotoAv2{display:none}
@@ -1489,11 +1489,11 @@ function carregarUltimos(){
     var ul=$('ult');ul.innerHTML='';
     (r.itens||[]).forEach(function(it){
       var li=document.createElement('li');
-      var tp=it.tipo==='AVARIA'?'avaria':(/MERCADO/.test(it.tipo)?'mercado':'proprio');
-      var rot=tp==='avaria'?(it.motivo==='VENCIDO'?'VENC':'AVAR'):(tp==='mercado'?'MERC':'PRÓP');
+      var tp=it.tipo==='AVARIA'?'avaria':(it.tipo==='PERDA PADARIA'?'perda':(/MERCADO/.test(it.tipo)?'mercado':'proprio')); // v128
+      var rot=tp==='avaria'?(it.motivo==='VENCIDO'?'VENC':'AVAR'):(tp==='perda'?'PERDA':(tp==='mercado'?'MERC':'PRÓP'));
       var extra=it.pedidoPor?' · pedido por '+esc(it.pedidoPor):'';extra+=tp==='avaria'?(it.validade?' · val. '+esc(it.validade):'')+(it.foto?' · <a href="'+esc(it.foto)+'" target="_blank" style="color:#1d4ed8">Foto 1</a>':'')+(it.foto2?' · <a href="'+esc(it.foto2)+'" target="_blank" style="color:#1d4ed8">Foto 2</a>':''):'';
       li.innerHTML='<div class="d"><span class="tp '+tp+'">'+rot+'</span>'+esc(it.desc)+'<br><small style="color:#64748b">'+esc(it.data)+' '+esc(it.hora)+extra+'</small></div><div class="q">'+it.qtd+' '+(/QUILO|KG/i.test(it.un)?'kg':'un')+'</div><button class="x" title="excluir">✕</button>';
-      var bx=li.querySelector('.x');bx.onclick=function(){if(bx.dataset.c!=='1'){bx.dataset.c='1';bx.textContent='EXCLUIR?';bx.style.fontWeight='700';setTimeout(function(){bx.dataset.c='';bx.textContent='✕';bx.style.fontWeight='';},3000);return;}bx.textContent='…';api({acao:'excluir',id:it.id,token:token,tipo:tipoReq}).then(function(x){toast(x.ok?'Excluído':'Não deu para excluir ('+(x.motivo||'')+')',x.ok?'ok':'err');carregarUltimos();}).catch(function(e){toast('Erro: '+e,'err');});};
+      var bx=li.querySelector('.x');bx.onclick=function(){if(bx.dataset.c!=='1'){bx.dataset.c='1';bx.textContent='EXCLUIR?';bx.style.fontWeight='700';setTimeout(function(){bx.dataset.c='';bx.textContent='✕';bx.style.fontWeight='';},3000);return;}bx.textContent='…';api({acao:'excluir',id:it.id,token:token,tipo:tp==='perda'?'PERDA PADARIA':tipoReq}).then(function(x){toast(x.ok?'Excluído':'Não deu para excluir ('+(x.motivo||'')+')',x.ok?'ok':'err');carregarUltimos();}).catch(function(e){toast('Erro: '+e,'err');});};
       ul.appendChild(li);
     });
   }).catch(function(){});
