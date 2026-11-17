@@ -2444,6 +2444,7 @@ function irHome(){
   if(ab==='precosoff'&&appsCache.indexOf('PRECOS_OFF')>=0){escolherTipo('PRECOS_OFF');return;}
   if(ab==='semvenda'&&appsCache.indexOf('SEMVENDA')>=0){escolherTipo('SEMVENDA');return;} // v87
   if(typeof v9Abrir==='function'&&v9Abrir(ab))return; // v109
+  if(ab==='trocafrente'&&appsCache.indexOf('VALIDADES')>=0){valAba='TF';escolherTipo('VALIDADES');return;} // v125: push de troca de frente atrasada
   var abM={validades:'VALIDADES',fotos:'FOTOS',conferencia:'CONFERENCIA'};if(abM[ab]&&appsCache.indexOf(abM[ab])>=0){escolherTipo(abM[ab]);return;} // v103: avisos automáticos
   mostrar('tHome');renderHome();atualizarPushUI();
   api({acao:'resumoHome',quem:quem}).then(function(r){if(r&&r.ok){resumoCache=r;try{localStorage.setItem('ci_resumo',JSON.stringify(r));}catch(e){}renderHome();}}).catch(function(){});
