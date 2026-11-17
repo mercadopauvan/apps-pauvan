@@ -535,6 +535,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .agdHi{list-style:none;padding:0;margin:0;font-size:13px;line-height:1.5}.agdHi li{padding:5px 0;border-bottom:1px solid #f1f5f9}.agdHi li[data-u]{cursor:pointer}.agdCh{font-size:12px}
 .agdB1,.agdB2{font-size:16px!important;padding:14px 12px!important}
 .agdB1{background:#f1f5f9!important;color:#0E4D32!important;margin-top:10px}.agdB2{background:#0E4D32!important;color:#fff!important;margin-top:12px}
+.decCorrB{background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;border-radius:10px;padding:8px 10px;font-size:13px;font-weight:700;margin-bottom:8px}.decResp{font-size:14px;margin-top:4px}.decResp b{color:#0E4D32}.decCorrL{font-size:12px;color:#9a3412;margin-top:3px}.v9Tag.rsp{background:#e0f2fe;color:#075985} /* v127 */
 .decUndo{display:block;margin-top:8px;border:1.5px solid #cbd5d0;background:#fff;color:#0E4D32;border-radius:10px;padding:8px 12px;font-weight:800;font-size:13px;font-family:inherit}.decUndo.mini{display:inline-block;margin:0 0 0 6px;padding:3px 8px;font-size:12px}
 .decOrg{margin:7px 0 4px;border-radius:10px;padding:7px 9px;font-size:13px;line-height:1.45;display:flex;gap:8px;align-items:flex-start}.decOrg i{font-style:normal;font-size:17px;line-height:1}.decOrg b{display:block;font-size:11px;letter-spacing:.4px;text-transform:uppercase}.decOrg.o1{background:#ecfdf5;color:#065f46}.decOrg.o2{background:#eff6ff;color:#1e40af}.decOrg.o3{background:#fdf4ff;color:#86198f}.decOrg.o4{background:#f1f5f9;color:#334155}.decLoc{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}.decLoc span{background:#fff;border-radius:7px;padding:2px 7px;font-weight:700;color:#065f46}.decLoc .x{color:#dc2626;background:#fee2e2}.decOriRow{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;width:100%}
 .v9Selo{display:inline-block;background:#dc2626;color:#fff;font-weight:800;border-radius:10px;padding:0 7px;font-size:12px;line-height:18px}
@@ -3297,25 +3298,32 @@ function gcRender(){
     if(!c.decidir.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">Nada para decidir. 👍</p>';return;}
     c.decidir.forEach(function(o){box.appendChild(gcCartao(o,c));});return;
   }
-  var fb=document.createElement('div');fb.className='v9Chips';['TODAS','A DECIDIR','AJUSTADAS'].forEach(function(f){var b=document.createElement('button');b.type='button';b.textContent=f;b.className=gcFil===f?'on':'';b.onclick=function(){gcFil=f;gcRender();};fb.appendChild(b);});box.appendChild(fb);
+  var fb=document.createElement('div');fb.className='v9Chips';['TODAS','A DECIDIR','RESPONDIDAS','AJUSTADAS'].forEach(function(f){var b=document.createElement('button');b.type='button';b.textContent=f;b.className=gcFil===f?'on':'';b.onclick=function(){gcFil=f;gcRender();};fb.appendChild(b);});box.appendChild(fb);
   var tm=document.createElement('div');tm.className='v9Info';tm.innerHTML='Ajustes do mês: <b>'+brl(c.totMes).replace('R$ -','− R$ ')+'</b>';box.appendChild(tm);
   var ul2=document.createElement('ul');ul2.className='v9L';
-  c.hist.filter(function(o){return gcFil==='TODAS'||(gcFil==='A DECIDIR'?o.status==='CONTADA - DECIDIR':(o.status==='AJUSTADO'||/^AUTORIZADO/.test(o.status)));}).forEach(function(o){
-    var li=document.createElement('li');li.innerHTML='<div class="v9D">'+esc(o.desc)+'</div><div class="v9M">'+esc(o.pedEm.slice(0,5))+' · '+esc(o.para)+(o.total!==''?' · contou '+gcNum(o.total)+' · sistema '+gcNum(o.saldoSis)+' · dif. '+gcNum(o.dif)+(o.difRs!==''?' ('+brl(o.difRs)+')':''):'')+(o.decisao?' · '+esc(o.decisao):'')+(o.lanc?' · nº '+esc(o.lanc):'')+'</div>'+gcStTag(o.status);ul2.appendChild(li);});
+  var GC_RSP=['AUTORIZADO - A LANCAR','NAO AJUSTADO','RECONTAGEM'],GC_DEC={'SAIDA MA':'⬇️ Saída por MA','BAIXA NF':'🧾 Baixa por NF','ENTRADA MA':'⬆️ Entrada por MA','NAO AJUSTAR':'✖️ Não ajustar','RECONTAGEM':'🔁 Recontagem'}; // v127
+  c.hist.filter(function(o){return gcFil==='TODAS'||(gcFil==='A DECIDIR'?o.status==='CONTADA - DECIDIR':(gcFil==='RESPONDIDAS'?GC_RSP.indexOf(o.status)>=0:o.status==='AJUSTADO'));}).forEach(function(o){
+    var li=document.createElement('li'),cr=(String(o.obs).match(/CORRIGIDA (\d\d\/\d\d\/\d{4} \d\d:\d\d): (.+?) \(([^)]*)\) -> ([A-Z ]+)\s*$/)||null);
+    li.innerHTML='<div class="v9D">'+esc(o.desc)+'</div><div class="v9M">'+esc(o.pedEm.slice(0,5))+' · '+esc(o.para)+(o.total!==''?' · contou '+gcNum(o.total)+' · sistema '+gcNum(o.saldoSis)+' · dif. '+gcNum(o.dif)+(o.difRs!==''?' ('+brl(o.difRs)+')':''):'')+(o.lanc?' · nº '+esc(o.lanc):'')+'</div>'
+      +(o.decisao?'<div class="decResp">Sua resposta: <b>'+esc(GC_DEC[o.decisao]||o.decisao)+'</b> · 🕑 '+esc(String(o.decEm).slice(0,16))+'</div>':'')
+      +(cr?'<div class="decCorrL">✏️ corrigida em '+esc(cr[1].slice(0,16))+' — antes: '+esc(GC_DEC[cr[2]]||cr[2])+' ('+esc(cr[3].slice(0,16))+')</div>':'')+gcStTag(o.status)
+      +((o.status==='AUTORIZADO - A LANCAR'||o.status==='NAO AJUSTADO')?'<button type="button" class="decUndo gcCorr">✏️ Corrigir resposta</button>':'');
+    var bc=li.querySelector('.gcCorr');if(bc)bc.onclick=function(){vibra();bc.remove();var cx=gcCartao(o,c,true);li.appendChild(cx);};
+    ul2.appendChild(li);});
   if(!ul2.children.length)ul2.innerHTML='<li class="dica">Nada nos últimos 30 dias.</li>';box.appendChild(ul2);
 }
-function gcCartao(o,c){
+function gcCartao(o,c,corr){ // v127: corr = corrigir resposta já dada
   var d=document.createElement('div'),dif=Number(o.dif),sel=gcDec[o.id]||'';d.className='v9Box';
   d.innerHTML='<div class="v9D">'+esc(o.desc)+'</div><div class="v9M">SKU '+esc(o.sku)+' · contou <b>'+esc(o.contPor)+'</b> em '+esc(o.contEm)+'</div>'
     +'<div class="gcNums"><div>ÁREA<b>'+gcNum(o.area)+'</b></div><div>ESTOQUE<b>'+gcNum(o.est)+'</b></div><div>CONTADO<b>'+gcNum(o.total)+'</b></div></div>'
     +'<div class="gcNums"><div>SISTEMA<b>'+(o.saldoSis===''?'—':gcNum(o.saldoSis))+'</b><small>arquivo '+esc(String(o.arqEm).slice(0,16))+(Number(o.vendaEst)?' − venda estimada '+gcNum(o.vendaEst):'')+'</small></div><div class="'+(dif<0?'neg':(dif>0?'pos':''))+'">DIFERENÇA<b>'+(o.dif===''?'—':(dif>0?'+':'')+gcNum(o.dif))+'</b><small>'+(o.difRs===''?'':brl(o.difRs))+'</small></div></div>'
-    +'<div class="v9Lbl">O QUE FAZER?</div><div class="gcOps"></div><div class="gcRec"></div><button class="btn ok gcAut" disabled>AUTORIZAR AJUSTE</button>';
+    +(corr?'<div class="decCorrB">✏️ Corrigindo — resposta atual: '+esc(o.decisao)+'. Escolha a nova.</div>':'')+'<div class="v9Lbl">O QUE FAZER?</div><div class="gcOps"></div><div class="gcRec"></div><button class="btn ok gcAut" disabled>AUTORIZAR AJUSTE</button>';
   var ops=d.querySelector('.gcOps'),aut=d.querySelector('.gcAut'),rec=d.querySelector('.gcRec'),para=o.para;
-  var L=[];if(dif<0)L.push(['SAIDA MA','⬇️ Saída por MA'],['BAIXA NF','🧾 Baixa por NF (roubo/avaria)']);if(dif>0)L.push(['ENTRADA MA','⬆️ Entrada por MA']);L.push(['RECONTAGEM','🔁 Pedir recontagem'],['NAO AJUSTAR','✖️ Não ajustar']);
+  var L=[];if(dif<0)L.push(['SAIDA MA','⬇️ Saída por MA'],['BAIXA NF','🧾 Baixa por NF (roubo/avaria)']);if(dif>0)L.push(['ENTRADA MA','⬆️ Entrada por MA']);L.push(['RECONTAGEM','🔁 Pedir recontagem'],['NAO AJUSTAR','✖️ Não ajustar']);if(corr)L=L.filter(function(x){return x[0]!==String(o.decisao).replace('NAO AJUSTADO','NAO AJUSTAR');}); // v127
   L.forEach(function(x){var b=document.createElement('button');b.type='button';b.textContent=x[1];b.className=sel===x[0]?'on':'';b.onclick=function(){sel=gcDec[o.id]=x[0];vibra();ops.querySelectorAll('button').forEach(function(y){y.classList.toggle('on',y===b);});aut.disabled=false;
-    aut.textContent=sel==='RECONTAGEM'?'PEDIR RECONTAGEM':(sel==='NAO AJUSTAR'?'CONFIRMAR — NÃO AJUSTAR':'AUTORIZAR AJUSTE');
+    aut.textContent=corr?'SALVAR CORREÇÃO':sel==='RECONTAGEM'?'PEDIR RECONTAGEM':(sel==='NAO AJUSTAR'?'CONFIRMAR — NÃO AJUSTAR':'AUTORIZAR AJUSTE');
     rec.innerHTML='';if(sel==='RECONTAGEM'){rec.innerHTML='<div class="v9Lbl">QUEM RECONTA</div><div class="v9Chips"></div>';var ch=rec.querySelector('.v9Chips');var ns=(c.pessoas||[]).slice();['Ney','Regiane'].forEach(function(n){if(ns.indexOf(n)<0)ns.push(n);});if(ns.indexOf(o.para)<0)ns.unshift(o.para);ns.forEach(function(n){var bb=document.createElement('button');bb.type='button';bb.textContent=n;bb.className=n===para?'on':'';bb.onclick=function(){para=n;ch.querySelectorAll('button').forEach(function(y){y.classList.toggle('on',y===bb);});};ch.appendChild(bb);});}};ops.appendChild(b);});
-  aut.onclick=function(){if(!sel)return;aut.disabled=true;v9Otim(d,{acao:'ctaDecidir',id:o.id,decisao:sel,para:para},sel==='RECONTAGEM'?'Recontagem pedida para '+para:(sel==='NAO AJUSTAR'?'Marcado: não ajustar':'Autorizado — o Claude lança no Plenus à noite'),function(){delete gcDec[o.id];gcCarregar();});};
+  aut.onclick=function(){if(!sel)return;aut.disabled=true;if(corr){aut.textContent='salvando…';v9Api({acao:'ctaCorrigir',id:o.id,decisao:sel,para:para},function(r){toast(r.msg||'Resposta corrigida','ok');delete gcDec[o.id];gcCarregar();},function(){aut.disabled=false;aut.textContent='SALVAR CORREÇÃO';});return;}v9Otim(d,{acao:'ctaDecidir',id:o.id,decisao:sel,para:para},sel==='RECONTAGEM'?'Recontagem pedida para '+para:(sel==='NAO AJUSTAR'?'Marcado: não ajustar':'Autorizado — o Claude lança no Plenus à noite'),function(){delete gcDec[o.id];gcCarregar();});};
   return d;
 }
 // ---------- 7. 👀 VALIDADE NA FRENTE (aba do módulo Validades) ----------
@@ -3529,6 +3537,7 @@ function agdDetalhe(o){
   Array.prototype.forEach.call(box.querySelectorAll('[data-u]'),function(el){el.onclick=function(){vibra();agdAbrir(el.getAttribute('data-u'));};});
 }
 // v113: 🗂️ DECISÕES (Gestão, só o Celio) — Rebaixas, Produto novo (NF), Contagem, Código de barras
+var decFase='R',decCorr={},decFoco=null; // v127: Respondidas / Ajustadas + Corrigir resposta
 var decC=null,decAba='A',decFil='TODOS',decAb=null,decSel={},decBusca={},decGrmPara={}; // v118
 var DEC_TIPOS={REBAIXA:['🏷️','Rebaixas'],PRODUTO_NOVO:['🧾','Produto novo'],CONTAGEM:['📦','Contagem'],CODIGO:['🔢','Código']};
 function irDEC(){pararCamera();$('faixaDEC').textContent='🗂️ DECISÕES · '+quem;mostrar('tDEC');decAb=null;if(!decC){try{decC=JSON.parse(localStorage.getItem('ci_dec')||'null');}catch(e){}}decRender();decCarregar();} // v123.2: abre na hora com a última lista
@@ -3548,8 +3557,18 @@ function decRender(){
   its=its.filter(function(o){return decFil==='TODOS'||o.tipo===decFil;});
   if(decFil==='REBAIXA'&&decAba!=='D'){var co={};its.forEach(function(o){var t=o.org&&o.org.t;if(t)co[t]=(co[t]||0)+1;});var br=document.createElement('div');br.className='decOriRow';[['TODAS','Todas origens',its.length]].concat(Object.keys(DEC_ORI).map(function(t){return [t,DEC_ORI[t],co[t]||0];})).forEach(function(t){if(t[0]!=='TODAS'&&!t[2])return;var b=document.createElement('button');b.type='button';b.className='decChip'+(decOri===t[0]?' on':'');b.textContent=t[1]+' '+t[2];b.onclick=function(){decOri=t[0];decRender();};br.appendChild(b);});ch.appendChild(br);if(decOri!=='TODAS'&&!co[decOri])decOri='TODAS';its=its.filter(function(o){return decOri==='TODAS'||(o.org&&o.org.t===decOri);});} // v116
   if(!its.length){box.innerHTML='<p class="dica" style="font-size:16px;margin-top:16px">'+(decAba==='A'?'Nada para decidir agora. 👍':(decAba==='E'?'Nada esperando.':'Nenhuma decisão nos últimos 15 dias.'))+'</p>';return;}
-  if(decAba==='D'){var ul=document.createElement('ul');ul.className='v9L';its.forEach(function(o){var d=o.det||{},li=document.createElement('li');var st=o.status==='A EXECUTAR'?'<span class="v9Tag" style="background:#fef3c7;color:#92400e">⏳ o Claude vai fazer no Plenus</span>':(o.status==='EXECUTADA'?'<span class="v9Tag ok">✓ feito'+(o.exec?' '+esc(String(o.exec).slice(0,5)):'')+'</span>':'<span class="v9Tag ok">✓ decidido</span>');
-    li.innerHTML='<div class="v9D">'+(DEC_TIPOS[o.tipo]||['•'])[0]+' '+esc(d.prod||d.desc||o.chave.split('|').slice(-2,-1)[0]||'')+'</div><div class="v9M">'+esc(o.decisao)+(d.preco?' · R$ '+Number(d.preco).toFixed(2).replace('.',','):'')+(d.sku&&o.tipo==='PRODUTO_NOVO'?' · '+esc(d.sku+' '+(d.desc||'')):'')+(o.tipo==='PRODUTO_NOVO'&&d.desc&&!d.sku?' · '+esc(d.desc):'')+' · '+esc(o.em)+(o.obs?' · '+esc(o.obs):'')+'</div>'+st+(o.pode?'<button type="button" class="decUndo" data-k="'+esc(o.chave)+'">↩️ Mudar decisão</button>':(o.motivo&&o.status!=='EXECUTADA'?'<div class="v9M">'+esc(o.motivo)+'</div>':''));ul.appendChild(li);});box.appendChild(ul);decUndoLiga(ul);return;}
+  if(decAba==='D'){ // v127: Respondidas (ainda dá para corrigir) / Ajustadas (já feito no Plenus)
+    var nR=its.filter(function(o){return o.fase!=='AJUSTADA';}).length,nA=its.length-nR,fr=document.createElement('div');fr.className='v9Chips';
+    [['R','📝 Respondidas',nR],['A','✓ Ajustadas',nA],['T','Todas',its.length]].forEach(function(t){var b=document.createElement('button');b.type='button';b.textContent=t[1]+' ('+t[2]+')';b.className=decFase===t[0]?'on':'';b.onclick=function(){decFase=t[0];decRender();};fr.appendChild(b);});box.appendChild(fr);
+    var its2=its.filter(function(o){return decFase==='T'||(decFase==='A'?o.fase==='AJUSTADA':o.fase!=='AJUSTADA');});
+    var ul=document.createElement('ul');ul.className='v9L';if(!its2.length)ul.innerHTML='<li class="dica">'+(decFase==='R'?'Nenhuma resposta esperando ajuste.':'Nada aqui nos últimos 15 dias.')+'</li>';
+    its2.forEach(function(o){var d=o.det||{},li=document.createElement('li'),aj=o.fase==='AJUSTADA';
+      var st=aj?'<span class="v9Tag ok">'+esc(o.status==='EXECUTADA'?'✓ feito'+(o.exec?' '+String(o.exec).slice(0,5):''):(o.motivo||'✓ feito'))+'</span>':(o.status==='A EXECUTAR'?'<span class="v9Tag" style="background:#fef3c7;color:#92400e">⏳ o Claude vai fazer no Plenus</span>':'<span class="v9Tag rsp">📝 respondida — ainda não ajustada</span>');
+      var cr=d.corrigida?'<div class="decCorrL">✏️ corrigida em '+esc(String(d.corrigida.em||'').slice(0,16))+' — antes: '+esc(d.corrigida.de)+' ('+esc(String(d.corrigida.deEm||'').slice(0,16))+')</div>':'';
+      li.innerHTML='<div class="v9D">'+(DEC_TIPOS[o.tipo]||['•'])[0]+' '+esc(d.prod||d.desc||o.chave.split('|').slice(-2,-1)[0]||'')+'</div><div class="decResp">Sua resposta: <b>'+esc(o.decisao)+(d.preco?' · R$ '+Number(d.preco).toFixed(2).replace('.',','):'')+'</b>'+(d.sku&&o.tipo==='PRODUTO_NOVO'?' · '+esc(d.sku+' '+(d.desc||'')):'')+'</div><div class="v9M">🕑 '+esc(String(o.em).slice(0,16))+(o.obs&&!/^CORRIGIDA/.test(o.obs)?' · '+esc(o.obs):'')+'</div>'+cr+st
+        +(o.pode&&!aj?'<button type="button" class="decUndo decCorr" data-k="'+esc(o.chave)+'" data-de="'+esc(o.decisao+(d.preco?' R$ '+Number(d.preco).toFixed(2).replace('.',','):''))+'" data-em="'+esc(String(o.em).slice(0,16))+'">✏️ Corrigir resposta</button>':(!aj&&o.motivo?'<div class="v9M">'+esc(o.motivo)+'</div>':''));ul.appendChild(li);});
+    box.appendChild(ul);decCorrLiga(ul);return;}
+  if(decFoco){its=its.slice().sort(function(a,b){return (b.chave===decFoco)-(a.chave===decFoco);});} // v127: o cartão em correção vem primeiro
   its.forEach(function(o){box.appendChild(decCard(o));});
 }
 function decPill(t){return '<span class="decPill">'+t+'</span>';}
@@ -3561,7 +3580,8 @@ function decOrg(o){var g=o.org;if(!g)return '';var nm=function(v){return v==null
   return '<div class="decOrg o4"><i>✍️</i><div><b>Por você</b></div></div>';} // v116
 var decOri='TODAS',DEC_ORI={CONTAGEM:'👩 Contagem',ACHADO:'👀 Achado',LOJA:'🔎 Achado na loja',SISTEMA:'📊 Sistema',LANCADO:'✍️ Por você'};
 function decCard(o){
-  var d=document.createElement('div');d.className='decCard t'+o.tipo+(o.tipo==='REBAIXA'&&o.dias<=3?' urg':'');var h='',k=o.chave;
+  var d=document.createElement('div');d.className='decCard t'+o.tipo+(o.tipo==='REBAIXA'&&o.dias<=3?' urg':'');var h='',k=o.chave;d.dataset.k=k;
+  if(decCorr[k])h+='<div class="decCorrB">✏️ Corrigindo — sua resposta anterior: '+esc(decCorr[k].de)+' ('+esc(decCorr[k].em)+'). Escolha a nova resposta.</div>'; // v127
   var gd=o.tipo==='REBAIXA'&&o.gondola?o.gondola:null; // v121
   if(gd&&gd.esperando)h+='<div class="decTop" style="color:#92400e">⏳ Esperando conferência na gôndola (lista de '+esc(gd.rep)+')'+(gd.pedido?' · pedido em '+esc(String(gd.pedido).slice(0,5)):'')+' <button type="button" class="decUndo mini" data-k="'+esc(k)+'">↩️ voltar agora</button></div>';
   else if(o.volta)h+='<div class="decTop" style="color:#92400e">⏸️ esperando · volta em '+esc(o.volta)+' <button type="button" class="decUndo mini" data-k="'+esc(k)+'">↩️ voltar agora</button></div>';
@@ -3639,6 +3659,8 @@ function decLigarPainel(o,pn){
     cf.onclick=function(){decEnviar(o,{op:'NAO FAZER',obs:mot,prod:o.prod,validade:o.validade},cf);};}
   if(op==='CADASTRAR'){cf.onclick=function(){var ds=pn.querySelector('.cdDesc').value.trim();if(!ds)return toast('Informe a descrição','err');decEnviar(o,{op:'CADASTRAR',desc:ds,un:pn.querySelector('.cdUn').value,entrada:pn.querySelector('.cdEnt').value,ean:pn.querySelector('.cdEan').value,obs:pn.querySelector('.decOb').value,prod:o.prod,nf:o.nf,forn:o.forn,idNf:o.idNf},cf);};}
 }
+function decCorrLiga(root){root.querySelectorAll('.decCorr').forEach(function(b){b.onclick=function(ev){ev.stopPropagation();vibra();if(!confirm('Corrigir esta resposta? O cartão abre de novo para você escolher a nova resposta. A anterior fica registrada.'))return;b.disabled=true;b.textContent='abrindo…';var k=b.dataset.k;
+  toast('Abrindo o cartão para corrigir… (a lista pode levar alguns segundos)','ok');v9Api({acao:'decDesfazer',chave:k,corrigir:'1'},function(){delete decFeitas[k];decCorr[k]={de:b.dataset.de,em:b.dataset.em};decFoco=k;decAba='A';decFil='TODOS';decAb=null;decCarregar();},function(){b.disabled=false;b.textContent='✏️ Corrigir resposta';});};});} // v127
 function decUndoLiga(root){root.querySelectorAll('.decUndo').forEach(function(b){b.onclick=function(ev){ev.stopPropagation();vibra();if(!confirm('Desfazer esta decisão? O cartão volta para A DECIDIR.'))return;b.disabled=true;v9Api({acao:'decDesfazer',chave:b.dataset.k},function(r){toast(r.msg||'Desfeito','ok');decAba='A';decAb=null;decCarregar();},function(){b.disabled=false;});};});} // v115
 // v119.1: decisão otimista — o cartão sai na hora e a gravação na planilha corre em segundo plano; se falhar, o cartão volta com aviso
 var decPend={},decFeitas={}; // v123.2: decFeitas = decididas nesta sessão (a lista demora ~30 s e pode chegar velha)
@@ -3646,6 +3668,7 @@ function decTirar_(ch){var c=decC;if(!c)return null;var achou=null;['aDecidir','
 function decEnviar(o,x,bt){
   if(decPend[o.chave])return;
   x.acao='decDecidir';x.tipo=o.tipo;x.chave=o.chave;
+  delete decCorr[o.chave];if(decFoco===o.chave)decFoco=null; // v127
   var tirado=decTirar_(o.chave);decPend[o.chave]=1;decAb=null;delete decSel[o.chave];
   try{resumoCache.dec=Math.max(0,(resumoCache.dec||1)-1);}catch(e){}
   decRender();toast('✓ Decisão registrada','ok');
