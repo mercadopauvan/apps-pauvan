@@ -767,10 +767,10 @@ function consultaPreco(codigo) {
 }
 function rhChave_(quem) { return 'RH131_' + semAcento_(String(quem || '')).toLowerCase().replace(/[^a-z0-9]/g, ''); } // v131
 function resumoHome_(quem) {
-  var rhc = CacheService.getScriptCache(), rhk = rhChave_(quem), rhv = null; // v131: contadores da tela inicial guardados 60 s por pessoa
+  var rhc = CacheService.getScriptCache(), rhk = rhChave_(quem), rhv = null; // v131: contadores da tela inicial guardados 3 min por pessoa (quem grava algo recalcula na hora)
   try { rhv = rhc.get(rhk); } catch (e) {} if (rhv) { try { var rr = JSON.parse(rhv); rr.cache = 1; return rr; } catch (e) {} }
   var r = resumoHomeCalc_(quem);
-  try { rhc.put(rhk, JSON.stringify(r), 60); } catch (e) {}
+  try { rhc.put(rhk, JSON.stringify(r), 180); } catch (e) {}
   return r;
 }
 function resumoHomeCalc_(quem) {
@@ -4040,13 +4040,14 @@ function v9Prod_(p) { // produto pelo código de barras ou SKU: sku, desc, un, p
   return { ok: true, sku: s, desc: desc, un: String(l[3]), preco: Number(l[5]) || 0, secao: c.secao || '', local: c.local || '', rep: c.rep || '', media: med == null ? '' : Math.round(med * 10) / 10 };
 }
 function v9Saldos_() { // saldo atual.txt → { itens: {sku: {q, custo}}, em: Date }
-  var f = DriveApp.getFileById(ID_SALDO_TXT), m = {};
+  var f = DriveApp.getFileById(ID_SALDO_TXT), m = {}, emF = f.getLastUpdated(), ckS = 'SALDOS131_' + emF.getTime(), hitS = cacheGrandeLer_(ckS); if (hitS) return { itens: hitS, em: emF }; // v131: arquivo lido 1x por versão
   saldoTxt_(f).split(/\r?\n/).forEach(function (l, i) {
     if (!i) return; var c = l.split(';'); if (c.length < 7) return; var s = skuN_(c[0]); if (!s) return;
     var n = function (x) { var v = Number(String(x || '').replace(/\./g, '').replace(',', '.')); return isNaN(v) ? null : v; };
     m[s] = { q: n(c[6]), custo: n(c[5]) };
   });
-  return { itens: m, em: f.getLastUpdated() };
+  cacheGrande_(ckS, m, 21600); // v131
+  return { itens: m, em: emF };
 }
 function v9SaldoSku_(sku) {
   var f = DriveApp.getFileById(ID_SALDO_TXT), t = saldoTxt_(f);
@@ -5027,8 +5028,10 @@ function decDescSug_(d, un, f) { // descrição no padrão Pauvan: maiúscula, s
 
 // ---- CÓDIGO DE BARRAS: bipado na conferência e não cadastrado (COD_STATUS = NOVO) ----
 function decCodigosSku_() { // sku -> [códigos do cadastro]
+  var hitC = cacheGrandeLer_('CODSKU131'); if (hitC) return hitC; // v131: 15 min
   var sh = SpreadsheetApp.getActive().getSheetByName(ABA_CAD), n = sh.getLastRow(), m = {};
   if (n >= 2) sh.getRange(2, 1, n - 1, 2).getValues().forEach(function (l) { var s = skuN_(l[1]), c = String(l[0]).replace(/^'/, '').trim(); if (s && c && c !== s) (m[s] = m[s] || []).push(c); });
+  cacheGrande_('CODSKU131', m, 900); // v131
   return m;
 }
 function decCodCartoes_(m, leve) {
