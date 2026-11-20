@@ -802,7 +802,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <ul class="res" id="trRes"></ul>
   <div id="trSel" class="trsel" style="display:none"></div>
   <div class="lin"><label>Quantos vieram</label><input id="trQtdNovo" type="text" inputmode="decimal" placeholder="ex.: 1"></div>
-  <div class="val"><input type="date" id="trVal"><button class="sv" id="trSemVal" onclick="trToggleSemVal()">SEM VALIDADE</button></div>
+  <div class="dica" style="text-align:left;margin:10px 0 4px">Validade do produto que veio</div><div id="trVp"></div>
   <div class="dica" style="text-align:left;margin:10px 0 4px">Quem autorizou a troca?</div>
   <div class="formas" id="trAut"><button data-a="Celio">Celio</button><button data-a="Amanda">Amanda</button><button data-a="NINGUEM">NINGUÉM</button></div>
   <button class="btn ok" onclick="salvarTroca()">GRAVAR TROCA</button>
@@ -821,7 +821,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div class="formas" id="exUnBt"><button data-u="UN">UNIDADE</button><button data-u="CX">CAIXA</button><button data-u="KG">KG</button></div>
   <div class="lin"><label id="exQtdLb">Quantos vieram a mais?</label><input id="exQtd" type="text" inputmode="decimal" placeholder="ex.: 2"></div>
   <div class="lin" id="exPesoLin"><label>Peso total (kg) — se pesou</label><input id="exPeso" type="text" inputmode="decimal" placeholder="opcional"></div>
-  <div class="val"><input type="date" id="exVal"><button class="sv" id="exSemVal" onclick="exToggleSemVal()">SEM VALIDADE</button></div>
+  <div class="dica" style="text-align:left;margin:10px 0 4px">Validade</div><div id="exVp"></div>
   <div class="lin"><label>Observação</label><input id="exObs" type="text" placeholder="opcional"></div>
   <button class="btn ok" id="exBt" onclick="salvarExtra()">GRAVAR</button>
   <button class="btn cancel" onclick="$('cardExtra').classList.remove('on')">CANCELAR</button>
@@ -2789,12 +2789,12 @@ function enviarConf(p,aplicar){
 var trProd=null,trAut='';
 function abrirTroca(){
   if(!confItemAtual)return;trProd=null;trAut='';
-  $('trDesc').textContent='Item da nota: '+confItemAtual.produto;$('trQtdSubst').value='';$('trBusca').value='';$('trRes').innerHTML='';$('trSel').style.display='none';$('trQtdNovo').value='';$('trVal').value='';$('trVal').disabled=false;$('trSemVal').classList.remove('on');
+  $('trDesc').textContent='Item da nota: '+confItemAtual.produto;$('trQtdSubst').value='';$('trBusca').value='';$('trRes').innerHTML='';$('trSel').style.display='none';$('trQtdNovo').value='';trValV='';vpMontar($('trVp'),'',function(v){trValV=v;},{modos:['ROL','CAL','MA','SEM']}); // v134: roleta
   $('trAut').querySelectorAll('button').forEach(function(b){b.classList.remove('on');b.onclick=function(){trAut=b.dataset.a;$('trAut').querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});vibra();};});
   $('cardConf').classList.remove('on');$('cardTroca').classList.add('on');setTimeout(function(){$('trQtdSubst').focus();},100);
 }
 function fecharTroca(){$('cardTroca').classList.remove('on');if(confItemAtual)$('cardConf').classList.add('on');}
-function trToggleSemVal(){var b=$('trSemVal'),v=$('trVal');b.classList.toggle('on');v.disabled=b.classList.contains('on');if(v.disabled)v.value='';}
+var trValV='',exValV=''; // v134: validade da troca / do que veio a mais pela roleta (vpMontar)
 function trEscolher(p){trProd=p;$('trSel').style.display='block';$('trSel').textContent='→ '+p.desc+' (SKU '+p.sku+')';$('trRes').innerHTML='';$('trBusca').value='';setTimeout(function(){$('trQtdNovo').focus();},80);}
 function trBuscar(){
   var v=$('trBusca').value.trim();if(!v)return;
@@ -2811,7 +2811,7 @@ function salvarTroca(){
   if(!(qs>0))return toast('Quantos do item da nota foram trocados?','err');
   if(!trProd)return toast('Escolha o produto que veio no lugar','err');
   if(!(qn>0))return toast('Quantos vieram do produto novo?','err');
-  var val=$('trSemVal').classList.contains('on')?'SEM VALIDADE':($('trVal').value?br($('trVal').value):'');
+  var val=trValV;
   if(!val)return toast('Informe a validade ou toque em SEM VALIDADE','err');
   if(!trAut)return toast('Quem autorizou a troca?','err');
   var p={acao:'salvarTroca',idNf:confNF.idNf,idItem:confItemAtual.idItem,produtoNf:confItemAtual.produto,qtdSubst:qs,skuNovo:trProd.sku,produtoNovo:trProd.desc,codNovo:trProd.codigo||'',qtdNovo:qn,validade:val,autorizou:trAut,token:token,quem:quem};
@@ -2839,7 +2839,7 @@ function renderExtras(){
   box.querySelectorAll('.exDel').forEach(function(b){b.onclick=function(){vibra();if(!b.dataset.cf){b.dataset.cf='1';b.textContent='CONFIRMAR?';setTimeout(function(){if(b.isConnected){delete b.dataset.cf;b.textContent='REMOVER';}},4000);return;}b.disabled=true;api({acao:'extraDel',id:b.dataset.id,token:token,quem:quem}).then(function(r){if(r&&r.ok){confNF.nf.extras=r.extras;renderExtras();toast('Removido','ok');}else{b.disabled=false;toast((r&&r.erro)||'Erro','err');}}).catch(function(){b.disabled=false;toast('Sem conexão, tente de novo','err');});};});
 }
 function abrirExtra(){
-  exProd=null;exCodPend='';exKg=false;$('exKg').classList.remove('on');$('exKgSt').textContent='OFF';exUn='UN';$('exBusca').value='';$('exRes').innerHTML='';$('exSel').style.display='none';$('exQtd').value='';$('exPeso').value='';$('exVal').value='';$('exVal').disabled=false;$('exSemVal').classList.remove('on');$('exObs').value='';exMarcarUn();
+  exProd=null;exCodPend='';exKg=false;$('exKg').classList.remove('on');$('exKgSt').textContent='OFF';exUn='UN';$('exBusca').value='';$('exRes').innerHTML='';$('exSel').style.display='none';$('exQtd').value='';$('exPeso').value='';exValV='';vpMontar($('exVp'),'',function(v){exValV=v;},{modos:['ROL','CAL','MA','SEM']}); // v134: roleta$('exObs').value='';exMarcarUn();
   $('cardExtra').classList.add('on');setTimeout(function(){$('exBusca').focus();},100);
 }
 var exKg=false; // v97: chave de produto por kg (hortifruti) no produto que veio a mais
@@ -2865,11 +2865,11 @@ $('exBusca').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preven
 $('exBusca').addEventListener('input',function(){if(this.value.trim().length>=3&&!/^\d+$/.test(this.value.trim()))exBuscar();});
 SCAN_CB.fotoExtra=function(cod){$('exBusca').value=cod;exBuscar();};
 $('fotoExtra').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fotoExtra);});
-function exToggleSemVal(){var b=$('exSemVal'),v=$('exVal');b.classList.toggle('on');v.disabled=b.classList.contains('on');if(v.disabled)v.value='';}
+
 function salvarExtra(){
   if(!exProd)return toast('Escolha o produto','err');
   var q=parseFloat(String($('exQtd').value).replace(',','.'));if(!(q>0))return toast('Quantos vieram a mais?','err');
-  var val=$('exSemVal').classList.contains('on')?'SEM VALIDADE':($('exVal').value?br($('exVal').value):'');
+  var val=exValV;
   var bj=exBdj(exUn),obs=$('exObs').value.trim();if(bj)obs=('BANDEJA '+Math.round(bj*1000)+'G'+(obs?' · '+obs:''));if(exProd.codNovo&&exProd.sku)obs='CÓDIGO NOVO '+exProd.codigo+' (incluir no cadastro)'+(obs?' · '+obs:'');
   var p={acao:'extraAdd',idNf:confNF.idNf,sku:exProd.sku,produto:exProd.desc,codigo:exProd.codigo||'',qtd:q,un:bj?'UN':exUn,peso:bj?String(Math.round(q*bj*1000)/1000):(exUn==='CX'?$('exPeso').value:''),validade:val,obs:obs,token:token,quem:quem};
   $('exBt').disabled=true;
