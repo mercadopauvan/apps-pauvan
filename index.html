@@ -1643,7 +1643,7 @@ function cvItem(it,modo){
   }
   var soEst=modo==='est';
   h+='<div class="qq"><label>ÁREA DE VENDA'+(soEst?'':' *')+'<input class="ia" type="text" inputmode="decimal" value="'+esc(soEst||cvAberto[it.id]?it.area:'')+'"'+(soEst?' disabled':'')+'></label><label>ESTOQUE<input class="ie" type="text" inputmode="decimal" value="'+esc(cvAberto[it.id]?it.estoque:'')+'" placeholder="'+(soEst?'':'opcional')+'"></label><div class="tt">TOTAL<b class="it">'+(soEst||cvAberto[it.id]?esc(it.total):'0')+'</b></div></div>';
-  if(!soEst)h+='<div class="vdBox" style="display:none"><div class="vdLb">VALIDADE QUE VOCÊ ENCONTROU</div><div class="vdDt"><s>'+esc(it.validade)+'</s> ➜ <input type="date" class="vdIn"></div><div class="vdMsg"></div></div>'; // v100
+  if(!soEst)h+='<div class="vdBox" style="display:none"><div class="vdLb">VALIDADE QUE VOCÊ ENCONTROU</div><div class="vdDt"><s>'+esc(it.validade)+'</s> ➜ escolha abaixo<input type="hidden" class="vdIn"></div><div class="vdVp"></div><div class="vdMsg"></div></div>'; // v100
   h+='<div class="bts"><button class="ok">'+(soEst?'SALVAR ESTOQUE':'CONFERIDO')+'</button>'+(soEst?'':'<button class="nao">NÃO TEM MAIS</button>')+'</div>'+(soEst?'':'<div class="bts vdL"><button class="vd">📅 VALIDADE DIFERENTE</button></div>'+lcLink(it,'CV'));
   li.innerHTML=h;lcLigar(li,it,'CV');
   var ia=li.querySelector('.ia'),ie=li.querySelector('.ie'),tt=li.querySelector('.it');
@@ -1655,7 +1655,8 @@ function cvItem(it,modo){
   // v100: VALIDADE DIFERENTE
   var vdOn=false,vdSt=null,vb=li.querySelector('.vd'),vbox=li.querySelector('.vdBox'),vin=li.querySelector('.vdIn'),vmsg=li.querySelector('.vdMsg'),qq=li.querySelector('.qq');
   function vdFechar(){vdOn=false;vdSt=null;vbox.style.display='none';li.querySelector('.vdL').style.display='';qq.style.display='';bo.textContent='CONFERIDO';bo.disabled=false;bn.textContent='NÃO TEM MAIS';li.classList.remove('vdOn');}
-  if(vb)vb.onclick=function(){vibra();vdOn=true;vdSt=null;vbox.style.display='block';li.querySelector('.vdL').style.display='none';li.classList.add('vdOn');vmsg.className='vdMsg';vmsg.innerHTML='Escolha a data que está no produto.';var p=String(it.validade).split('/');vin.value=p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';bo.textContent='SALVAR';bo.disabled=true;bn.textContent='VOLTAR';try{vin.focus();if(vin.showPicker)vin.showPicker();}catch(e){}};
+  if(vb)vb.onclick=function(){vibra();vdOn=true;vdSt=null;vbox.style.display='block';li.querySelector('.vdL').style.display='none';li.classList.add('vdOn');vmsg.className='vdMsg';vmsg.innerHTML='Escolha a data que está no produto.';var p=String(it.validade).split('/');vin.value=p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';vdVp();bo.textContent='SALVAR';bo.disabled=true;bn.textContent='VOLTAR';try{vin.focus();if(vin.showPicker)vin.showPicker();}catch(e){}};
+  var vdTm=null;function vdVp(){var hv=li.querySelector('.vdVp');if(!hv)return;vpMontar(hv,String(it.validade),function(v){var x=vpParse(v);if(!x)return;var iso=x.a+'-'+('0'+(x.m+1)).slice(-2)+'-'+('0'+x.d).slice(-2);if(iso===vin.value)return;vin.value=iso;clearTimeout(vdTm);vdTm=setTimeout(function(){if(vdOn&&vin.onchange)vin.onchange();},700);},{modos:['ROL','CAL','MA']});} // v134: roleta no lugar do calendário do celular
   if(vin)vin.onchange=function(){
     var m=String(vin.value).match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!m)return;var nova=m[3]+'/'+m[2]+'/'+m[1];vdSt=null;bo.disabled=true;qq.style.display='';vmsg.className='vdMsg';vmsg.textContent='conferindo…';
     api({acao:'cvValCheck',quem:quem,token:token,id:it.id,novaVal:nova}).then(function(r){
@@ -2383,10 +2384,11 @@ function vaBloco(box){
   }else if(vaProd){
     var p=vaProd;
     d.innerHTML='<div class="vaProd"><div class="d">'+esc(p.desc)+'</div><div class="m">SKU '+esc(p.sku)+(p.secao?' · '+esc(p.secao):'')+(p.local?' · 📍 '+esc(p.local):'')+(p.media!==''&&p.media!=null?' · vende ~'+String(p.media).replace('.',',')+' por dia':'')+'</div></div>'+
-      '<div class="vaLb">VALIDADE QUE ESTÁ NO PRODUTO *</div><div class="vaDt"><input type="date" class="vaVal"></div>'+
+      '<div class="vaLb">VALIDADE QUE ESTÁ NO PRODUTO *</div><div class="vaDt"><input type="hidden" class="vaVal"><div class="vaVp"></div></div>'+
       '<ul class="cv vaF"><li><div class="qq"><label>ÁREA DE VENDA *<input class="ia" type="text" inputmode="decimal"></label><label>ESTOQUE<input class="ie" type="text" inputmode="decimal" placeholder="opcional"></label><div class="tt">TOTAL<b class="it">0</b></div></div>'+
       '<div class="bts"><button class="ok">SALVAR</button><button class="nao">CANCELAR</button></div></li></ul>';
     var ia=d.querySelector('.ia'),ie=d.querySelector('.ie'),tt=d.querySelector('.it'),vv=d.querySelector('.vaVal'),bo=d.querySelector('.ok');
+    vpMontar(d.querySelector('.vaVp'),'',function(v){var x=vpParse(v);vv.value=x?x.a+'-'+('0'+(x.m+1)).slice(-2)+'-'+('0'+x.d).slice(-2):'';},{modos:['ROL','CAL','MA']}); // v134: roleta
     function soma(){tt.textContent=String(((cvNum(ia.value)||0)+(cvNum(ie.value)||0))).replace('.',',');}
     ia.oninput=soma;ie.oninput=soma;
     d.querySelector('.nao').onclick=function(){vibra();vaProd=null;renderVAL();};
