@@ -381,6 +381,7 @@ ul.cv li.vdOn{border-color:#7c3aed}
 #valLista .grp.vcHd{background:#ede9fe;color:#5b21b6;display:flex;justify-content:space-between;cursor:pointer}
 #grupos .blq{flex:1 1 100%;width:100%;box-sizing:border-box;border:1px solid #e2e8f0;border-radius:12px;padding:8px;margin:0 0 2px;background:#fff}#grupos .blq h4{margin:0 0 6px;font-size:12px;letter-spacing:.5px;color:#64748b}#grupos .blq .bb{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}#grupos .blq .bb button{padding:10px 4px;font-size:13px;min-height:0;margin:0;width:100%;border:2px solid #16a34a;border-radius:10px;background:#fff;font-weight:700;color:#0f172a}#grupos .blq.ins{background:#fff7ed;border-color:#fdba74}#grupos .blq.ins .bb button{border-color:#ea580c} /* v107 */
 #grupos .blq.perda{background:#fef2f2;border:2px solid #dc2626}#grupos .blq.perda h4{color:#b91c1c}#grupos .blq.perda .bb{grid-template-columns:1fr 1fr}#grupos .blq.perda .bb button{background:#dc2626;color:#fff;border-color:#dc2626;padding:12px 4px;font-size:14px}#grupos .blq.perda p{font-size:12px;color:#991b1b;margin:6px 0 0;font-weight:600} /* v122 */
+#grupos .blq.chega{background:#f0fdfa;border:2px solid #0f766e}#grupos .blq.chega h4{color:#0f766e}#grupos .blq.chega .bb{grid-template-columns:1fr 1fr}#grupos .blq.chega .bb button{background:#0f766e;color:#fff;border-color:#0f766e;padding:14px 4px;font-size:15px}#grupos .blq.chega p{font-size:12px;color:#115e59;margin:6px 0 0;font-weight:600}#cardPerda.chega .pdFx{background:#0f766e!important} .tp.entrada{background:#0f766e} /* v136 */
 #cardPerda .pdFx{background:#dc2626;color:#fff;border-radius:12px;padding:10px 12px;margin:8px 0 10px;font-weight:800;font-size:15px}#cardPerda .pdLb0{font-weight:700;font-size:15px;color:#0f172a;margin:0 0 6px}
 #cardPerda .pdLcd{background:#b8c9a3;border:3px solid #2b2b2b;border-radius:10px;padding:6px 14px 4px;margin:0 0 10px;box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}#cardPerda .pdLcd small{display:block;font:700 13px system-ui;color:#2b3a22;letter-spacing:.5px}#cardPerda .pdDig{display:flex;justify-content:flex-end;align-items:flex-end;gap:6px;padding:4px 0}
 #cardPerda .pdRl{display:flex;justify-content:center;align-items:center;gap:6px;margin:0 0 4px}#cardPerda .pdC{width:58px;height:150px;overflow-y:scroll;scroll-snap-type:y mandatory;border-radius:12px;background:#f1f5f9;border:2px solid #cbd5e1;position:relative;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}#cardPerda .pdC::-webkit-scrollbar{display:none}
@@ -893,13 +894,13 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 <div class="card" id="cardPerda">
   <div class="desc" id="pdDesc"></div>
   <div class="cod" id="pdCod"></div>
-  <div class="pdFx">🗑️ PERDA DA PADARIA — vai para baixa de AVARIA</div>
+  <div class="pdFx" id="pdFx">🗑️ PERDA DA PADARIA — vai para baixa de AVARIA</div>
   <div class="pdLb0">Gire os números até ficar igual à balança</div>
   <div class="pdLcd"><small>Peso kg</small><div class="pdDig" id="pdLcd"></div></div>
   <div class="pdRl" id="pdRl"></div>
   <div class="pdLb"><span>kg</span><i></i><span>100 g</span><span>10 g</span><span>1 g</span></div>
   <div class="pdTx" id="pdTx"></div>
-  <button class="btn ok" onclick="perdaLancar()">LANÇAR PERDA</button>
+  <button class="btn ok" id="pdBt" onclick="perdaLancar()">LANÇAR PERDA</button>
   <button class="btn cancel" onclick="perdaFechar()">CANCELAR</button>
 </div>
 
@@ -1179,6 +1180,7 @@ function renderGrupos(aberto){
   } else {
     var g=gruposCache[aberto];
     var t=document.createElement('div');t.className='titulo';t.textContent=g.grupo+' — escolha';box.appendChild(t);
+    if(/A[ÇC]OUGUE/i.test(g.grupo)&&tipoAtual==='MERCADO'&&CHEGA_QUEM.indexOf(quem)>=0)chegaBloco(box); // v136: chegada de rabada e pé suíno (no topo)
     var blqs={},ordB=[]; // v107: bloquinhos (coluna BLOCO da aba ATALHOS)
     g.itens.forEach(function(it){
       if(it.bloco){if(!blqs[it.bloco]){blqs[it.bloco]=[];ordB.push(it.bloco);}blqs[it.bloco].push(it);return;}
@@ -1208,18 +1210,30 @@ function perdaBloco(box){
   PERDA_PROD.forEach(function(it){var b=document.createElement('button');b.textContent=it.bt;b.onclick=function(){vibra();perdaAbrir(it);};d.querySelector('.bb').appendChild(b);});
   box.appendChild(d);
 }
+// ===== v136: CHEGADA NO AÇOUGUE (Celio 20/11/2026) =====
+// Rabada e pé suíno que chegam são pesados na balança e lançados aqui. Grava em LANCAMENTOS com TIPO "ENTRADA ACOUGUE";
+// a tarefa noturna faz a Movimentação Avulsa de ENTRADA (e, no pé suíno, a saída da carne suína/carcaça).
+var CHEGA_QUEM=['Celio','Cristiano','Regiane'];
+var CHEGA_PROD=[{sku:'22954',desc:'RABADA KG',bt:'RABADA',tipo:'ENTRADA ACOUGUE'},{sku:'40958',desc:'PE SUINO KG',bt:'PÉ SUÍNO',tipo:'ENTRADA ACOUGUE'}];
+function chegaBloco(box){
+  var d=document.createElement('div');d.className='blq chega';d.innerHTML='<h4>📥 CHEGOU — PESAR</h4><div class="bb"></div><p>Pese o que chegou e lance o peso. Vira ENTRADA no estoque à noite.</p>';
+  CHEGA_PROD.forEach(function(it){var b=document.createElement('button');b.textContent=it.bt;b.onclick=function(){vibra();perdaAbrir(it);};d.querySelector('.bb').appendChild(b);});
+  box.appendChild(d);
+}
 function perdaSeg(dg){var SEG={0:'abcdef',1:'bc',2:'abged',3:'abgcd',4:'fgbc',5:'afgcd',6:'afgedc',7:'abc',8:'abcdefg',9:'abcdfg'},on=SEG[dg],P={a:'M8,2 L36,2 L31,8 L13,8 Z',b:'M38,4 L38,33 L33,30 L33,10 Z',c:'M38,37 L38,66 L33,60 L33,40 Z',d:'M8,68 L36,68 L31,62 L13,62 Z',e:'M6,37 L6,66 L11,60 L11,40 Z',f:'M6,4 L6,33 L11,30 L11,10 Z',g:'M9,35 L13,31 L31,31 L35,35 L31,39 L13,39 Z'};
   return '<svg width="40" height="64" viewBox="0 0 44 70" style="transform:skewX(-6deg)">'+Object.keys(P).map(function(k){return '<path d="'+P[k]+'" fill="'+(on.indexOf(k)>=0?'#1d2a16':'rgba(29,42,22,.08)')+'"/>';}).join('')+'</svg>';}
 function perdaKg(){return perdaDig[0]+perdaDig[1]/10+perdaDig[2]/100+perdaDig[3]/1000;}
 function perdaMostra(){
   $('pdLcd').innerHTML=perdaSeg(perdaDig[0])+'<svg width="12" height="64" viewBox="0 0 12 70"><rect x="2" y="58" width="8" height="10" rx="2" fill="#1d2a16"/></svg>'+perdaSeg(perdaDig[1])+perdaSeg(perdaDig[2])+perdaSeg(perdaDig[3]);
   var kg=perdaKg(),g=Math.round(kg*1000),t=$('pdTx');
-  t.textContent=g?kg.toFixed(3).replace('.',',')+' kg = '+g.toLocaleString('pt-BR')+' g de perda':'gire os números para marcar o peso';
+  t.textContent=g?kg.toFixed(3).replace('.',',')+' kg = '+g.toLocaleString('pt-BR')+(perdaAtual&&perdaAtual.tipo==='ENTRADA ACOUGUE'?' g chegando':' g de perda'):'gire os números para marcar o peso';
   t.className='pdTx'+(g?'':' z');
 }
 function perdaAbrir(it){
   perdaAtual=it;perdaDig=[0,0,0,0];lidoTrava=true;
   $('pdDesc').textContent=it.desc;$('pdCod').textContent='SKU '+it.sku;
+  var ch=it.tipo==='ENTRADA ACOUGUE';$('cardPerda').classList.toggle('chega',ch); // v136
+  $('pdFx').textContent=ch?'📥 CHEGADA NO AÇOUGUE — vira ENTRADA no estoque':'🗑️ PERDA DA PADARIA — vai para baixa de AVARIA';$('pdBt').textContent=ch?'LANÇAR CHEGADA':'LANÇAR PERDA';
   var rl=$('pdRl');rl.innerHTML='';
   [0,1,2,3].forEach(function(i){
     if(i===1){var v=document.createElement('span');v.className='pdV';v.textContent=',';rl.appendChild(v);}
@@ -1239,8 +1253,9 @@ function perdaLancar(){
   var it=perdaAtual;if(!it)return;var kg=Math.round(perdaKg()*1000)/1000;
   if(!(kg>0)){toast('Gire os números até ficar igual à balança','err');return;}
   if(kg>10){toast('Peso acima de 10 kg — confira na balança','err');return;} // trava (a roleta vai até 9,999)
-  vibra();var reg={acao:'salvar',id:uuid(),token:token,quem:quem,tipo:'PERDA PADARIA',codigo:it.sku,sku:it.sku,desc:it.desc,qtd:kg,un:'QUILO'};
-  perdaFechar();toast('Salvando a perda…');enviar(reg);
+  var tp=it.tipo||'PERDA PADARIA'; // v136: também ENTRADA ACOUGUE
+  vibra();var reg={acao:'salvar',id:uuid(),token:token,quem:quem,tipo:tp,codigo:it.sku,sku:it.sku,desc:it.desc,qtd:kg,un:'QUILO'};
+  perdaFechar();toast(tp==='ENTRADA ACOUGUE'?'Salvando a chegada…':'Salvando a perda…');enviar(reg);
 }
 // ===== BUSCA POR NOME =====
 var modoKg=false;
@@ -1490,8 +1505,8 @@ function carregarUltimos(){
     var ul=$('ult');ul.innerHTML='';
     (r.itens||[]).forEach(function(it){
       var li=document.createElement('li');
-      var tp=it.tipo==='AVARIA'?'avaria':(it.tipo==='PERDA PADARIA'?'perda':(/MERCADO/.test(it.tipo)?'mercado':'proprio')); // v128
-      var rot=tp==='avaria'?(it.motivo==='VENCIDO'?'VENC':'AVAR'):(tp==='perda'?'PERDA':(tp==='mercado'?'MERC':'PRÓP'));
+      var tp=it.tipo==='AVARIA'?'avaria':(it.tipo==='PERDA PADARIA'?'perda':(it.tipo==='ENTRADA ACOUGUE'?'entrada':(/MERCADO/.test(it.tipo)?'mercado':'proprio'))); // v128 + v136
+      var rot=tp==='avaria'?(it.motivo==='VENCIDO'?'VENC':'AVAR'):(tp==='perda'?'PERDA':(tp==='entrada'?'ENTRADA':(tp==='mercado'?'MERC':'PRÓP')));
       var extra=it.pedidoPor?' · pedido por '+esc(it.pedidoPor):'';extra+=tp==='avaria'?(it.validade?' · val. '+esc(it.validade):'')+(it.foto?' · <a href="'+esc(it.foto)+'" target="_blank" style="color:#1d4ed8">Foto 1</a>':'')+(it.foto2?' · <a href="'+esc(it.foto2)+'" target="_blank" style="color:#1d4ed8">Foto 2</a>':''):'';
       li.innerHTML='<div class="d"><span class="tp '+tp+'">'+rot+'</span>'+esc(it.desc)+'<br><small style="color:#64748b">'+esc(it.data)+' '+esc(it.hora)+extra+'</small></div><div class="q">'+it.qtd+' '+(/QUILO|KG/i.test(it.un)?'kg':'un')+'</div><button class="x" title="excluir">✕</button>';
       var bx=li.querySelector('.x');bx.onclick=function(){if(bx.dataset.c!=='1'){bx.dataset.c='1';bx.textContent='EXCLUIR?';bx.style.fontWeight='700';setTimeout(function(){bx.dataset.c='';bx.textContent='✕';bx.style.fontWeight='';},3000);return;}bx.textContent='…';api({acao:'excluir',id:it.id,token:token,tipo:tp==='perda'?'PERDA PADARIA':tipoReq}).then(function(x){toast(x.ok?'Excluído':'Não deu para excluir ('+(x.motivo||'')+')',x.ok?'ok':'err');carregarUltimos();}).catch(function(e){toast('Erro: '+e,'err');});};
