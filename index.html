@@ -3763,11 +3763,11 @@ function ctHa(ms){var m=Math.round(ms/60000);if(m<1)return 'agora';if(m<60)retur
 function ctRender(){var box=$('ctBox');if(!ctD){box.innerHTML='<div class="pdVaz">Carregando…</div>';return;}
   var r=ctD,u=r.ult,cf=r.cfg||{},h='',agora=r.agora||Date.now();
   // --- cartão principal ---
-  if(!u){h+='<div class="ctCard"><div class="ctTit">COMPARTIMENTO 3 · FUNDO</div><div class="pdVaz" style="margin-top:8px">Ainda não chegou nenhuma leitura. O programa do PC do servidor começa a mandar em até 1 hora depois da atualização dele.</div></div>';}
+  if(!u){h+='<div class="ctCard"><div class="ctTit">COMPARTIMENTO 3 · FUNDO</div><div class="pdVaz" style="margin-top:8px">Ainda não chegou nenhuma leitura. O programa do PC do servidor começa a mandar em até 1 hora depois da atualização dele.</div>'+(r.falha?'<div class="ctSub" style="margin-top:8px">'+(r.falha.ip?'Tentando ler no IP <b>'+esc(r.falha.ip)+'</b> · ':'')+'última tentativa às '+esc(String(r.falha.quando||'').slice(11,16))+': '+esc(r.falha.erro||'sem resposta')+'</div>':'')+'</div>';}
   else{var idade=agora-(r.okEm||u.t),sem=idade>15*60000,t=Number(u.temp),quente=!sem&&t>Number(cf.max);
     var chip=sem?'<span class="ctChip x">Sem sinal '+ctHa(idade)+'</span>':(quente?'<span class="ctChip q">Acima de '+ctN(cf.max)+' °C</span>':'<span class="ctChip ok">Normal</span>');
     var pc=r.contato&&agora-r.contato<10*60000;
-    h+='<div class="ctCard"><div class="ctTop"><div><div class="ctTit">COMPARTIMENTO 3 · FUNDO</div><div class="ctSub">Sensor '+esc(u.sensor||'')+' · Wi-Fi '+esc(u.wifi||'?')+'</div></div>'+chip+'</div>'
+    h+='<div class="ctCard"><div class="ctTop"><div><div class="ctTit">COMPARTIMENTO 3 · FUNDO</div><div class="ctSub">Sensor '+esc(u.sensor||'')+((u.ipAgora||u.ip)?' · IP '+esc(sem&&u.ipAgora?u.ipAgora:(u.ip||u.ipAgora)):'')+' · Wi-Fi '+esc(u.wifi||'?')+'</div></div>'+chip+'</div>'
       +'<div class="ctTemp'+(sem?' s':(quente?' q':''))+'"><b>'+ctN(t)+'</b><span>°C</span></div>'
       +'<div class="ctHora"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Última leitura às <b>'+esc(String(u.quando||'').slice(11,16))+'</b>'+(String(u.quando||'').slice(0,10)!==ctHoje()?' de '+esc(String(u.quando).slice(0,5)):'')+' · '+ctHa(agora-u.t)+'</span><i>lê a cada 2 min</i></div>'
       +(sem?'<div class="ctAviso">'+(pc?'O PC do servidor está mandando sinal, mas o sensor não responde'+(u.erroAgora?' ('+esc(String(u.erroAgora).replace(/^sensor sem resposta: ?/,''))+')':'')+'. Veja se o aparelhinho está ligado e no Wi-Fi.':'O PC do servidor também está sem contato. Veja se ele está ligado e com internet.')+'</div>':'')
