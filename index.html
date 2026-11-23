@@ -558,7 +558,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .vfR{margin-top:8px;border-radius:10px;padding:8px 10px;font-weight:700;font-size:14px}.vfR.ok{background:#dcfce7;color:#14532d}.vfR.am{background:#fef3c7;color:#92400e}.vfR.er{background:#fee2e2;color:#991b1b}.vfR.ci{background:#f1f5f9;color:#475569}.vfR.az{background:#dbeafe;color:#1e3a8a}
 .vfAch{display:flex;gap:6px;margin-top:8px}.vfAch input{flex:1;min-width:0;font-size:17px;padding:10px}.vfAch .btn{width:auto;margin:0;padding:10px 16px}
 /* v123: Agenda Celio */
-.faixa.pend{background:#1e3a8a}
+.faixa.pend{background:#1e3a8a}.ctCard{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:14px;margin-bottom:12px}.ctTop{display:flex;justify-content:space-between;align-items:center;gap:8px}.ctTit{font-size:12px;font-weight:700;letter-spacing:.5px;color:#475569}.ctSub{font-size:13px;color:#475569;line-height:1.4}.ctH{font-size:16px}.ctChip{font-size:13px;font-weight:700;border-radius:999px;padding:5px 10px;white-space:nowrap}.ctChip.ok{background:#dcfce7;color:#14532d}.ctChip.q{background:#ffedd5;color:#9a3412}.ctChip.x{background:#fee2e2;color:#991b1b}.ctChip.b{background:#dbeafe;color:#1e40af}.ctTemp{display:flex;align-items:baseline;gap:6px;margin:10px 0 4px;color:#14532d}.ctTemp b{font-size:60px;line-height:1;font-weight:800}.ctTemp span{font-size:24px;font-weight:700}.ctTemp.q{color:#c2410c}.ctTemp.s{color:#94a3b8}.ctHora{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:14px;color:#334155;background:#f1f5f9;border-radius:10px;padding:7px 10px;margin-bottom:10px}.ctHora svg{width:18px;height:18px;fill:none;stroke:#334155;stroke-width:2;stroke-linecap:round;flex:none}.ctHora i{font-style:normal;color:#64748b;font-size:12px;margin-left:auto}.ctAviso{background:#fef2f2;color:#991b1b;border-radius:10px;padding:8px 10px;font-size:14px;margin-bottom:10px}.ctGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}.ctGrid div{background:#f1f5f9;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:2px}.ctGrid i{font-style:normal;font-size:12px;color:#475569}.ctGrid b{font-size:15px}.ctGrid b.on{color:#15803d}.ctGrid b.off{color:#b91c1c}.ctPer{display:flex;gap:6px}.ctPer button,.ctTog{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;font:600 13px system-ui;color:#0f172a}.ctPer button.on,.ctTog.on{background:#14532d;color:#fff;border-color:#14532d}.ctSvg{width:100%;height:auto;display:block;margin:8px 0 4px}.ctLim{display:flex;gap:8px;align-items:flex-end;margin-top:10px}.ctLim label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:13px;color:#475569}.ctLim input{min-height:44px;border:1px solid #cbd5e1;border-radius:10px;padding:0 10px;font-size:16px;width:100%;box-sizing:border-box}.ctBts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.ctBt{min-height:46px;border-radius:12px;border:2px solid #14532d;background:#fff;color:#14532d;font:700 15px system-ui;padding:0 12px}.ctBt.sel{background:#14532d;color:#fff}.ctBt.lg{background:#16a34a;border-color:#16a34a;color:#fff}.ctBt.dg{background:#e2e8f0;border-color:#e2e8f0;color:#0f172a}.ctBt:disabled{opacity:.5}.ctOutro{background:#fff;border:1px dashed #cbd5e1;border-radius:14px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.ctOutro div{display:flex;flex-direction:column;gap:2px}.ctOutro i{font-style:normal;font-size:13px;color:#475569}.ctOutro span{font-size:13px;color:#475569}
 .pdH{font:800 13px system-ui;color:#475569;letter-spacing:.4px;margin:14px 2px 8px;display:flex;justify-content:space-between}
 .pdI{border:2px solid #e2e8f0;border-left-width:8px;border-radius:14px;padding:10px 12px;margin:8px 0;background:#fff}
 .pdTop{display:flex;gap:10px;align-items:center}
@@ -958,6 +958,11 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
   <div class="faixa pend"><span>📅 AGENDA CELIO</span><button onclick="irTipo()">VOLTAR</button></div>
   <div class="contTop"><span id="agcDia"></span><span id="agcCont"></span></div>
   <div id="agcLista"><div class="pdVaz">Carregando…</div></div>
+</section>
+<!-- v144: TEMPERATURA DO CONTAINER (Gestão, só o Celio) -->
+<section class="tela" id="tCONT">
+  <div class="faixa pend"><span>🌡️ TEMPERATURA DO CONTAINER</span><button onclick="irTipo()">VOLTAR</button></div>
+  <div id="ctBox"><div class="pdVaz">Carregando…</div></div>
 </section>
 <!-- v109: CONTAGEM DE ESTOQUE (quem conta) -->
 <section class="tela" id="tCE">
@@ -2498,7 +2503,7 @@ function renderHome(){
   var temMP=appsCache.indexOf('PONTO')>=0,ehCelio=semAc(quem||'').toLowerCase().trim()==='celio';
   if(temMP&&!ehCelio){var gp=document.createElement('h3');gp.textContent='GESTÃO';box.appendChild(gp);box.appendChild(mpBtn());}
   if(!box.children.length)box.innerHTML=appsOk?'<p class="dica" style="font-size:16px;margin-top:20px;line-height:1.5">Seus outros módulos ainda não foram liberados.<br>Peça ao Celio para liberar.</p>':'<p class="dica">Carregando…</p>';
-  if(semAc(quem||'').toLowerCase().trim()==='celio'){var g=document.createElement('h3');g.textContent='GESTÃO';box.appendChild(g);var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:#b45309"><svg class="nhIc"><use href="#ic-sino"/></svg></span><span><b>Enviar aviso</b><i>notificação no celular da equipe</i></span><span class="ar">›</span>';b.onclick=function(){vibra();irAviso();};if(typeof v9Gestao==='function')v9Gestao(box);if(temMP)box.appendChild(mpBtn());box.appendChild(cnBtn());box.appendChild(b);} // v117 · v139: Enviar aviso por último // v63 · v109: contagem e validade na frente
+  if(semAc(quem||'').toLowerCase().trim()==='celio'){var g=document.createElement('h3');g.textContent='GESTÃO';box.appendChild(g);var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:#b45309"><svg class="nhIc"><use href="#ic-sino"/></svg></span><span><b>Enviar aviso</b><i>notificação no celular da equipe</i></span><span class="ar">›</span>';b.onclick=function(){vibra();irAviso();};if(typeof v9Gestao==='function')v9Gestao(box);if(temMP)box.appendChild(mpBtn());box.appendChild(cnBtn());box.appendChild(ctBtn());box.appendChild(b);} // v117 · v139: Enviar aviso por último // v63 · v109: contagem e validade na frente
 }
 // ----- v63: notificações (Firebase) -----
 function pushSuportado(){return NOVA_HOME&&('Notification' in window)&&('serviceWorker' in navigator);}
@@ -3736,6 +3741,7 @@ function v9Abrir(ab){
   if(ab==='conferirloja'){irGRM();return true;} // v118
   if(ab==='gvalfrente'&&cel){irGV();return true;}
   if(ab==='agenda'&&cel){irAGC();return true;} // v123
+  if(ab==='container'&&cel){irCONT();return true;} // v144
   return false;
 }
 
@@ -3745,6 +3751,65 @@ var AGC_DS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 function agcDd(d){return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2);}
 function agcDatas(){var h=new Date();h.setHours(0,0,0,0);var a=new Date(h);a.setDate(a.getDate()+1);var s=new Date(h);s.setDate(s.getDate()+((8-s.getDay())%7||7));var m=new Date(h.getFullYear(),h.getMonth()+1,1);
   return {DIA:AGC_DS[a.getDay()].slice(0,3)+' '+agcDd(a),SEMANA:'Seg '+agcDd(s),MES:AGC_DS[m.getDay()].slice(0,3)+' '+agcDd(m)};}
+// ----- v144: 🌡️ TEMPERATURA DO CONTAINER (Gestão, só o Celio) — leitura pelo programa do ponto no PC do servidor -----
+var ctD=null,ctPer='24h',ctTimer=null,ctEnv=false;
+function ctBtn(){var u=null;try{u=JSON.parse(localStorage.getItem('ctUlt')||'null');}catch(e){}var sub='compartimento 3 · temperatura e avisos';if(u&&u.temp!==undefined&&u.temp!==''&&Date.now()-u.t<3*3600000)sub='compartimento 3 · '+String(u.temp).replace('.',',')+' °C às '+String(u.quando||'').slice(11,16);
+  var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:#0e7490"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/><path d="M12 17.5v-5"/></svg></span><span><b>Temperatura do container</b><i>'+esc(sub)+'</i></span><span class="ar">›</span>';b.onclick=function(){vibra();irCONT();};return b;}
+function irCONT(){pararCamera();mostrar('tCONT');ctRender();ctCarregar();clearInterval(ctTimer);ctTimer=setInterval(function(){if($('tCONT').classList.contains('on'))ctCarregar(true);else clearInterval(ctTimer);},60000);}
+function ctCarregar(quieto){v9Api({acao:'contTela',periodo:ctPer},function(r){ctD=r;try{if(r.ult)localStorage.setItem('ctUlt',JSON.stringify(r.ult));}catch(e){}ctRender();},function(){if(!quieto&&!ctD)$('ctBox').innerHTML='<div class="pdVaz">Não consegui carregar. Toque em VOLTAR e entre de novo.</div>';});}
+function ctHoje(){var d=new Date();return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear();}
+function ctN(v){return String(Math.round(Number(v)*10)/10).replace('.',',');}
+function ctHa(ms){var m=Math.round(ms/60000);if(m<1)return 'agora';if(m<60)return 'há '+m+' min';var h=Math.floor(m/60);if(h<24)return 'há '+h+' h'+(m%60?' '+(m%60)+' min':'');return 'há '+Math.floor(h/24)+' dia'+(h>=48?'s':'');}
+function ctRender(){var box=$('ctBox');if(!ctD){box.innerHTML='<div class="pdVaz">Carregando…</div>';return;}
+  var r=ctD,u=r.ult,cf=r.cfg||{},h='',agora=r.agora||Date.now();
+  // --- cartão principal ---
+  if(!u){h+='<div class="ctCard"><div class="ctTit">COMPARTIMENTO 3 · FUNDO</div><div class="pdVaz" style="margin-top:8px">Ainda não chegou nenhuma leitura. O programa do PC do servidor começa a mandar em até 1 hora depois da atualização dele.</div></div>';}
+  else{var idade=agora-(r.okEm||u.t),sem=idade>15*60000,t=Number(u.temp),quente=!sem&&t>Number(cf.max);
+    var chip=sem?'<span class="ctChip x">Sem sinal '+ctHa(idade)+'</span>':(quente?'<span class="ctChip q">Acima de '+ctN(cf.max)+' °C</span>':'<span class="ctChip ok">Normal</span>');
+    var pc=r.contato&&agora-r.contato<10*60000;
+    h+='<div class="ctCard"><div class="ctTop"><div><div class="ctTit">COMPARTIMENTO 3 · FUNDO</div><div class="ctSub">Sensor '+esc(u.sensor||'')+' · Wi-Fi '+esc(u.wifi||'?')+'</div></div>'+chip+'</div>'
+      +'<div class="ctTemp'+(sem?' s':(quente?' q':''))+'"><b>'+ctN(t)+'</b><span>°C</span></div>'
+      +'<div class="ctHora"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Última leitura às <b>'+esc(String(u.quando||'').slice(11,16))+'</b>'+(String(u.quando||'').slice(0,10)!==ctHoje()?' de '+esc(String(u.quando).slice(0,5)):'')+' · '+ctHa(agora-u.t)+'</span><i>lê a cada 2 min</i></div>'
+      +(sem?'<div class="ctAviso">'+(pc?'O PC do servidor está mandando sinal, mas o sensor não responde'+(u.erroAgora?' ('+esc(String(u.erroAgora).replace(/^sensor sem resposta: ?/,''))+')':'')+'. Veja se o aparelhinho está ligado e no Wi-Fi.':'O PC do servidor também está sem contato. Veja se ele está ligado e com internet.')+'</div>':'')
+      +'<div class="ctGrid"><div><i>Ventilador</i><b class="'+(u.vent==='LIGADO'?'on':'off')+'">'+(u.vent==='LIGADO'?'Ligado':'Desligado')+'</b></div><div><i>Modo</i><b>'+(u.modo==='AUTO'?'Automático':'Manual')+'</b></div><div><i>Automático</i><b>liga '+ctN(u.tOn)+' · desliga '+ctN(u.tOff)+'</b></div></div></div>';}
+  // --- gráfico ---
+  h+='<div class="ctCard"><div class="ctTop"><b class="ctH">'+(r.periodo==='7d'?'Últimos 7 dias':'Últimas 24 horas')+'</b><div class="ctPer"><button type="button" class="'+(ctPer==='24h'?'on':'')+'" onclick="ctPeriodo(\'24h\')">24 h</button><button type="button" class="'+(ctPer==='7d'?'on':'')+'" onclick="ctPeriodo(\'7d\')">7 dias</button></div></div>'+ctGraf(r)
+    +(r.pts&&r.pts.length?'<div class="ctGrid"><div><i>Mínima</i><b>'+ctN(r.min)+' °C</b></div><div><i>Máxima</i><b>'+ctN(r.max)+' °C</b></div><div><i>Acima de '+ctN(cf.max)+' °C</i><b>'+(r.acimaMin>=60?Math.floor(r.acimaMin/60)+' h '+(r.acimaMin%60)+' min':r.acimaMin+' min')+'</b></div></div>':'')+'</div>';
+  // --- avisos ---
+  h+='<div class="ctCard"><div class="ctTop"><b class="ctH">Avisos no celular</b><button type="button" class="ctTog'+(cf.ligado?' on':'')+'" onclick="ctCfg({ligado:'+(!cf.ligado)+'})">'+(cf.ligado?'Ligados':'Pausados')+'</button></div>'
+    +'<div class="ctLim"><label>Passou de (°C)<input id="ctMax" type="number" inputmode="decimal" step="0.5" value="'+Number(cf.max)+'"></label><label>por (min)<input id="ctMin" type="number" inputmode="numeric" value="'+Number(cf.minutos)+'"></label><button type="button" class="ctBt" onclick="ctCfg({max:$(\'ctMax\').value,minutos:$(\'ctMin\').value})">Salvar</button></div>'
+    +'<div class="ctSub" style="margin-top:6px">Também avisa quando o sensor fica '+Number(cf.semSinal||15)+' min sem mandar leitura e quando volta ao normal.'+(cf.ligado?'':' Pause os avisos quando desligar o sensor de propósito (degelo).')+'</div></div>';
+  // --- controle ---
+  h+='<div class="ctCard"><div class="ctTop"><b class="ctH">Controle do ventilador</b>'+(r.controle?'':'<span class="ctChip b">em breve</span>')+'</div>';
+  if(!r.controle)h+='<div class="ctSub">Ligar, desligar, automático/manual e as temperaturas do automático pelo app ficam liberados assim que eu conferir os comandos do aparelhinho do compartimento 3.</div>';
+  else{var c=r.cmd,pend=c&&c.status==='PENDENTE';
+    h+='<div class="ctBts"><button type="button" class="ctBt'+(u&&u.modo==='AUTO'?' sel':'')+'" '+(pend||ctEnv?'disabled':'')+' onclick="ctCmd(\'AUTO\')">Automático</button><button type="button" class="ctBt'+(u&&u.modo==='MANUAL'?' sel':'')+'" '+(pend||ctEnv?'disabled':'')+' onclick="ctCmd(\'MANUAL\')">Manual</button><button type="button" class="ctBt lg" '+(pend||ctEnv?'disabled':'')+' onclick="ctCmd(\'LIGAR\')">Ligar</button><button type="button" class="ctBt dg" '+(pend||ctEnv?'disabled':'')+' onclick="ctCmd(\'DESLIGAR\')">Desligar</button></div>'
+      +'<div class="ctLim"><label>Liga acima de (°C)<input id="ctOn" type="number" inputmode="decimal" step="0.5" value="'+(u?Number(u.tOn):'')+'"></label><label>Desliga abaixo de (°C)<input id="ctOff" type="number" inputmode="decimal" step="0.5" value="'+(u?Number(u.tOff):'')+'"></label><button type="button" class="ctBt" '+(pend||ctEnv?'disabled':'')+' onclick="ctCmd(\'LIMITES\')">Enviar</button></div>';
+    if(c){var nm={LIGAR:'Ligar',DESLIGAR:'Desligar',AUTO:'Automático',MANUAL:'Manual',LIMITES:'Temperaturas '+ctN(c.tOn)+' / '+ctN(c.tOff)}[c.op]||c.op;h+='<div class="ctSub" style="margin-top:6px">Último comando: <b>'+esc(nm)+'</b> ('+esc(String(c.pedido||'').slice(0,16))+') — '+(c.status==='PENDENTE'?'⏳ esperando o PC do servidor (até 2 min)':(c.status==='FEITO'?'✅ feito às '+esc(String(c.feito||'').slice(11,16)):'❌ não deu certo'+(c.resp?': '+esc(c.resp):'')))+'</div>';}}
+  h+='</div>';
+  // --- outros compartimentos ---
+  h+='<div class="ctTit" style="margin:4px 4px 6px">OUTROS COMPARTIMENTOS</div>'+[['Compartimento 2 · meio','Controlador sem Wi-Fi'],['Compartimento 1 · frios','Aguardando sensor'],['Congelado · máquina Carrier','Controlado pela própria máquina']].map(function(x){return '<div class="ctOutro"><div><b>'+x[0]+'</b><i>'+x[1]+'</i></div><span>sem sensor</span></div>';}).join('');
+  box.innerHTML=h;}
+function ctGraf(r){var p=r.pts||[];if(p.length<2)return '<div class="pdVaz" style="margin:8px 0">Sem leituras '+(r.periodo==='7d'?'nos últimos 7 dias':'nas últimas 24 horas')+'.</div>';
+  var W=340,H=150,L=30,R=6,T=8,B=20,u=r.ult||{},cf=r.cfg||{},ag=r.agora,ini=ag-(r.periodo==='7d'?7:1)*86400000;
+  var vs=p.map(function(x){return x[1];});var lo=Math.min.apply(null,vs),hi=Math.max.apply(null,vs);if(u.tOff!==undefined&&u.tOff!=='')lo=Math.min(lo,Number(u.tOff));hi=Math.max(hi,Number(cf.max)||hi);lo=Math.floor(lo-1);hi=Math.ceil(hi+1);if(hi-lo<4)hi=lo+4;
+  var X=function(t){return L+(t-ini)/(ag-ini)*(W-L-R);},Y=function(v){return T+(hi-v)/(hi-lo)*(H-T-B);};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" class="ctSvg" role="img" aria-label="Gráfico da temperatura">';
+  if(u.tOn!==undefined&&u.tOn!==''&&u.tOff!==undefined&&u.tOff!=='')s+='<rect x="'+L+'" y="'+Y(Number(u.tOn)).toFixed(1)+'" width="'+(W-L-R)+'" height="'+Math.max(1,Y(Number(u.tOff))-Y(Number(u.tOn))).toFixed(1)+'" fill="#dcfce7"/>';
+  if(cf.max!==undefined)s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(Number(cf.max)).toFixed(1)+'" y2="'+Y(Number(cf.max)).toFixed(1)+'" stroke="#c2410c" stroke-dasharray="4 4"/>';
+  for(var i=0;i<=4;i++){var v=lo+(hi-lo)*i/4,y=Y(v);s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="#e2e8f0"/><text x="0" y="'+(y+4).toFixed(1)+'" font-size="10" fill="#475569">'+Math.round(v)+'°</text>';}
+  var seg=[],cur=[];p.forEach(function(x,j){if(j&&x[0]-p[j-1][0]>(r.periodo==='7d'?75:12)*60000){seg.push(cur);cur=[];}cur.push(X(x[0]).toFixed(1)+','+Y(x[1]).toFixed(1));});seg.push(cur);
+  seg.forEach(function(c){if(c.length>1)s+='<polyline fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linejoin="round" points="'+c.join(' ')+'"/>';else s+='<circle cx="'+c[0].split(',')[0]+'" cy="'+c[0].split(',')[1]+'" r="1.8" fill="#1d4ed8"/>';});
+  var lp=p[p.length-1];s+='<circle cx="'+X(lp[0]).toFixed(1)+'" cy="'+Y(lp[1]).toFixed(1)+'" r="4" fill="'+(lp[1]>Number(cf.max)?'#c2410c':'#1d4ed8')+'"/>';
+  var f=function(t){var d=new Date(t);return r.periodo==='7d'?('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2):('0'+d.getHours()).slice(-2)+'h';};
+  s+='<text x="'+L+'" y="'+(H-4)+'" font-size="10" fill="#475569">'+f(ini)+'</text><text x="'+((L+W-R)/2-8)+'" y="'+(H-4)+'" font-size="10" fill="#475569">'+f((ini+ag)/2)+'</text><text x="'+(W-R-26)+'" y="'+(H-4)+'" font-size="10" fill="#475569">agora</text></svg>';
+  return s+'<div class="ctSub">Faixa verde = automático do sensor (liga/desliga) · tracejado = limite do aviso ('+ctN(cf.max)+' °C)</div>';}
+function ctPeriodo(x){vibra();ctPer=x;ctRender();ctCarregar();}
+function ctCfg(o){vibra();var p={acao:'contCfg'};for(var k in o)p[k]=o[k];v9Api(p,function(r){if(ctD)ctD.cfg=r.cfg;ctRender();toast('Avisos salvos','ok');});}
+function ctCmd(op){vibra();var p={acao:'contCmd',op:op};if(op==='LIMITES'){p.tOn=$('ctOn').value;p.tOff=$('ctOff').value;}
+  var nm={LIGAR:'LIGAR o ventilador',DESLIGAR:'DESLIGAR o ventilador',AUTO:'passar para AUTOMÁTICO',MANUAL:'passar para MANUAL',LIMITES:'trocar as temperaturas do automático'}[op];
+  if(!confirm('Confirma '+nm+' do compartimento 3?'))return;ctEnv=true;ctRender();
+  v9Api(p,function(r){ctEnv=false;if(ctD)ctD.cmd=r.cmd;ctRender();toast('Comando enviado — chega ao sensor em até 2 min','ok');},function(){ctEnv=false;ctRender();});}
 function irAGC(){pararCamera();mostrar('tAGC');agcAb=null;var h=new Date();$('agcDia').textContent=AGC_DS[h.getDay()]+', '+agcDd(h);agcRender();agcCarregar();}
 function agcCarregar(){v9Api({acao:'agcLista'},function(r){agcC=r;agcOcultos={};agcRender();});}
 function agcResumo(){if(!agcC)return;var p=agcC.pend.length,a=agcC.agenda.length;$('agcCont').textContent=p+' pendência'+(p===1?'':'s')+' · '+a+' na agenda';try{resumoCache=resumoCache||{};resumoCache.agc={p:p,a:a};}catch(e){}}
