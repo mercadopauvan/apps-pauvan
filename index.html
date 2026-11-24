@@ -572,6 +572,9 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .pdI.ag{border-left-color:#1e3a8a}
 .pdI.passou{background:#f1f5f9;border-left-color:#94a3b8}
 .pdI.passou .hr,.pdI.passou b{color:#94a3b8}
+.ctAbas{display:flex;gap:6px;margin:0 0 10px}
+.ctAbas button{flex:1;min-height:44px;border-radius:12px;border:2px solid #cbd5e1;background:#fff;font:800 14px system-ui;color:#334155}
+.ctAbas button.on{background:#0e7490;border-color:#0e7490;color:#fff}
 .flaC{border:2px solid #111;border-radius:16px;overflow:hidden;margin:4px 0 12px;background:#fff}
 .flaH{background:repeating-linear-gradient(180deg,#c8102e 0 8px,#111 8px 16px);padding:3px}
 .flaH div{background:#111;color:#fff;border-radius:11px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;font:900 14px system-ui;letter-spacing:.4px}
@@ -979,7 +982,7 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 </section>
 <!-- v144: TEMPERATURA DO CONTAINER (Gestão, só o Celio) -->
 <section class="tela" id="tCONT">
-  <div class="faixa pend"><span>🌡️ TEMPERATURA DO CONTAINER</span><button onclick="irTipo()">VOLTAR</button></div>
+  <div class="faixa pend"><span>🌡️ TEMPERATURAS</span><button onclick="irTipo()">VOLTAR</button></div>
   <div id="ctBox"><div class="pdVaz">Carregando…</div></div>
 </section>
 <!-- v109: CONTAGEM DE ESTOQUE (quem conta) -->
@@ -3770,16 +3773,19 @@ function agcDd(d){return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).
 function agcDatas(){var h=new Date();h.setHours(0,0,0,0);var a=new Date(h);a.setDate(a.getDate()+1);var s=new Date(h);s.setDate(s.getDate()+((8-s.getDay())%7||7));var m=new Date(h.getFullYear(),h.getMonth()+1,1);
   return {DIA:AGC_DS[a.getDay()].slice(0,3)+' '+agcDd(a),SEMANA:'Seg '+agcDd(s),MES:AGC_DS[m.getDay()].slice(0,3)+' '+agcDd(m)};}
 // ----- v144: 🌡️ TEMPERATURA DO CONTAINER (Gestão, só o Celio) — leitura pelo programa do ponto no PC do servidor -----
-var ctD=null,ctPer='12h',ctTimer=null,ctEnv=false;
-function ctBtn(){var u=null;try{u=JSON.parse(localStorage.getItem('ctUlt')||'null');}catch(e){}var sub='compartimento 3 · temperatura e avisos';if(u&&u.temp!==undefined&&u.temp!==''&&Date.now()-u.t<3*3600000)sub='compartimento 3 · '+String(u.temp).replace('.',',')+' °C às '+String(u.quando||'').slice(11,16);
-  var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:#0e7490"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/><path d="M12 17.5v-5"/></svg></span><span><b>Temperatura do container</b><i>'+esc(sub)+'</i></span><span class="ar">›</span>';b.onclick=function(){vibra();irCONT();};return b;}
+var ctD=null,ctPer='12h',ctTimer=null,ctEnv=false,ctComp='3'; /* v153: ctComp '3' = container · 'CERV' = cervejeira */
+function ctBtn(){var u=null;try{u=JSON.parse(localStorage.getItem('ctUlt')||'null');}catch(e){}var sub='compartimento 3 e cervejeira · temperatura e avisos';if(u&&u.temp!==undefined&&u.temp!==''&&Date.now()-u.t<3*3600000)sub='compartimento 3 · '+String(u.temp).replace('.',',')+' °C às '+String(u.quando||'').slice(11,16);
+  var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:#0e7490"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/><path d="M12 17.5v-5"/></svg></span><span><b>Temperatura do container e cervejeira</b><i>'+esc(sub)+'</i></span><span class="ar">›</span>';b.onclick=function(){vibra();irCONT();};return b;}
 function irCONT(){pararCamera();mostrar('tCONT');ctRender();ctCarregar();clearInterval(ctTimer);ctTimer=setInterval(function(){if($('tCONT').classList.contains('on'))ctCarregar(true);else clearInterval(ctTimer);},60000);}
-function ctCarregar(quieto){v9Api({acao:'contTela',periodo:ctPer},function(r){ctD=r;try{if(r.ult)localStorage.setItem('ctUlt',JSON.stringify(r.ult));}catch(e){}ctRender();},function(){if(!quieto&&!ctD)$('ctBox').innerHTML='<div class="pdVaz">Não consegui carregar. Toque em VOLTAR e entre de novo.</div>';});}
+function ctCarregar(quieto){var cp=ctComp;v9Api({acao:'contTela',periodo:ctPer,comp:cp},function(r){if(cp!==ctComp)return;ctD=r;try{if(r.ult&&cp==='3')localStorage.setItem('ctUlt',JSON.stringify(r.ult));}catch(e){}ctRender();},function(){if(!quieto&&!ctD)$('ctBox').innerHTML='<div class="pdVaz">Não consegui carregar. Toque em VOLTAR e entre de novo.</div>';});}
 function ctHoje(){var d=new Date();return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear();}
 function ctN(v){return String(Math.round(Number(v)*10)/10).replace('.',',');}
 function ctHa(ms){var m=Math.round(ms/60000);if(m<1)return 'agora';if(m<60)return 'há '+m+' min';var h=Math.floor(m/60);if(h<24)return 'há '+h+' h'+(m%60?' '+(m%60)+' min':'');return 'há '+Math.floor(h/24)+' dia'+(h>=48?'s':'');}
-function ctRender(){var box=$('ctBox');if(!ctD){box.innerHTML='<div class="pdVaz">Carregando…</div>';return;}
-  var r=ctD,u=r.ult,cf=r.cfg||{},h='',agora=r.agora||Date.now();
+function ctAba(c){vibra();if(c===ctComp)return;ctComp=c;ctD=null;ctRender();ctCarregar();}
+function ctAbas(){return '<div class="ctAbas"><button type="button" class="'+(ctComp==='3'?'on':'')+'" onclick="ctAba(\'3\')">📦 Container · C3</button><button type="button" class="'+(ctComp==='CERV'?'on':'')+'" onclick="ctAba(\'CERV\')">🍺 Cervejeira</button></div>';}
+function ctRender(){var box=$('ctBox');if(!ctD){box.innerHTML=ctAbas()+'<div class="pdVaz">Carregando…</div>';return;}
+  if(ctComp==='CERV'){box.innerHTML=ctAbas()+ctCerv();return;}
+  var r=ctD,u=r.ult,cf=r.cfg||{},h=ctAbas(),agora=r.agora||Date.now();
   // --- cartão principal ---
   if(!u){h+='<div class="ctCard"><div class="ctTit">COMPARTIMENTO 3 · FUNDO</div><div class="pdVaz" style="margin-top:8px">Ainda não chegou nenhuma leitura. O programa do PC do servidor começa a mandar em até 1 hora depois da atualização dele.</div>'+(r.falha?'<div class="ctSub" style="margin-top:8px">'+(r.falha.ip?'Tentando ler no IP <b>'+esc(r.falha.ip)+'</b> · ':'')+'última tentativa às '+esc(String(r.falha.quando||'').slice(11,16))+': '+esc(r.falha.erro||'sem resposta')+'</div>':'')+'</div>';}
   else{var idade=agora-(r.okEm||u.t),sem=idade>15*60000,t=Number(u.temp),quente=!sem&&t>Number(cf.max);
@@ -3810,6 +3816,22 @@ function ctRender(){var box=$('ctBox');if(!ctD){box.innerHTML='<div class="pdVaz
   // --- outros compartimentos ---
   h+='<div class="ctTit" style="margin:4px 4px 6px">OUTROS COMPARTIMENTOS</div>'+[['Compartimento 2 · meio','Controlador sem Wi-Fi'],['Compartimento 1 · frios','Aguardando sensor'],['Congelado · máquina Carrier','Controlado pela própria máquina']].map(function(x){return '<div class="ctOutro"><div><b>'+x[0]+'</b><i>'+x[1]+'</i></div><span>sem sensor</span></div>';}).join('');
   box.innerHTML=h;}
+/* v153: 🍺 CERVEJEIRA — controlador XT "Cervejeira" lido pelo programa do ponto a cada 2 min. Só leitura: sem comando, sem avisos. */
+function ctCerv(){var r=ctD,u=r.ult,h='',agora=r.agora||Date.now(),sp=u&&u.setpoint!==''&&u.setpoint!=null,hy=u&&u.hyst!==''&&u.hyst!=null;
+  if(!u){h+='<div class="ctCard"><div class="ctTit">CERVEJEIRA</div><div class="pdVaz" style="margin-top:8px">Ainda não chegou nenhuma leitura. O programa do PC do servidor começa a mandar em até 1 hora depois da atualização dele.</div>'+(r.falha?'<div class="ctSub" style="margin-top:8px">'+(r.falha.ip?'Tentando ler no IP <b>'+esc(r.falha.ip)+'</b> · ':'')+'última tentativa às '+esc(String(r.falha.quando||'').slice(11,16))+': '+esc(String(r.falha.erro||'sem resposta').replace(/^cervejeira sem resposta: ?/,'sem resposta: '))+'</div>':'')+'</div>';}
+  else{var idade=agora-(r.okEm||u.t),sem=idade>15*60000,t=Number(u.temp),pc=r.contato&&agora-r.contato<10*60000;
+    h+='<div class="ctCard"><div class="ctTop"><div><div class="ctTit">CERVEJEIRA</div><div class="ctSub">Controlador XT'+((u.ipAgora||u.ip)?' · IP '+esc(sem&&u.ipAgora?u.ipAgora:(u.ip||u.ipAgora)):'')+' · Wi-Fi '+esc(u.wifi||'?')+'</div></div>'+(sem?'<span class="ctChip x">Sem sinal '+ctHa(idade)+'</span>':'<span class="ctChip ok">Lendo</span>')+'</div>'
+      +'<div class="ctTemp'+(sem?' s':'')+'"><b>'+ctN(t)+'</b><span>°C</span></div>'
+      +'<div class="ctHora"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Última leitura às <b>'+esc(String(u.quando||'').slice(11,16))+'</b>'+(String(u.quando||'').slice(0,10)!==ctHoje()?' de '+esc(String(u.quando).slice(0,5)):'')+' · '+ctHa(agora-u.t)+'</span><i>lê a cada 2 min</i></div>'
+      +(sem?'<div class="ctAviso">'+(pc?'O PC do servidor está mandando sinal, mas a cervejeira não responde'+(u.erroAgora?' ('+esc(String(u.erroAgora).replace(/^cervejeira sem resposta: ?/,''))+')':'')+'. Veja se o controlador está ligado e no Wi-Fi.':'O PC do servidor também está sem contato. Veja se ele está ligado e com internet.')+'</div>':'')
+      +'<div class="ctGrid"><div><i>Compressor</i><b class="'+(u.vent==='LIGADO'?'on':'off')+'">'+(u.vent==='LIGADO'?'Ligado':'Desligado')+'</b></div><div><i>Regulagem</i><b>'+(sp?ctN(u.setpoint)+' °C':'—')+'</b></div><div><i>Histerese</i><b>'+(hy?ctN(u.hyst)+' °C':'—')+'</b></div></div></div>';}
+  var g={};for(var k in r)g[k]=r[k];g.cfg={};g.ult=(u&&sp)?{tOff:Number(u.setpoint),tOn:Number(u.setpoint)+(hy?Number(u.hyst):0)}:{};g=ct12(g);g.semLegenda=true;
+  var lg=(g.pts||[]).filter(function(x){return x[2];}).length,pl=g.pts&&g.pts.length?Math.round(lg/g.pts.length*100):0;
+  h+='<div class="ctCard"><div class="ctTop"><b class="ctH">'+(g.periodo==='7d'?'Últimos 7 dias':g.periodo==='12h'?'Últimas 12 horas':'Últimas 24 horas')+'</b><div class="ctPer"><button type="button" class="'+(ctPer==='12h'?'on':'')+'" onclick="ctPeriodo(\'12h\')">12 h</button><button type="button" class="'+(ctPer==='24h'?'on':'')+'" onclick="ctPeriodo(\'24h\')">24 h</button><button type="button" class="'+(ctPer==='7d'?'on':'')+'" onclick="ctPeriodo(\'7d\')">7 dias</button></div></div>'+ctGraf(g)
+    +(g.pts&&g.pts.length?'<div class="ctGrid"><div><i>Mínima</i><b>'+ctN(g.min)+' °C</b></div><div><i>Máxima</i><b>'+ctN(g.max)+' °C</b></div><div><i>Compressor ligado</i><b>'+pl+'%</b></div></div>':'')
+    +(sp?'<div class="ctSub" style="margin-top:6px">Faixa verde = regulagem '+ctN(u.setpoint)+' °C'+(hy?' até '+ctN(Number(u.setpoint)+Number(u.hyst))+' °C (histerese '+ctN(u.hyst)+')':'')+'.</div>':'')+'</div>';
+  h+='<div class="ctSub" style="margin:0 4px 10px">🔒 Só leitura: o app não liga nem desliga a cervejeira e não manda aviso no celular por enquanto.</div>';
+  return h;}
 /* v151.1: 12 h = recorte das 24 h na própria tela (o servidor manda as leituras cruas de 2 em 2 min) */
 function ct12(r){if(ctPer!=='12h'||!r||r.periodo!=='24h')return r;var o={};for(var k in r)o[k]=r[k];var lim=r.agora-43200000,cf=r.cfg||{},mx=Number(cf.max),ac=0,mn=null,mxx=null;
   o.pts=(r.pts||[]).filter(function(x){return x[0]>=lim;});o.pts.forEach(function(x,i){if(mn===null||x[1]<mn)mn=x[1];if(mxx===null||x[1]>mxx)mxx=x[1];if(x[1]>mx&&i>0&&x[0]-o.pts[i-1][0]<600000)ac+=x[0]-o.pts[i-1][0];});
@@ -3832,6 +3854,7 @@ function ctGraf(r){var p=r.pts||[];if(p.length<2)return '<div class="pdVaz" styl
   seg.forEach(function(c){if(c.length>1)s+='<polyline fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linejoin="round" points="'+c.join(' ')+'"/>';else s+='<circle cx="'+c[0].split(',')[0]+'" cy="'+c[0].split(',')[1]+'" r="1.8" fill="#1d4ed8"/>';});
   var lp=p[p.length-1];s+='<circle cx="'+X(lp[0]).toFixed(1)+'" cy="'+Y(lp[1]).toFixed(1)+'" r="4" fill="'+(lp[1]>Number(cf.max)?'#c2410c':'#1d4ed8')+'"/>';
   s+=lab+'</svg>';
+  if(r.semLegenda)return s; /* v153: cervejeira tem a legenda própria */
   return s+'<div class="ctSub">Faixa verde = automático do sensor (liga/desliga) · tracejado = limite do aviso ('+ctN(cf.max)+' °C)</div>';}
 function ctPeriodo(x){vibra();ctPer=x;ctRender();ctCarregar();}
 function ctCfg(o){vibra();var p={acao:'contCfg'};for(var k in o)p[k]=o[k];v9Api(p,function(r){if(ctD)ctD.cfg=r.cfg;ctRender();toast('Avisos salvos','ok');});}
@@ -3840,7 +3863,7 @@ function ctCmd(op){vibra();var p={acao:'contCmd',op:op};if(op==='LIMITES'){p.tOn
   if(op!=='PROCURAR'&&!confirm('Confirma '+nm+' do compartimento 3?'))return;ctEnv=true;ctRender();
   v9Api(p,function(r){ctEnv=false;if(ctD)ctD.cmd=r.cmd;ctRender();toast(op==='PROCURAR'?'Procurando o sensor na rede…':'Comando enviado ao aparelho','ok');ctRapido(r.cmd&&r.cmd.id,0);},function(){ctEnv=false;ctRender();});}
 // v145: depois do comando, confere a cada 3 s até o aparelho confirmar (máx. ~45 s)
-function ctRapido(id,n){if(!id||n>14||!$('tCONT').classList.contains('on'))return;setTimeout(function(){v9Api({acao:'contTela',periodo:ctPer},function(r){ctD=r;try{if(r.ult)localStorage.setItem('ctUlt',JSON.stringify(r.ult));}catch(e){}ctRender();var c=r.cmd;if(c&&String(c.id)===String(id)&&c.status!=='PENDENTE'){vibra();toast(c.status==='FEITO'?(c.op==='PROCURAR'?'✅ Sensor '+(c.resp||'achado'):'✅ O aparelho confirmou'):(c.op==='PROCURAR'?'❌ ':'❌ O aparelho não confirmou: ')+(c.resp||''),c.status==='FEITO'?'ok':'err');}else ctRapido(id,n+1);},function(){ctRapido(id,n+1);});},n?3000:2000);}
+function ctRapido(id,n){if(!id||n>14||!$('tCONT').classList.contains('on'))return;setTimeout(function(){if(ctComp!=='3')return;v9Api({acao:'contTela',periodo:ctPer,comp:'3'},function(r){if(ctComp!=='3')return;ctD=r;try{if(r.ult)localStorage.setItem('ctUlt',JSON.stringify(r.ult));}catch(e){}ctRender();var c=r.cmd;if(c&&String(c.id)===String(id)&&c.status!=='PENDENTE'){vibra();toast(c.status==='FEITO'?(c.op==='PROCURAR'?'✅ Sensor '+(c.resp||'achado'):'✅ O aparelho confirmou'):(c.op==='PROCURAR'?'❌ ':'❌ O aparelho não confirmou: ')+(c.resp||''),c.status==='FEITO'?'ok':'err');}else ctRapido(id,n+1);},function(){ctRapido(id,n+1);});},n?3000:2000);}
 function irAGC(){pararCamera();mostrar('tAGC');agcAb=null;var h=new Date();$('agcDia').textContent=AGC_DS[h.getDay()]+', '+agcDd(h);agcRender();agcCarregar();}
 function agcCarregar(){v9Api({acao:'agcLista'},function(r){agcC=r;agcOcultos={};agcRender();});}
 function agcResumo(){if(!agcC)return;var p=agcC.pend.length,a=agcC.agenda.length;$('agcCont').textContent=p+' pendência'+(p===1?'':'s')+' · '+a+' na agenda';try{resumoCache=resumoCache||{};resumoCache.agc={p:p,a:a};}catch(e){}}
