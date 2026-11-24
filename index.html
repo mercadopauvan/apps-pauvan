@@ -572,6 +572,23 @@ ul.vs li .desf{margin-top:8px;border:1px solid #d97706;background:#fff;color:#b4
 .pdI.ag{border-left-color:#1e3a8a}
 .pdI.passou{background:#f1f5f9;border-left-color:#94a3b8}
 .pdI.passou .hr,.pdI.passou b{color:#94a3b8}
+.flaC{border:2px solid #111;border-radius:16px;overflow:hidden;margin:4px 0 12px;background:#fff}
+.flaH{background:repeating-linear-gradient(180deg,#c8102e 0 8px,#111 8px 16px);padding:3px}
+.flaH div{background:#111;color:#fff;border-radius:11px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;font:900 14px system-ui;letter-spacing:.4px}
+.flaH span.n{background:#c8102e;border-radius:999px;padding:2px 9px;font-size:13px}
+.flaJ{display:flex;gap:10px;align-items:center;padding:10px 12px;border-top:1px solid #e5e7eb}
+.flaJ:first-of-type{border-top:0}
+.flaJ.hj{background:#fde8eb;border-left:6px solid #c8102e;padding-left:6px}
+.flaD{background:#111;color:#fff;border-radius:10px;min-width:54px;text-align:center;padding:5px 4px;line-height:1.1}
+.flaD b{display:block;font:900 12px system-ui;color:#fca5a5;letter-spacing:.5px}
+.flaD span{font:800 15px system-ui}
+.flaT{flex:1;min-width:0}
+.flaT b{display:block;font:800 16px system-ui;color:#111}
+.flaT small{display:block;color:#475569;font-size:12px;line-height:1.35}
+.flaT .hz{display:inline-block;background:#c8102e;color:#fff;font:900 11px system-ui;border-radius:999px;padding:2px 8px;margin:0 0 3px;letter-spacing:.5px}
+.flaR{display:flex;flex-direction:column;align-items:center;gap:6px}
+.flaR i{font:900 18px system-ui;font-style:normal;color:#c8102e}
+.flaR button{min-height:40px;min-width:56px;border-radius:10px;border:2px solid #111;background:#111;color:#fff;font:800 14px system-ui}
 .pdTag{display:inline-block;font:800 11px system-ui;border-radius:999px;padding:2px 8px;margin:4px 4px 0 0}
 .pdTag.alta{background:#dc2626;color:#fff}
 .pdTag.media{background:#eab308;color:#422006}
@@ -3831,12 +3848,13 @@ function agcObs(o){return String(o.obs||'').replace(/\s*·?\s*https?:\/\/\S+/,''
 function agcPri(v){v=semAc(v||'').toLowerCase().trim();return v==='alta'||v==='media'||v==='baixa'?v:'';}
 function agcRender(){
   var box=$('agcLista');if(!agcC){box.innerHTML='<div class="pdVaz">Carregando…</div>';return;}
-  ['agenda','pend'].forEach(function(k){agcC[k]=agcC[k].filter(function(o){return !agcOcultos[o.row];});});
+  agcC.fla=agcC.fla||[];['agenda','pend','fla'].forEach(function(k){agcC[k]=agcC[k].filter(function(o){return !agcOcultos[o.row];});});
   agcResumo();
   var agora=new Date(),hm=('0'+agora.getHours()).slice(-2)+':'+('0'+agora.getMinutes()).slice(-2),D=agcDatas(),h='';
   var bts=function(o){var lk=agcLink(o);if(agcOpo(o))return '<div class="pdBts"><button class="pdOk" onclick="agcFazer('+o.row+',\'COMPREI\')">✅ COMPREI</button><button class="pdNo" onclick="agcFazer('+o.row+',\'DESCARTAR\')">🚫 NÃO QUERO</button></div>'; /* v132: oportunidade de atacado */
     return (lk?'<button class="pdLk" onclick="vibra();window.open(\''+esc(lk).replace(/'/g,'%27')+'\',\'_blank\')">🔗 ABRIR CONVERSA</button>':'')+'<div class="pdBts"><button class="pdOk" onclick="agcFazer('+o.row+',\'FEITO\')">✔ FEITO</button><button class="pdAd" onclick="agcAbrir('+o.row+')">⏭ ADIAR</button></div>'+
     (agcAb===o.row?'<div class="pdAdOp"><p>Adiar para quando? Some da tela e volta nesse dia.</p><div class="r">'+[['DIA','1 DIA'],['SEMANA','1 SEMANA'],['MES','1 MÊS']].map(function(x){return '<button onclick="agcFazer('+o.row+',\'ADIAR\',\''+x[0]+'\')">'+x[1]+'<small>'+D[x[0]]+'</small></button>';}).join('')+'</div></div>':'');};
+  h+=agcFla();
   h+='<div class="pdH"><span>📅 AGENDA DE HOJE</span><span>'+agcC.agenda.length+'</span></div>';
   if(!agcC.agenda.length)h+='<div class="pdVaz">Nada na agenda de hoje</div>';
   agcC.agenda.forEach(function(o){var ps=o.hora&&o.hora<hm;
@@ -3848,11 +3866,24 @@ function agcRender(){
   box.innerHTML=h;
 }
 function agcOpo(o){return /^\W*oportunidade/i.test(semAc(o.tarefa||''));} // v132
+/* v152: cartão JOGOS DO FLAMENGO DA SEMANA (linhas com Tipo = Flamengo; OK grava Status = Feito) */
+function agcFlaJogo(o){var t=String(o.tarefa||'').replace(/^[^A-Za-zÀ-ú0-9]+/,'').trim(),cn='',m=t.match(/\(([^)]*)\)\s*$/);if(m){cn=m[1].trim();t=t.slice(0,m.index).trim();}
+  var pr=t.split(/\s+x\s+/i),adv=t,lado='';if(pr.length===2){var f0=/flamengo/i.test(pr[0]),f1=/flamengo/i.test(pr[1]);if(f1&&!f0){adv=pr[0];lado='fora';}else if(f0&&!f1){adv=pr[1];lado='casa';}}
+  return {adv:adv,lado:lado,canal:cn};}
+function agcFla(){var L=agcC.fla||[];if(!L.length)return '';
+  var h='<div class="flaC"><div class="flaH"><div><span>🔴⚫ JOGOS DO FLAMENGO DA SEMANA</span><span class="n">'+L.length+'</span></div></div>';
+  L.forEach(function(o){var j=agcFlaJogo(o),dd=String(o.data||'').slice(0,5);
+    h+='<div class="flaJ'+(o.hoje?' hj':'')+'"><div class="flaD"><b>'+(o.hoje?'HOJE':AGC_DS[o.dow].slice(0,3).toUpperCase())+'</b><span>'+esc(dd)+'</span></div>'
+     +'<div class="flaT">'+(o.hoje?'<span class="hz">É HOJE!</span>':'')+'<b>'+(j.lado==='casa'?'Flamengo x ':'')+esc(j.adv)+(j.lado==='fora'?' x Flamengo':'')+'</b>'
+     +'<small>'+AGC_DS[o.dow]+', '+esc(dd)+(j.canal?' · 📺 '+esc(j.canal):'')+'</small>'+(o.obs?'<small>🏆 '+esc(o.obs)+'</small>':'')+'</div>'
+     +'<div class="flaR"><i>'+esc(o.hora||'--:--')+'</i><button onclick="agcFazer('+o.row+',\'FEITO\')">OK</button></div></div>';});
+  return h+'</div>';}
 function agcAbrir(row){vibra();agcAb=agcAb===row?null:row;agcRender();}
 function agcFazer(row,op,quando){vibra();if(!agcC)return;
-  var o=agcC.agenda.concat(agcC.pend).filter(function(x){return x.row===row;})[0];if(!o)return;
+  var fj=(agcC.fla||[]).some(function(x){return x.row===row;});
+  var o=agcC.agenda.concat(agcC.pend,agcC.fla||[]).filter(function(x){return x.row===row;})[0];if(!o)return;
   agcOcultos[row]=1;agcAb=null;agcRender();
-  toast(op==='FEITO'?'✔ Feito':op==='COMPREI'?'✅ Oportunidade finalizada — comprei':op==='DESCARTAR'?'🚫 Oportunidade descartada':'⏭ Adiada — volta '+agcDatas()[quando],'ok');
+  toast(fj?'🔴⚫ OK — jogo saiu da lista':op==='FEITO'?'✔ Feito':op==='COMPREI'?'✅ Oportunidade finalizada — comprei':op==='DESCARTAR'?'🚫 Oportunidade descartada':'⏭ Adiada — volta '+agcDatas()[quando],'ok');
   v9Api({acao:'agcAcao',row:row,tarefa:o.tarefa,op:op,quando:quando},function(){},function(){delete agcOcultos[row];agcCarregar();});
 }
 ['fotoET','fotoCE','fotoGC'].forEach(function(id){try{$(id).addEventListener('change',function(){lerFotoPara(this,SCAN_CB[id]);});}catch(e){}});
