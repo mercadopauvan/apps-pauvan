@@ -3752,7 +3752,7 @@ function agcDd(d){return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).
 function agcDatas(){var h=new Date();h.setHours(0,0,0,0);var a=new Date(h);a.setDate(a.getDate()+1);var s=new Date(h);s.setDate(s.getDate()+((8-s.getDay())%7||7));var m=new Date(h.getFullYear(),h.getMonth()+1,1);
   return {DIA:AGC_DS[a.getDay()].slice(0,3)+' '+agcDd(a),SEMANA:'Seg '+agcDd(s),MES:AGC_DS[m.getDay()].slice(0,3)+' '+agcDd(m)};}
 // ----- v144: 🌡️ TEMPERATURA DO CONTAINER (Gestão, só o Celio) — leitura pelo programa do ponto no PC do servidor -----
-var ctD=null,ctPer='24h',ctTimer=null,ctEnv=false;
+var ctD=null,ctPer='12h',ctTimer=null,ctEnv=false;
 function ctBtn(){var u=null;try{u=JSON.parse(localStorage.getItem('ctUlt')||'null');}catch(e){}var sub='compartimento 3 · temperatura e avisos';if(u&&u.temp!==undefined&&u.temp!==''&&Date.now()-u.t<3*3600000)sub='compartimento 3 · '+String(u.temp).replace('.',',')+' °C às '+String(u.quando||'').slice(11,16);
   var b=document.createElement('button');b.className='nhR';b.innerHTML='<span class="ib" style="background:#0e7490"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/><path d="M12 17.5v-5"/></svg></span><span><b>Temperatura do container</b><i>'+esc(sub)+'</i></span><span class="ar">›</span>';b.onclick=function(){vibra();irCONT();};return b;}
 function irCONT(){pararCamera();mostrar('tCONT');ctRender();ctCarregar();clearInterval(ctTimer);ctTimer=setInterval(function(){if($('tCONT').classList.contains('on'))ctCarregar(true);else clearInterval(ctTimer);},60000);}
