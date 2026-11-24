@@ -3800,11 +3800,16 @@ function ctGraf(r){var p=r.pts||[];if(p.length<2)return '<div class="pdVaz" styl
   if(u.tOn!==undefined&&u.tOn!==''&&u.tOff!==undefined&&u.tOff!=='')s+='<rect x="'+L+'" y="'+Y(Number(u.tOn)).toFixed(1)+'" width="'+(W-L-R)+'" height="'+Math.max(1,Y(Number(u.tOff))-Y(Number(u.tOn))).toFixed(1)+'" fill="#dcfce7"/>';
   if(cf.max!==undefined)s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(Number(cf.max)).toFixed(1)+'" y2="'+Y(Number(cf.max)).toFixed(1)+'" stroke="#c2410c" stroke-dasharray="4 4"/>';
   for(var i=0;i<=4;i++){var v=lo+(hi-lo)*i/4,y=Y(v);s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="#e2e8f0"/><text x="0" y="'+(y+4).toFixed(1)+'" font-size="10" fill="#475569">'+Math.round(v)+'°</text>';}
+  /* v151: marcas de hora redondas — 24 h: a cada 4 h (6 marcas); 7 dias: cada meia-noite */
+  var f=function(t){var d=new Date(t);return r.periodo==='7d'?('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2):('0'+d.getHours()).slice(-2)+'h';};
+  var tk=[],d0=new Date(ini);d0.setMinutes(0,0,0);if(r.periodo==='7d')d0.setHours(0);
+  while(d0.getTime()<=ag){var tt=d0.getTime();if(tt>ini&&(r.periodo==='7d'||d0.getHours()%4===0))tk.push(tt);d0=new Date(tt+(r.periodo==='7d'?86400000:3600000));if(r.periodo==='7d'){d0.setHours(0,0,0,0);}}
+  var perto=false,lab='';tk.forEach(function(tt){var x=X(tt);if(W-R-x<30)perto=true;s+='<line x1="'+x.toFixed(1)+'" x2="'+x.toFixed(1)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="#eef2f7"/><line x1="'+x.toFixed(1)+'" x2="'+x.toFixed(1)+'" y1="'+(H-B)+'" y2="'+(H-B+3)+'" stroke="#94a3b8"/>';lab+='<text x="'+Math.min(Math.max(x,L+10),W-R-10).toFixed(1)+'" y="'+(H-4)+'" font-size="10" fill="#475569" text-anchor="middle">'+f(tt)+'</text>';});
+  if(!perto)lab+='<text x="'+(W-R)+'" y="'+(H-4)+'" font-size="10" fill="#475569" text-anchor="end">agora</text>';
   var seg=[],cur=[];p.forEach(function(x,j){if(j&&x[0]-p[j-1][0]>(r.periodo==='7d'?75:12)*60000){seg.push(cur);cur=[];}cur.push(X(x[0]).toFixed(1)+','+Y(x[1]).toFixed(1));});seg.push(cur);
   seg.forEach(function(c){if(c.length>1)s+='<polyline fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linejoin="round" points="'+c.join(' ')+'"/>';else s+='<circle cx="'+c[0].split(',')[0]+'" cy="'+c[0].split(',')[1]+'" r="1.8" fill="#1d4ed8"/>';});
   var lp=p[p.length-1];s+='<circle cx="'+X(lp[0]).toFixed(1)+'" cy="'+Y(lp[1]).toFixed(1)+'" r="4" fill="'+(lp[1]>Number(cf.max)?'#c2410c':'#1d4ed8')+'"/>';
-  var f=function(t){var d=new Date(t);return r.periodo==='7d'?('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2):('0'+d.getHours()).slice(-2)+'h';};
-  s+='<text x="'+L+'" y="'+(H-4)+'" font-size="10" fill="#475569">'+f(ini)+'</text><text x="'+((L+W-R)/2-8)+'" y="'+(H-4)+'" font-size="10" fill="#475569">'+f((ini+ag)/2)+'</text><text x="'+(W-R-26)+'" y="'+(H-4)+'" font-size="10" fill="#475569">agora</text></svg>';
+  s+=lab+'</svg>';
   return s+'<div class="ctSub">Faixa verde = automático do sensor (liga/desliga) · tracejado = limite do aviso ('+ctN(cf.max)+' °C)</div>';}
 function ctPeriodo(x){vibra();ctPer=x;ctRender();ctCarregar();}
 function ctCfg(o){vibra();var p={acao:'contCfg'};for(var k in o)p[k]=o[k];v9Api(p,function(r){if(ctD)ctD.cfg=r.cfg;ctRender();toast('Avisos salvos','ok');});}
