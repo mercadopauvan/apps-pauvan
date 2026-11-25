@@ -1,0 +1,1 @@
+[{"old": "  if (cerv) return { ok: true }; // v153: cervejeira só grava a leitura (sem avisos e sem comandos)", "new": "  if (cerv && p.ipMudou) contPush_('🍺 Cervejeira: mudou de IP', String(p.ipMudou).slice(0, 60) + ' — o programa do ponto já passou a usar o novo'); // v154\n  if (cerv) return { ok: true }; // v153: cervejeira só grava a leitura (sem avisos e sem comandos)"}]
