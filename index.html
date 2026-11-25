@@ -2223,7 +2223,7 @@ function salvarCont(it,v,bt,rep){
   }).catch(function(){if(!rep)return setTimeout(function(){salvarCont(it,v,bt,1);},1500);toast('Sem conexão, tente de novo','err');bt.disabled=false;bt.textContent='OK';}); // v50: repete 1x
 }
 // ===== CONFERÊNCIA CEGA =====
-var confCache=null,confNF=null,confItemAtual=null,confForma='UNIDADE',confLotes=[],confEmb='',confQtdEmb='',confCodLido='',confCodStatus='',confKgUn=false,confKgCx=false,confPesoObrig=false,confUva=false,confAut='',confReconte={},confFaltaSt='',confFaltaTipo='',confGrupo='';
+var confTomC=false,confCache=null,confNF=null,confItemAtual=null,confForma='UNIDADE',confLotes=[],confEmb='',confQtdEmb='',confCodLido='',confCodStatus='',confKgUn=false,confKgCx=false,confPesoObrig=false,confUva=false,confAut='',confReconte={},confFaltaSt='',confFaltaTipo='',confGrupo='';
 function irConf(){
   pararCamera();confNF=null;confItemAtual=null;$('faixaConf').textContent='CONFERÊNCIA · '+quem;mostrar('tConf');
   try{confCache=JSON.parse(localStorage.getItem('ci_conf')||'null');}catch(e){}
@@ -2667,7 +2667,9 @@ function abrirConfItem(i){
   confEmb=l0&&l0.emb||'';confQtdEmb=l0&&l0.qtdEmb||'';confCodLido=l0&&l0.codLido||'';confCodStatus=l0&&l0.codStatus||'';
   // como veio (hortifruti por kg)
   var eb=$('ccEmb');eb.style.display=confUva||(i.horti&&EMB_RE.test(semAc(String(i.produto||'')).toUpperCase()))||i.embHist?'block':'none'; // v111: só produtos de bandeja (ou que já vieram em bandeja)
-  if(eb.style.display==='block'){var bb=$('ccEmbBt');bb.innerHTML='';[['BANDEJA 500G','Bandeja 500g'],['BANDEJA 250G','Bandeja 250g'],['SACOLA/KG','Saco / kg'],['OUTRO','Outro']].forEach(function(x){var b=document.createElement('button');b.textContent=x[1];b.dataset.e=x[0];b.onclick=function(){setEmb(x[0]);};bb.appendChild(b);});setEmb(confEmb,true);}
+  confTomC=/TOMATE CEREJA/.test(semAc(String(i.produto||'')+' '+String(i.descNf||'')).toUpperCase())&&!/RAMA/.test(semAc(String(i.produto||'')).toUpperCase()); // v157: tomate cereja vem a granel (kg) ou na bandeja de 300 g (SKU 42735, filial do 38115)
+  if(confTomC)eb.style.display='block';
+  if(eb.style.display==='block'){var bb=$('ccEmbBt');bb.innerHTML='';(confTomC?[['SACOLA/KG','A granel (kg)'],['BANDEJA 300G','Bandeja 300g']]:[['BANDEJA 500G','Bandeja 500g'],['BANDEJA 250G','Bandeja 250g'],['SACOLA/KG','Saco / kg'],['OUTRO','Outro']]).forEach(function(x){var b=document.createElement('button');b.textContent=x[1];b.dataset.e=x[0];b.onclick=function(){setEmb(x[0]);};bb.appendChild(b);});setEmb(confEmb,true);}
   $('ccMotivo').value=i.motivo||'';$('ccMotivoLin').style.display=(i.motivo||i.status==='NAO VEIO'||i.status==='RECUSADO')?'':'none';
   confFaltaSt=i.faltaQtd?(i.faltaTipo||'RECUSADO'):'';confFaltaTipo=i.faltaQtd?'PARTE':'';confFaltaUn='UN';$('ccFaltaFat').value=''; // v110: devolução por caixa
   $('ccFaltaQtd').value=i.faltaQtd||'';mostrarFalta(); // v46
@@ -2761,7 +2763,8 @@ function salvarConfItem(){
     lotes.push({forma:confForma,qtdDig:q,fator:confForma==='CAIXA'?parseFloat(String(l.fator).replace(',','.')):'',validade:l.validade,pecas:(confForma==='KG'||confForma==='KGCX')&&l.pecas!==''?parseFloat(String(l.pecas).replace(',','.')):'',emb:k===0?confEmb:'',qtdEmb:k===0&&confEmb&&confEmb!=='SACOLA/KG'?confQtdEmb:'',codLido:k===0?confCodLido:'',codStatus:k===0?confCodStatus:''});
   }
   if($('ccEmb').style.display==='block'&&confEmb&&confEmb!=='SACOLA/KG'&&!(parseInt(confQtdEmb,10)>0))return toast('Informe quantas embalagens vieram','err');
-  if(confUva&&!confEmb)return toast('Uva: marque como veio — bandeja 500g, bandeja 250g ou saco / kg','err'); // v41: saco/kg não exige bandeja nem código
+  if(confUva&&!confEmb)return toast('Uva: marque como veio — bandeja 500g, bandeja 250g ou saco / kg','err');
+  if(confTomC&&!confEmb)return toast('Tomate cereja: marque como veio — a granel (kg) ou bandeja 300g','err'); // v157 // v41: saco/kg não exige bandeja nem código
   confCodLido=$('ccCodLido').value.replace(/\D/g,'')||confCodLido;
   if(confUva&&/^BANDEJA/.test(confEmb||'')&&!confCodLido)return toast('Uva: bipe o código de barras da bandeja','err');
   if(lotes[0]&&!lotes[0].codLido)lotes[0].codLido=confCodLido;
