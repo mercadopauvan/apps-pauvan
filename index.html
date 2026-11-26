@@ -1026,7 +1026,7 @@ var API_URL = 'https://script.google.com/macros/s/AKfycby5E_gkrNjAOsBgpYbrfJvXaK
 var FB_CFG={apiKey:'AIzaSyC4lagk9rwIo-_G5sZxV0GPyhcaTvJz0ng',authDomain:'apps-pauvan.firebaseapp.com',projectId:'apps-pauvan',storageBucket:'apps-pauvan.firebasestorage.app',messagingSenderId:'442345355000',appId:'1:442345355000:web:b311386f57ad07527dad0d'},FB_VAPID='BDmanVUsM42_JEf3CDuth5vPV_hHXt2fPMmF2hUH9E9tiZOLHt8fVvwiBFvj519E3PGjJAq33EagY4F12vX_rQw',fbMsg=null; // v63: notificações
 var NOVA_HOME=/^https?:/.test(API_URL);
 if(NOVA_HOME){try{document.querySelector('header').style.background='#104800';}catch(e){}}
-var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont'],FOTOS:['LOJA E RECEBIMENTO','Fotos do site','fotografar produtos sem foto no site','#be185d','foto'],PRECOS_OFF:['LOJA E RECEBIMENTO','Preços off-line','etiqueta colocada → ativar o preço','#0369a1','tag'],VALIDADES:['LOJA E RECEBIMENTO','Validades','conferência de validade e troca de frente','#a16207','conf'],SEMVENDA:['LOJA E RECEBIMENTO','Produto sem venda','produto com saldo que não está vendendo','#0d9488','graf']};
+var HOME_DEF={MERCADO:['BAIXAS','Consumo do mercado','produto usado pela loja','#1e40af','loja'],PROPRIO:['BAIXAS','Consumo próprio','produto retirado pela família','#c2410c','casa'],AVARIA:['BAIXAS','Avaria / vencido','produto perdido, com foto','#b91c1c','aler'],CONFERENCIA:['LOJA E RECEBIMENTO','Conferência','conferir as notas que chegaram','#0e7490','conf'],REBAIXAS:['LOJA E RECEBIMENTO','Rebaixas','avisar que uma rebaixa terminou','#6d28d9','tag'],CONTAGEM:['LOJA E RECEBIMENTO','Contagem Dia D','contar o que tem na gôndola','#111','cont'],FOTOS:['LOJA E RECEBIMENTO','Fotos do site','fotografar produtos sem foto no site','#be185d','foto'],PRECOS_OFF:['LOJA E RECEBIMENTO','Preços off-line','etiqueta colocada → ativar o preço','#0369a1','tag'],VALIDADES:['LOJA E RECEBIMENTO','Validades','conferência de validade e troca de frente','#a16207','conf'],VAL_AVULSO:['LOJA E RECEBIMENTO','Lançar validade','bipar o produto e informar a validade','#a16207','conf'],SEMVENDA:['LOJA E RECEBIMENTO','Produto sem venda','produto com saldo que não está vendendo','#0d9488','graf']};
 var resumoCache={};try{resumoCache=JSON.parse(localStorage.getItem('ci_resumo')||'{}')||{};}catch(e){}
 
 var PESSOAS = [];
@@ -1081,7 +1081,7 @@ function confirmarPin(){
 $('pin1').addEventListener('keydown',function(e){if(e.key==='Enter'){if(pinNovo)$('pin2').focus();else confirmarPin();}});
 $('pin2').addEventListener('keydown',function(e){if(e.key==='Enter')confirmarPin();});
 $('pin1').addEventListener('input',function(){if(!pinNovo&&this.value.replace(/\D/g,'').length===4)confirmarPin();});
-var NOMES_TIPO={SEMVENDA:'PRODUTO SEM VENDA',VALIDADES:'VALIDADES',MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',FOTOS:'FOTOS DO SITE',PRECOS_OFF:'PREÇOS OFF-LINE'};
+var NOMES_TIPO={SEMVENDA:'PRODUTO SEM VENDA',VALIDADES:'VALIDADES',VAL_AVULSO:'LANÇAR VALIDADE',MERCADO:'CONSUMO DO MERCADO',PROPRIO:'CONSUMO PRÓPRIO',AVARIA:'AVARIA / VENCIDO',REBAIXAS:'REBAIXAS',CONTAGEM:'CONTAGEM DIA D',CONFERENCIA:'CONFERÊNCIA',FOTOS:'FOTOS DO SITE',PRECOS_OFF:'PREÇOS OFF-LINE'};
 function irTipo(){
   vsPend=null;
   reenviarFila();
@@ -1107,7 +1107,7 @@ function escolherTipo(t){
 if(t==='CONTAGEM'){irCont();return;}
   if(t==='FOTOS'){irFS();return;}
   if(t==='PRECOS_OFF'){irPO();return;}
-  if(t==='VALIDADES'){irVAL();return;} // v81
+  if(t==='VALIDADES'||t==='VAL_AVULSO'){irVAL();return;} // v81 · v161
   if(t==='SEMVENDA'){irPSV();return;} // v87
   if(t==='CONFERENCIA'){irConf();return;}
   var f=$('faixa');f.className='faixa '+t.toLowerCase();
@@ -1580,8 +1580,12 @@ try{$('video').addEventListener('click',function(){if(tipoAtual&&!produtoAtual){
 
 // ===== VALIDADES — TROCA DE FRENTE — v81 =====
 var valCache=null,valAba='CV',cvAberto={};
+// v161: acesso VAL_AVULSO (sem VALIDADES) = só a parte de bipar e lançar validade avulsa; sem listas e sem as outras abas
+function valSo(){return appsCache.indexOf('VALIDADES')<0&&appsCache.indexOf('VAL_AVULSO')>=0;}
 function irVAL(){
-  pararCamera();$('faixaVAL').textContent='VALIDADES · '+quem;mostrar('tVAL');
+  var so=valSo();if(so)valAba='CV';
+  pararCamera();$('faixaVAL').textContent=(so?'LANÇAR VALIDADE · ':'VALIDADES · ')+quem;mostrar('tVAL');
+  var vt=document.querySelector('#tVAL .valTabs');if(vt)vt.style.display=so?'none':'';
   try{valCache=JSON.parse(localStorage.getItem('ci_val')||'null');}catch(e){}
   renderVAL();carregarVAL();
 }
@@ -1601,6 +1605,7 @@ function valMarcar(it,b,desf){
 }
 function renderVAL(){
   var box=$('valLista');box.innerHTML='';
+  if(valSo()){$('valTit').textContent='Lançar validade';$('valProg').textContent='';$('valDica').innerHTML='Bipe o produto (ou busque pelo nome), informe a <b>validade que está na embalagem</b> e conte a <b>área de venda</b> e o <b>estoque</b>.';vaBloco(box);return;} // v161
   $('valTabCV').className=valAba==='CV'?'on':'';$('valTabTF').className=valAba==='TF'?'on':'';$('valTabVF').className=valAba==='VF'?'on':''; // v109
   if($('valTabAL'))$('valTabAL').className=valAba==='AL'?'on':'';if(valAba==='AL'){alRender(box);return;} // v119.7
   if(valAba==='VF'){vfRender(box);return;}
@@ -2419,7 +2424,7 @@ $('fotoCodEmb').addEventListener('change',function(){lerFotoPara(this,SCAN_CB.fo
 // ===== v104: VALIDADE FORA DA LISTA (a repositora lança um lote que não veio na lista) =====
 var vaProd=null,vaSalvo=null,vaRes=null;
 function vaBloco(box){
-  var hd=document.createElement('div');hd.className='grp vaHd';hd.innerHTML='<span>➕ VALIDADE FORA DA LISTA</span>';box.appendChild(hd);
+  var hd=document.createElement('div');hd.className='grp vaHd';hd.innerHTML='<span>'+(valSo()?'➕ LANÇAR VALIDADE':'➕ VALIDADE FORA DA LISTA')+'</span>';box.appendChild(hd);
   var d=document.createElement('div');d.className='vaBox';box.appendChild(d);
   if(vaSalvo){
     d.innerHTML='<div class="vaProd"><div class="d">'+esc(vaSalvo.desc)+'</div><div class="m">validade '+esc(vaSalvo.val)+' · '+esc(vaSalvo.total)+' un</div></div><div class="vaRes ok">✅ <b>Salvo!</b> Validade lançada.</div><div class="vaBt" style="margin-top:10px"><button class="vaScan">📷 BIPAR OUTRO</button><button class="vaNome">🔎 BUSCAR PELO NOME</button></div>';
@@ -2509,7 +2514,7 @@ function renderHome(){
   var box=$('nhLista');box.innerHTML='';var grupo='';pontoTopoRender();
   if(resumoCache.grm&&typeof irGRM==='function'){var gm=document.createElement('button');gm.className='nhR';gm.innerHTML='<span class="ib" style="background:#5b21b6;font-size:24px">📏</span><span><b>Conferir na loja</b><i><span class="v9Selo">'+resumoCache.grm+'</span> '+(resumoCache.grm===1?'pedido':'pedidos')+' do Celio</i></span><span class="ar">›</span>';gm.onclick=function(){vibra();irGRM();};box.appendChild(gm);} // v118
   (typeof HOME_ORDEM!=='undefined'?HOME_ORDEM:['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA']).forEach(function(a){ // v109
-    if(appsCache.indexOf(a)<0)return;var d=HOME_DEF[a];
+    if(appsCache.indexOf(a)<0)return;if(a==='VAL_AVULSO'&&appsCache.indexOf('VALIDADES')>=0)return;var d=HOME_DEF[a]; // v161: quem tem Validades completo não precisa do botão avulso
     if(d[0]!==grupo){grupo=d[0];var t=document.createElement('h3');t.textContent=grupo;box.appendChild(t);}
     var sub=d[2];
     if(a==='CONFERENCIA'&&resumoCache.conf!=null)sub=resumoCache.conf?(resumoCache.conf+(resumoCache.conf===1?' nota esperando':' notas esperando')):'nenhuma nota esperando';
@@ -3533,7 +3538,7 @@ HOME_DEF.ETIQUETAS=['LOJA E RECEBIMENTO','Pedir etiqueta','etiqueta de preço pe
 HOME_DEF.ETIQUETAS_FILA=['LOJA E RECEBIMENTO','Fila de etiquetas','imprimir as etiquetas pedidas','#9333ea','tag'];
 HOME_DEF.POFF_FILA=['LOJA E RECEBIMENTO','Fila de preços on-line','ativar no Plenus os preços com etiqueta colocada','#0369a1','tag'];NOMES_TIPO.POFF_FILA='FILA DE PREÇOS ON-LINE';
 NOMES_TIPO.CONTAGEM_ESTOQUE='CONTAGEM DE ESTOQUE';NOMES_TIPO.ETIQUETAS='PEDIR ETIQUETA';NOMES_TIPO.ETIQUETAS_FILA='FILA DE ETIQUETAS';
-var HOME_ORDEM={lista:['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','FOTOS','PRECOS_OFF','VALIDADES','SEMVENDA','CONTAGEM_ESTOQUE','ETIQUETAS','ETIQUETAS_FILA','POFF_FILA'],forEach:function(fn){var cel=semAc(quem||'').toLowerCase().trim()==='celio';this.lista.forEach(function(a){if(cel&&(a==='ETIQUETAS_FILA'||a==='POFF_FILA'))return;fn(a);});}}; // a fila do Celio fica em GESTÃO
+var HOME_ORDEM={lista:['MERCADO','PROPRIO','AVARIA','CONFERENCIA','REBAIXAS','CONTAGEM','FOTOS','PRECOS_OFF','VALIDADES','VAL_AVULSO','SEMVENDA','CONTAGEM_ESTOQUE','ETIQUETAS','ETIQUETAS_FILA','POFF_FILA'],forEach:function(fn){var cel=semAc(quem||'').toLowerCase().trim()==='celio';this.lista.forEach(function(a){if(cel&&(a==='ETIQUETAS_FILA'||a==='POFF_FILA'))return;fn(a);});}}; // a fila do Celio fica em GESTÃO
 function v9SubHtml(a,sub){
   var r=resumoCache||{},sel=function(n,t){return '<span class="v9Selo">'+n+'</span> '+esc(t);};
   if(a==='CONTAGEM_ESTOQUE'&&r.cta)return sel(r.cta,r.cta===1?'produto para contar':'produtos para contar');
